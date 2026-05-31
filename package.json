@@ -1,0 +1,40 @@
+{
+  "name": "obsidian-valet",
+  "version": "0.1.0",
+  "description": "A local tool for manipulating Obsidian vault notes",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"vite,server\" -c \"cyan,yellow\" \"vite\" \"NODE_ENV=development tsx watch src/server/index.ts\"",
+    "build": "vite build",
+    "start": "tsx src/server/index.ts",
+    "preview": "npm run build && npm run start",
+    "check-docs": "tsx scripts/check-docs.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "chalk": "^5.0.0",
+    "fastify": "^5.0.0",
+    "js-yaml": "^4.1.0",
+    "marked": "^15.0.0",
+    "open": "^10.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
+    "simple-git": "^3.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^9.0.0",
+    "pino-pretty": "^13.1.3",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^6.0.0"
+  }
+}

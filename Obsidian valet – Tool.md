@@ -113,3 +113,17 @@ related:
 
 - Understanding of Git operations
 - Understanding of GitHub operations
+
+# Improvements
+
+- [x] when selecting a vault, add the ability to either enter the absolute path or browse the folder; in the suggested path, use `~/Obsidian/MyVault`; put the path to the left and the name on the right; the vault name is readonly, and it is the last folder of the path; so in the default vaule name is calculated to `MyVault`
+- [x] Forbidden directories. Autocomplete the name of directories inside the vault, and only when one directory is selected enable the ADD button. By default text in the input field show `Type the name of a folder`
+- [x] Do not ask to add properties to the vault. Once the vault is defined, self discover the properties inside the vault and figure out by yourself the type. Show them in a table with columns name and type
+- [x] in the menu bar, clicking in `Obsidian Valet` takes you to the home page
+- [x] make the top bar fixed at the top, should always be visible
+- [x] If there is only one vault defined, make it active by default
+- [x] when selecting forbidden directories of a vault, do not allow entering directories that does not exist
+- [x] when selecting forbidden directories of a vault, improve the dropdown; as I am typing, only show the directories matching the substring being typed, and allow the use of the keyboard to navigate up and down the directories matched and shown; allow [Enter] to select; allow Enter to add; when added, clean the input field
+- [x] in the operations page, put `filter notes` and `bulk operations` in tabs
+- [x] bug: in the documentation page, clicking on the links to the docs takes the user to the home page, not the doc
+- [x] add ability to refresh the list of properties and types of the vault
