@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
+import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
 import DirSelect from './DirSelect'
 import styles from './FilterBuilder.module.css'
 
@@ -18,7 +19,7 @@ function isValidPropertyRule(rule: PropertyRule, defs: PropertyDef[]): boolean {
   if (!rule.property) return false
   const def = defs.find((d) => d.name === rule.property)
   const type = def?.type ?? 'text'
-  if (rule.operator === 'is-empty') return true
+  if (rule.operator === 'exists-and-empty' || rule.operator === 'does-not-exist') return true
   const isLink = type === 'link' || type === 'link-array'
   if (isLink && rule.value) {
     return /^\[\[.+\]\]$/.test(rule.value.trim())
@@ -71,7 +72,7 @@ export default function FilterBuilder({
     next.properties = next.properties.map((r, i) => {
       if (i !== idx) return r
       const updated = { ...r, ...patch }
-      if ('operator' in patch && patch.operator === 'is-empty') {
+      if ('operator' in patch && (patch.operator === 'exists-and-empty' || patch.operator === 'does-not-exist')) {
         updated.value = undefined
       }
       return updated
@@ -205,12 +206,14 @@ export default function FilterBuilder({
                     updatePropertyRule(idx, { operator: e.target.value as any })
                   }
                 >
-                  <option value="contains">contains</option>
-                  <option value="not-contains">does not contain</option>
-                  <option value="is-empty">is empty</option>
+                  {SIMPLE_PROPERTY_OPERATORS.map((op) => (
+                    <option key={op.value} value={op.value}>
+                      {op.label}
+                    </option>
+                  ))}
                 </select>
 
-                {rule.operator !== 'is-empty' && (
+                {rule.operator !== 'exists-and-empty' && rule.operator !== 'does-not-exist' && (
                   <input
                     className={`${styles.valueInput} ${
                       invalidRuleIdx === idx && isLink ? styles.valueInputInvalid : ''

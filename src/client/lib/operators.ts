@@ -1,7 +1,12 @@
-import type { PropertyType, FilterOperator } from '@shared/types'
+import type { PropertyType, FilterOperator, PropertyOperator } from '@shared/types'
 
 export interface OperatorOption {
   value: FilterOperator
+  label: string
+}
+
+export interface PropertyOperatorOption {
+  value: PropertyOperator
   label: string
 }
 
@@ -68,9 +73,11 @@ export const DIRECTORY_OPERATORS: OperatorOption[] = [
   { value: 'not-equals', label: 'is not' },
 ]
 
-export const SIMPLE_PROPERTY_OPERATORS: OperatorOption[] = [
+export const SIMPLE_PROPERTY_OPERATORS: PropertyOperatorOption[] = [
   { value: 'contains', label: 'contains' },
   { value: 'not-contains', label: 'does not contain' },
+  { value: 'exists-and-empty', label: 'exists and is empty' },
+  { value: 'does-not-exist', label: 'does not exist' },
 ]
 
 export function getPropertyType(property: string, defs: { name: string; type: PropertyType }[]): PropertyType {

@@ -35,7 +35,7 @@ export const locationRuleSchema = z.object({
 
 export const propertyRuleSchema = z.object({
   property: z.string().min(1),
-  operator: z.enum(['contains', 'not-contains', 'is-empty']),
+  operator: z.enum(['contains', 'not-contains', 'exists-and-empty', 'does-not-exist']),
   value: z.string().optional(),
   combinator: z.enum(['and', 'or']),
 })
