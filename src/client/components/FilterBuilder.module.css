@@ -40,6 +40,21 @@
   outline: none;
 }
 
+.kindSelect {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+.kindSelect:focus {
+  border-color: var(--color-accent);
+}
+
 .propInput {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -85,6 +100,11 @@
 
 .valueInput:focus {
   border-color: var(--color-accent);
+}
+
+.valueInputInvalid {
+  border-color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.05);
 }
 
 .valueSelect {

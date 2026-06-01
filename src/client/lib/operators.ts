@@ -63,6 +63,16 @@ export function getOperators(property: string, defs: { name: string; type: Prope
   return OPERATORS_BY_TYPE[def?.type ?? 'text']
 }
 
+export const DIRECTORY_OPERATORS: OperatorOption[] = [
+  { value: 'equals', label: 'is' },
+  { value: 'not-equals', label: 'is not' },
+]
+
+export const SIMPLE_PROPERTY_OPERATORS: OperatorOption[] = [
+  { value: 'contains', label: 'contains' },
+  { value: 'not-contains', label: 'does not contain' },
+]
+
 export function getPropertyType(property: string, defs: { name: string; type: PropertyType }[]): PropertyType {
   return defs.find((d) => d.name === property)?.type ?? 'text'
 }

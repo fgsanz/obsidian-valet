@@ -5,9 +5,31 @@ slug: filters
 
 # Filters
 
-Filters test frontmatter property values. The available operators depend on the property type.
+Filters can match notes by **property** (frontmatter value) or by **directory** (file location in vault).
 
-## Operators by type
+## Filter types
+
+### Property filters
+
+Property filters test frontmatter values. All property filters use two operators:
+
+- **contains** — match notes where the property value includes the query
+- **does not contain** — match notes where the property value does not include the query
+
+For **link and link-array** properties, you must provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively.
+
+For other property types, type-specific placeholders guide entry (e.g., `tag/subtag` for tags, `[[YYYY-Www]]` for week links).
+
+### Directory filters
+
+Directory filters match notes by their file location in the vault:
+
+- **is** — note is in this directory or a subdirectory
+- **is not** — note is not in this directory (or any subdirectory)
+
+Forbidden directories are excluded from the directory selector.
+
+## Matching behavior by type
 
 ### Link and link-array
 

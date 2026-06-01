@@ -127,3 +127,9 @@ related:
 - [x] in the operations page, put `filter notes` and `bulk operations` in tabs
 - [x] bug: in the documentation page, clicking on the links to the docs takes the user to the home page, not the doc
 - [x] add ability to refresh the list of properties and types of the vault
+- [x] new functionality in the filtering: add the ability to also filter per directory; to the right of `where`add the following controls and fields (from left to right):
+      - a dropdown with the options `directory` and `property`
+      - an input field with autocomplete (with same style and behavior than the one for selecting a directory in the vaults page; so maybe factor out the component) where the user selects/types either the name of a property or the name of a directory, depending of the control to the left
+      - a dropdown with the logical filters (e.g., contains, ...); if the leftmost dropdown is set to `directory`then the options of this dropdown are `is`and `is not`
+      - an input field, not auto-complete, where the user enters the value
+    

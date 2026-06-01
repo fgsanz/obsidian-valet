@@ -22,6 +22,8 @@ Typical defaults: `.obsidian`, `.trash`
 
 Add any other directories you never want to appear in results (e.g. `Archive/Old`, `Templates`).
 
+**Note:** All hidden directories (names starting with `.`) are automatically excluded from scanning, regardless of the forbidden list. This prevents accidental scanning of system and tool metadata directories.
+
 ## Property definitions
 
 Property definitions tell the tool how to interpret each frontmatter key. Without a definition, the tool makes a best-effort guess based on the value's shape.

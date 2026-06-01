@@ -22,6 +22,8 @@ export const api = {
     setActive: (vaultId: string) => request<null>('PUT', '/vaults/active', { vaultId }),
     discoverProperties: (id: string) =>
       request<PropertyDef[]>('POST', `/vaults/${id}/discover-properties`),
+    directories: (id: string) =>
+      request<string[]>('GET', `/vaults/${id}/directories`),
   },
 
   fs: {

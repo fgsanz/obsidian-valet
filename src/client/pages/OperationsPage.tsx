@@ -25,10 +25,16 @@ export default function OperationsPage() {
     enabled: !!activeVault?.id,
   })
 
+  const { data: dirs = [] } = useQuery({
+    queryKey: ['vault', 'directories', activeVault?.id],
+    queryFn: () => api.vaults.directories(activeVault!.id),
+    enabled: !!activeVault?.id,
+  })
+
   const [activeTab, setActiveTab] = useState<Tab>('filter')
 
   const [rules, setRules] = useState<FilterRule[]>([
-    { property: '', operator: 'contains', value: '', combinator: 'and' },
+    { kind: 'property', property: '', operator: 'contains', value: '', combinator: 'and' },
   ])
   const [isFiltering, setIsFiltering] = useState(false)
   const [filterError, setFilterError] = useState<string | null>(null)
@@ -201,6 +207,7 @@ export default function OperationsPage() {
               onRun={runFilter}
               isRunning={isFiltering}
               properties={activeVault.properties}
+              dirs={dirs}
             />
             {filterError && (
               <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>

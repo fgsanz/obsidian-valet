@@ -37,6 +37,7 @@ export type FilterOperator =
   | 'after'
 
 export interface FilterRule {
+  kind: 'property' | 'directory'
   property: string
   operator: FilterOperator
   value: string

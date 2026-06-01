@@ -26,7 +26,7 @@ export async function collectFiles(dir: string, forbidden: Set<string>, out: str
     return
   }
   for (const entry of entries) {
-    if (forbidden.has(entry.name)) continue
+    if (entry.name.startsWith('.') || forbidden.has(entry.name)) continue
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
       await collectFiles(full, forbidden, out)
@@ -51,7 +51,7 @@ export async function collectDirectories(
   }
   const dirs: string[] = []
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue
+    if (!entry.isDirectory() || entry.name.startsWith('.')) continue
     const dirRel = rel ? `${rel}/${entry.name}` : entry.name
     dirs.push(dirRel)
     const children = await collectDirectories(base, dirRel, depth + 1)

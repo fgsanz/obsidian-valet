@@ -120,7 +120,17 @@ function matchesOperator(
   }
 }
 
+function noteMatchesDirectory(note: ParsedNote, rule: FilterRule): boolean {
+  const rel = note.relativePath.replace(/\\/g, '/')
+  const noteDir = rel.includes('/') ? rel.substring(0, rel.lastIndexOf('/')) : ''
+  const targetDir = rule.property.replace(/\\/g, '/').replace(/\/$/, '')
+
+  const isIn = noteDir === targetDir || noteDir.startsWith(targetDir + '/')
+  return rule.operator === 'equals' ? isIn : !isIn
+}
+
 function noteMatchesRule(note: ParsedNote, rule: FilterRule, defs: PropertyDef[]): boolean {
+  if (rule.kind === 'directory') return noteMatchesDirectory(note, rule)
   const type = getPropertyType(rule.property, defs)
   const value = note.frontmatter[rule.property]
   return matchesOperator(value, rule.operator, rule.value, type)

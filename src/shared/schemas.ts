@@ -28,6 +28,7 @@ export const vaultSchema = z.object({
 export const createVaultSchema = vaultSchema.omit({ id: true })
 
 export const filterRuleSchema = z.object({
+  kind: z.enum(['property', 'directory']).default('property'),
   property: z.string().min(1),
   operator: z.enum(['equals', 'contains', 'not-equals', 'not-contains', 'before', 'after']),
   value: z.string(),

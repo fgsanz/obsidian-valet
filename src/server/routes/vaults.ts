@@ -113,6 +113,28 @@ export const vaultsPlugin: FastifyPluginAsync = async (fastify) => {
     return { data: properties }
   })
 
+  // ── Vault directory listing (for filter autocomplete) ──────────────────────
+
+  fastify.get('/vaults/:id/directories', async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const config = await getConfig()
+    const vault = config.vaults.find((v) => v.id === id)
+    if (!vault) {
+      reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Vault not found' } })
+      return
+    }
+    const allDirs = await collectDirectories(vault.path)
+    const dirs = allDirs.filter((d) => {
+      for (const forbidden of vault.forbiddenDirs) {
+        if (d === forbidden || d.startsWith(forbidden + '/')) {
+          return false
+        }
+      }
+      return true
+    })
+    return { data: dirs.sort() }
+  })
+
   // ── Filesystem utilities (for vault setup UI) ───────────────────────────────
 
   fastify.post('/browse-folder', async (_request, reply) => {
