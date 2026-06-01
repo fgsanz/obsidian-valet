@@ -27,6 +27,24 @@ export const vaultSchema = z.object({
 
 export const createVaultSchema = vaultSchema.omit({ id: true })
 
+export const locationRuleSchema = z.object({
+  operator: z.enum(['all-directories', 'directory-is', 'directory-is-not']),
+  directory: z.string().optional(),
+  combinator: z.enum(['and', 'or']),
+})
+
+export const propertyRuleSchema = z.object({
+  property: z.string().min(1),
+  operator: z.enum(['contains', 'not-contains', 'is-empty']),
+  value: z.string().optional(),
+  combinator: z.enum(['and', 'or']),
+})
+
+export const filterCriteriaSchema = z.object({
+  location: z.array(locationRuleSchema).min(1),
+  properties: z.array(propertyRuleSchema).min(1),
+})
+
 export const filterRuleSchema = z.object({
   kind: z.enum(['property', 'directory']).default('property'),
   property: z.string().min(1),

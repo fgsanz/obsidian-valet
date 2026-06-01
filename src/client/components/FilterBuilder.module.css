@@ -1,4 +1,23 @@
-.builder {}
+.builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
 
 .rules {
   display: flex;
@@ -133,8 +152,13 @@
   flex-shrink: 0;
 }
 
-.removeBtn:hover {
+.removeBtn:hover:not(:disabled) {
   color: var(--color-error);
+}
+
+.removeBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .footer {

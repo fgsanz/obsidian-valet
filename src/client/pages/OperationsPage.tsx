@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
-import type { FilterRule, Operation, ParsedNote, OperationResult } from '@shared/types'
+import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
 import FilterBuilder from '../components/FilterBuilder'
 import NoteList from '../components/NoteList'
 import StatsBar from '../components/StatsBar'
@@ -33,9 +33,10 @@ export default function OperationsPage() {
 
   const [activeTab, setActiveTab] = useState<Tab>('filter')
 
-  const [rules, setRules] = useState<FilterRule[]>([
-    { kind: 'property', property: '', operator: 'contains', value: '', combinator: 'and' },
-  ])
+  const [criteria, setCriteria] = useState<FilterCriteria>({
+    location: [{ operator: 'all-directories', combinator: 'and' }],
+    properties: [{ property: '', operator: 'contains', combinator: 'and' }],
+  })
   const [isFiltering, setIsFiltering] = useState(false)
   const [filterError, setFilterError] = useState<string | null>(null)
   const [matchedNotes, setMatchedNotes] = useState<ParsedNote[] | null>(null)
@@ -63,7 +64,7 @@ export default function OperationsPage() {
     setMatchedNotes(null)
     setResult(null)
     try {
-      const notes = await api.notes.filter(activeVault.id, rules)
+      const notes = await api.notes.filter(activeVault.id, criteria)
       setMatchedNotes(notes)
     } catch (err) {
       setFilterError(err instanceof Error ? err.message : String(err))
@@ -76,7 +77,7 @@ export default function OperationsPage() {
     if (!activeVault || !matchedNotes) return
     setIsPreviewing(true)
     try {
-      const previewed = await api.notes.previewOperation(activeVault.id, rules, op)
+      const previewed = await api.notes.previewOperation(activeVault.id, criteria, op)
       setMatchedNotes(previewed)
     } catch {
       // ignore preview errors
@@ -100,7 +101,7 @@ export default function OperationsPage() {
     if (!activeVault) return
     setIsApplying(true)
     try {
-      const res = await api.notes.applyOperation(activeVault.id, rules, op)
+      const res = await api.notes.applyOperation(activeVault.id, criteria, op)
       setResult(res)
     } catch (err) {
       setFilterError(err instanceof Error ? err.message : String(err))
@@ -138,7 +139,7 @@ export default function OperationsPage() {
     )
   }
 
-  const highlightedProperties = rules.filter((r) => r.property).map((r) => r.property)
+  const highlightedProperties = criteria.properties.filter((r) => r.property).map((r) => r.property)
   const hasMatches = matchedNotes !== null && matchedNotes.length > 0
 
   return (
@@ -202,8 +203,8 @@ export default function OperationsPage() {
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter rules</div>
             <FilterBuilder
-              rules={rules}
-              onChange={setRules}
+              criteria={criteria}
+              onChange={setCriteria}
               onRun={runFilter}
               isRunning={isFiltering}
               properties={activeVault.properties}
@@ -256,7 +257,7 @@ export default function OperationsPage() {
                 </div>
                 <BulkOpPanel
                   properties={activeVault.properties}
-                  suggestedProperty={rules[0]?.property}
+                  suggestedProperty={criteria.properties[0]?.property}
                   onPreview={handlePreview}
                   onApply={handleApply}
                   isPreviewing={isPreviewing}

@@ -1,83 +1,112 @@
 import { useState } from 'react'
-import type { FilterRule, PropertyDef } from '@shared/types'
-import { getOperators, getPropertyType, DIRECTORY_OPERATORS, SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
+import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
 import DirSelect from './DirSelect'
 import styles from './FilterBuilder.module.css'
 
 interface Props {
-  rules: FilterRule[]
-  onChange: (rules: FilterRule[]) => void
+  criteria: FilterCriteria
+  onChange: (criteria: FilterCriteria) => void
   onRun: () => void
   isRunning: boolean
   properties: PropertyDef[]
   dirs: string[]
 }
 
-const listId = 'prop-autocomplete'
+const propListId = 'prop-autocomplete'
 
-function isValidLinkSyntax(value: string): boolean {
-  if (!value.trim()) return true
-  return /^\[\[.+\]\]$/.test(value.trim())
-}
-
-function ruleIsValid(rule: FilterRule, defs: PropertyDef[]): boolean {
+function isValidPropertyRule(rule: PropertyRule, defs: PropertyDef[]): boolean {
   if (!rule.property) return false
-  if (rule.kind === 'directory') return true
-  const type = getPropertyType(rule.property, defs)
-  if (type === 'link' || type === 'link-array') {
-    return isValidLinkSyntax(rule.value)
+  const def = defs.find((d) => d.name === rule.property)
+  const type = def?.type ?? 'text'
+  if (rule.operator === 'is-empty') return true
+  const isLink = type === 'link' || type === 'link-array'
+  if (isLink && rule.value) {
+    return /^\[\[.+\]\]$/.test(rule.value.trim())
   }
-  return true
+  return !!rule.value?.trim()
 }
 
-export default function FilterBuilder({ rules, onChange, onRun, isRunning, properties, dirs }: Props) {
-  const [invalidRules, setInvalidRules] = useState<Set<number>>(new Set())
-  function addRule() {
-    onChange([
-      ...rules,
-      { kind: 'property', property: '', operator: 'contains', value: '', combinator: 'and' },
-    ])
-  }
+function criteriaIsValid(criteria: FilterCriteria, defs: PropertyDef[]): boolean {
+  if (criteria.location.length === 0 || criteria.properties.length === 0) return false
+  return criteria.properties.every((r) => isValidPropertyRule(r, defs))
+}
 
-  function removeRule(idx: number) {
-    onChange(rules.filter((_, i) => i !== idx))
-  }
+export default function FilterBuilder({
+  criteria,
+  onChange,
+  onRun,
+  isRunning,
+  properties,
+  dirs,
+}: Props) {
+  const [invalidRuleIdx, setInvalidRuleIdx] = useState<number | null>(null)
 
-  function updateRule(idx: number, patch: Partial<FilterRule>) {
-    const next = rules.map((r, i) => {
+  function updateLocationRule(idx: number, patch: Partial<LocationRule>) {
+    const next = { ...criteria }
+    next.location = next.location.map((r, i) => {
       if (i !== idx) return r
       const updated = { ...r, ...patch }
-
-      if ('kind' in patch && patch.kind !== r.kind) {
-        updated.property = ''
-        updated.value = ''
-        updated.operator = patch.kind === 'directory' ? 'equals' : 'contains'
-      } else if ('property' in patch && patch.property !== r.property) {
-        const ops = updated.kind === 'directory' ? DIRECTORY_OPERATORS : getOperators(patch.property ?? '', properties)
-        if (ops.length > 0 && !ops.find((o) => o.value === updated.operator)) {
-          updated.operator = ops[0].value
-        }
-        updated.value = ''
+      if ('operator' in patch && patch.operator !== r.operator) {
+        updated.directory = undefined
       }
       return updated
     })
     onChange(next)
   }
 
+  function removeLocationRule(idx: number) {
+    const next = { ...criteria }
+    next.location = next.location.filter((_, i) => i !== idx)
+    onChange(next)
+  }
+
+  function addLocationRule() {
+    const next = { ...criteria }
+    next.location = [...next.location, { operator: 'all-directories', combinator: 'and' }]
+    onChange(next)
+  }
+
+  function updatePropertyRule(idx: number, patch: Partial<PropertyRule>) {
+    const next = { ...criteria }
+    next.properties = next.properties.map((r, i) => {
+      if (i !== idx) return r
+      const updated = { ...r, ...patch }
+      if ('operator' in patch && patch.operator === 'is-empty') {
+        updated.value = undefined
+      }
+      return updated
+    })
+    onChange(next)
+  }
+
+  function removePropertyRule(idx: number) {
+    const next = { ...criteria }
+    next.properties = next.properties.filter((_, i) => i !== idx)
+    onChange(next)
+  }
+
+  function addPropertyRule() {
+    const next = { ...criteria }
+    next.properties = [
+      ...next.properties,
+      { property: '', operator: 'contains', combinator: 'and' },
+    ]
+    onChange(next)
+  }
+
   return (
     <div className={styles.builder}>
-      <datalist id={listId}>
+      <datalist id={propListId}>
         {properties.map((p) => (
           <option key={p.name} value={p.name} />
         ))}
       </datalist>
 
-      <div className={styles.rules}>
-        {rules.map((rule, idx) => {
-          const operators = rule.kind === 'directory' ? DIRECTORY_OPERATORS : getOperators(rule.property, properties)
-          const type = rule.kind === 'directory' ? undefined : getPropertyType(rule.property, properties)
-
-          return (
+      {/* ── Location Section ─────────────────────────────────────────── */}
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Location</div>
+        <div className={styles.rules}>
+          {criteria.location.map((rule, idx) => (
             <div key={idx} className={styles.rule}>
               {idx === 0 ? (
                 <span className={styles.combinator}>Where</span>
@@ -86,7 +115,7 @@ export default function FilterBuilder({ rules, onChange, onRun, isRunning, prope
                   className={styles.combinatorSelect}
                   value={rule.combinator}
                   onChange={(e) =>
-                    updateRule(idx, { combinator: e.target.value as 'and' | 'or' })
+                    updateLocationRule(idx, { combinator: e.target.value as 'and' | 'or' })
                   }
                 >
                   <option value="and">AND</option>
@@ -95,134 +124,141 @@ export default function FilterBuilder({ rules, onChange, onRun, isRunning, prope
               )}
 
               <select
-                className={styles.kindSelect}
-                value={rule.kind}
-                onChange={(e) => updateRule(idx, { kind: e.target.value as 'property' | 'directory' })}
+                className={styles.operatorSelect}
+                value={rule.operator}
+                onChange={(e) =>
+                  updateLocationRule(idx, {
+                    operator: e.target.value as any,
+                  })
+                }
               >
-                <option value="property">property</option>
-                <option value="directory">directory</option>
+                <option value="all-directories">all allowed directories</option>
+                <option value="directory-is">directory is</option>
+                <option value="directory-is-not">directory is not</option>
               </select>
 
-              {rule.kind === 'directory' ? (
-                <>
-                  <select
-                    className={styles.operatorSelect}
-                    value={rule.operator}
-                    onChange={(e) =>
-                      updateRule(idx, { operator: e.target.value as FilterRule['operator'] })
-                    }
-                  >
-                    {operators.map((op) => (
-                      <option key={op.value} value={op.value}>
-                        {op.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  <DirSelect
-                    value={rule.property}
-                    onChange={(v) => updateRule(idx, { property: v })}
-                    dirs={dirs}
-                    placeholder="select directory"
-                  />
-                </>
-              ) : (
-                <>
-                  <input
-                    className={styles.propInput}
-                    list={listId}
-                    value={rule.property}
-                    onChange={(e) => updateRule(idx, { property: e.target.value })}
-                    placeholder="property"
-                  />
-
-                  <select
-                    className={styles.operatorSelect}
-                    value={rule.operator}
-                    onChange={(e) =>
-                      updateRule(idx, { operator: e.target.value as FilterRule['operator'] })
-                    }
-                  >
-                    {SIMPLE_PROPERTY_OPERATORS.map((op) => (
-                      <option key={op.value} value={op.value}>
-                        {op.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  {type === 'boolean' ? (
-                    <select
-                      className={styles.valueSelect}
-                      value={rule.value}
-                      onChange={(e) => updateRule(idx, { value: e.target.value })}
-                    >
-                      <option value="true">true</option>
-                      <option value="false">false</option>
-                    </select>
-                  ) : (
-                    <input
-                      className={`${styles.valueInput} ${
-                        invalidRules.has(idx) && (type === 'link' || type === 'link-array')
-                          ? styles.valueInputInvalid
-                          : ''
-                      }`}
-                      type={type === 'date' ? 'date' : 'text'}
-                      value={rule.value}
-                      onChange={(e) => updateRule(idx, { value: e.target.value })}
-                      onBlur={() => {
-                        if (type === 'link' || type === 'link-array') {
-                          if (isValidLinkSyntax(rule.value)) {
-                            setInvalidRules((prev) => {
-                              const next = new Set(prev)
-                              next.delete(idx)
-                              return next
-                            })
-                          } else if (rule.value.trim()) {
-                            setInvalidRules((prev) => new Set(prev).add(idx))
-                          }
-                        }
-                      }}
-                      placeholder={
-                        type === 'link' || type === 'link-array'
-                          ? '[[Note Name]]'
-                          : type === 'week-link'
-                            ? '[[2026-W22]]'
-                            : type === 'tag-array'
-                              ? 'tag/subtag'
-                              : 'value'
-                      }
-                    />
-                  )}
-                </>
+              {rule.operator !== 'all-directories' && (
+                <DirSelect
+                  value={rule.directory ?? ''}
+                  onChange={(v) => updateLocationRule(idx, { directory: v })}
+                  dirs={dirs}
+                  placeholder="select directory"
+                />
               )}
 
               <button
                 type="button"
                 className={styles.removeBtn}
-                onClick={() => removeRule(idx)}
+                onClick={() => removeLocationRule(idx)}
                 title="Remove rule"
+                disabled={criteria.location.length === 1}
               >
                 ×
               </button>
             </div>
-          )
-        })}
+          ))}
+        </div>
+
+        <button type="button" className={styles.addBtn} onClick={addLocationRule}>
+          + Add location rule
+        </button>
       </div>
 
-      <div className={styles.footer}>
-        <button type="button" className={styles.addBtn} onClick={addRule}>
-          + Add rule
+      {/* ── Properties Section ───────────────────────────────────────── */}
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Properties</div>
+        <div className={styles.rules}>
+          {criteria.properties.map((rule, idx) => {
+            const def = properties.find((d) => d.name === rule.property)
+            const type = def?.type ?? 'text'
+            const isLink = type === 'link' || type === 'link-array'
+
+            return (
+              <div key={idx} className={styles.rule}>
+                {idx === 0 ? (
+                  <span className={styles.combinator}>Where</span>
+                ) : (
+                  <select
+                    className={styles.combinatorSelect}
+                    value={rule.combinator}
+                    onChange={(e) =>
+                      updatePropertyRule(idx, { combinator: e.target.value as 'and' | 'or' })
+                    }
+                  >
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                  </select>
+                )}
+
+                <input
+                  className={styles.propInput}
+                  list={propListId}
+                  value={rule.property}
+                  onChange={(e) => updatePropertyRule(idx, { property: e.target.value })}
+                  placeholder="property"
+                />
+
+                <select
+                  className={styles.operatorSelect}
+                  value={rule.operator}
+                  onChange={(e) =>
+                    updatePropertyRule(idx, { operator: e.target.value as any })
+                  }
+                >
+                  <option value="contains">contains</option>
+                  <option value="not-contains">does not contain</option>
+                  <option value="is-empty">is empty</option>
+                </select>
+
+                {rule.operator !== 'is-empty' && (
+                  <input
+                    className={`${styles.valueInput} ${
+                      invalidRuleIdx === idx && isLink ? styles.valueInputInvalid : ''
+                    }`}
+                    type="text"
+                    value={rule.value ?? ''}
+                    onChange={(e) => updatePropertyRule(idx, { value: e.target.value })}
+                    onBlur={() => {
+                      if (isLink && rule.value?.trim()) {
+                        if (/^\[\[.+\]\]$/.test(rule.value.trim())) {
+                          setInvalidRuleIdx(null)
+                        } else {
+                          setInvalidRuleIdx(idx)
+                        }
+                      } else {
+                        setInvalidRuleIdx(null)
+                      }
+                    }}
+                    placeholder={isLink ? '[[Note Name]]' : 'value'}
+                  />
+                )}
+
+                <button
+                  type="button"
+                  className={styles.removeBtn}
+                  onClick={() => removePropertyRule(idx)}
+                  title="Remove rule"
+                  disabled={criteria.properties.length === 1}
+                >
+                  ×
+                </button>
+              </div>
+            )
+          })}
+        </div>
+
+        <button type="button" className={styles.addBtn} onClick={addPropertyRule}>
+          + Add property rule
         </button>
+      </div>
+
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <div className={styles.footer}>
         <button
           type="button"
           className={styles.runBtn}
           onClick={onRun}
-          disabled={
-            isRunning ||
-            rules.length === 0 ||
-            rules.some((r) => !ruleIsValid(r, properties)) ||
-            invalidRules.size > 0
-          }
+          disabled={isRunning || !criteriaIsValid(criteria, properties)}
         >
           {isRunning ? 'Searching…' : 'Find notes'}
         </button>

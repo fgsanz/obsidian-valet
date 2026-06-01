@@ -28,6 +28,27 @@ export interface AppConfig {
   vaults: Vault[]
 }
 
+export type LocationOperator = 'all-directories' | 'directory-is' | 'directory-is-not'
+export type PropertyOperator = 'contains' | 'not-contains' | 'is-empty'
+
+export interface LocationRule {
+  operator: LocationOperator
+  directory?: string
+  combinator: 'and' | 'or'
+}
+
+export interface PropertyRule {
+  property: string
+  operator: PropertyOperator
+  value?: string
+  combinator: 'and' | 'or'
+}
+
+export interface FilterCriteria {
+  location: LocationRule[]
+  properties: PropertyRule[]
+}
+
 export type FilterOperator =
   | 'equals'
   | 'contains'

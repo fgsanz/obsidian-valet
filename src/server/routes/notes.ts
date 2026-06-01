@@ -2,9 +2,9 @@ import type { FastifyPluginAsync } from 'fastify'
 import { z } from 'zod'
 import { getConfig } from '../config/config'
 import { scanVault, getCachedNotes, invalidateCache } from '../services/scanner'
-import { filterNotes } from '../services/filter'
+import { filterByCriteria } from '../services/filter'
 import { applyOperation, previewOperation } from '../services/operations'
-import { filterRuleSchema, operationSchema } from '@shared/schemas'
+import { filterCriteriaSchema, operationSchema } from '@shared/schemas'
 
 export const notesPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.post('/notes/scan', async (request, reply) => {
@@ -20,8 +20,8 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
   })
 
   fastify.post('/notes/filter', async (request, reply) => {
-    const { vaultId, rules } = z
-      .object({ vaultId: z.string(), rules: z.array(filterRuleSchema) })
+    const { vaultId, criteria } = z
+      .object({ vaultId: z.string(), criteria: filterCriteriaSchema })
       .parse(request.body)
 
     const config = await getConfig()
@@ -36,15 +36,15 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
       notes = await scanVault(vault)
     }
 
-    const matched = filterNotes(notes, rules, vault.properties)
+    const matched = filterByCriteria(notes, criteria, vault.properties)
     return { data: matched }
   })
 
   fastify.post('/notes/preview-operation', async (request, reply) => {
-    const { vaultId, rules, operation } = z
+    const { vaultId, criteria, operation } = z
       .object({
         vaultId: z.string(),
-        rules: z.array(filterRuleSchema),
+        criteria: filterCriteriaSchema,
         operation: operationSchema,
       })
       .parse(request.body)
@@ -59,16 +59,16 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
     let notes = getCachedNotes(vaultId)
     if (!notes) notes = await scanVault(vault)
 
-    const matched = filterNotes(notes, rules, vault.properties)
+    const matched = filterByCriteria(notes, criteria, vault.properties)
     const previews = previewOperation(matched, operation, vault.properties)
     return { data: previews }
   })
 
   fastify.post('/notes/apply-operation', async (request, reply) => {
-    const { vaultId, rules, operation } = z
+    const { vaultId, criteria, operation } = z
       .object({
         vaultId: z.string(),
-        rules: z.array(filterRuleSchema),
+        criteria: filterCriteriaSchema,
         operation: operationSchema,
       })
       .parse(request.body)
@@ -83,7 +83,7 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
     let notes = getCachedNotes(vaultId)
     if (!notes) notes = await scanVault(vault)
 
-    const matched = filterNotes(notes, rules, vault.properties)
+    const matched = filterByCriteria(notes, criteria, vault.properties)
     const result = await applyOperation(matched, operation, vault.properties)
 
     invalidateCache(vaultId)

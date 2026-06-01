@@ -9,13 +9,31 @@ The **Operations** page is a multi-step workflow: filter notes → review matche
 
 ## Step 1 — Filter
 
-Build one or more filter rules. Each rule has three parts:
+Filters consist of two sections: **Location** and **Properties**. Both sections must have at least one rule.
+
+### Location section
+
+Controls where to search:
+
+- **All allowed directories** — search all non-forbidden directories (default)
+- **Directory is** — search only notes in a specific directory or its subdirectories
+- **Directory is not** — exclude a specific directory and its subdirectories
+
+Select a directory from the dropdown if using "directory is" or "directory is not".
+
+### Properties section
+
+Filter notes by frontmatter values:
 
 - **Property** — the frontmatter key to test (e.g. `parent`, `tags`, `date`)
-- **Operator** — the comparison to apply (e.g. `contains`, `is before`)
-- **Value** — the value to compare against
+- **Operator** — `contains` (value exists), `does not contain` (value absent), or `is empty` (property is null or blank)
+- **Value** — the value to match (required for `contains` and `does not contain`; omitted for `is empty`)
 
-Multiple rules are combined with **AND** (all rules must match) or **OR** (any rule must match).
+For link properties, provide the link in `[[Note Name]]` syntax. The tool validates this format.
+
+### Combining rules
+
+Multiple location rules and multiple property rules are combined with **AND** (all rules must match) or **OR** (any rule must match) within each section. The location rules are applied first, then the property rules are applied to the matched notes.
 
 Click **Find notes** to run the filter. The matched notes appear below.
 

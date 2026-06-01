@@ -1,4 +1,4 @@
-import type { ParsedNote, FilterRule, PropertyDef, PropertyType } from '@shared/types'
+import type { ParsedNote, FilterRule, PropertyDef, PropertyType, LocationRule, PropertyRule, FilterCriteria } from '@shared/types'
 import { normalizeLinkTarget } from './frontmatter'
 
 function getPropertyType(property: string, defs: PropertyDef[]): PropertyType {
@@ -160,6 +160,109 @@ export function filterNotes(
         if (!existingPaths.has(note.filePath)) result.push(note)
       }
     }
+  }
+
+  return result
+}
+
+function noteMatchesLocationRule(note: ParsedNote, rule: LocationRule): boolean {
+  const rel = note.relativePath.replace(/\\/g, '/')
+  const noteDir = rel.includes('/') ? rel.substring(0, rel.lastIndexOf('/')) : ''
+
+  if (rule.operator === 'all-directories') return true
+  const targetDir = rule.directory ? rule.directory.replace(/\\/g, '/').replace(/\/$/, '') : ''
+  const isIn = noteDir === targetDir || noteDir.startsWith(targetDir + '/')
+  return rule.operator === 'directory-is' ? isIn : !isIn
+}
+
+function locationRulesList(
+  notes: ParsedNote[],
+  rules: LocationRule[],
+): ParsedNote[] {
+  if (rules.length === 0) return notes
+
+  let result: ParsedNote[] = []
+
+  for (let i = 0; i < rules.length; i++) {
+    const rule = rules[i]
+    const matched = notes.filter((note) => noteMatchesLocationRule(note, rule))
+
+    if (i === 0) {
+      result = matched
+    } else if (rule.combinator === 'and') {
+      const matchedPaths = new Set(matched.map((n) => n.filePath))
+      result = result.filter((n) => matchedPaths.has(n.filePath))
+    } else {
+      const existingPaths = new Set(result.map((n) => n.filePath))
+      for (const note of matched) {
+        if (!existingPaths.has(note.filePath)) result.push(note)
+      }
+    }
+  }
+
+  return result
+}
+
+function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: PropertyDef[]): boolean {
+  if (rule.operator === 'is-empty') {
+    const value = note.frontmatter[rule.property]
+    return value == null || (Array.isArray(value) && value.length === 0)
+  }
+
+  const type = getPropertyType(rule.property, defs)
+  const value = note.frontmatter[rule.property]
+
+  if (rule.operator === 'contains') {
+    return matchesOperator(value, 'contains', rule.value ?? '', type)
+  } else if (rule.operator === 'not-contains') {
+    return matchesOperator(value, 'not-contains', rule.value ?? '', type)
+  }
+
+  return false
+}
+
+function filterPropertyRules(
+  notes: ParsedNote[],
+  rules: PropertyRule[],
+  defs: PropertyDef[],
+): ParsedNote[] {
+  if (rules.length === 0) return notes
+
+  let result: ParsedNote[] = []
+
+  for (let i = 0; i < rules.length; i++) {
+    const rule = rules[i]
+    const matched = notes.filter((note) => noteMatchesPropertyRule(note, rule, defs))
+
+    if (i === 0) {
+      result = matched
+    } else if (rule.combinator === 'and') {
+      const matchedPaths = new Set(matched.map((n) => n.filePath))
+      result = result.filter((n) => matchedPaths.has(n.filePath))
+    } else {
+      const existingPaths = new Set(result.map((n) => n.filePath))
+      for (const note of matched) {
+        if (!existingPaths.has(note.filePath)) result.push(note)
+      }
+    }
+  }
+
+  return result
+}
+
+export function filterByCriteria(
+  notes: ParsedNote[],
+  criteria: FilterCriteria,
+  defs: PropertyDef[],
+): ParsedNote[] {
+  let result = notes
+
+  if (criteria.location.length > 0) {
+    result = locationRulesList(result, criteria.location)
+  }
+
+  if (criteria.properties.length > 0) {
+    result = filterPropertyRules(result, criteria.properties, defs)
   }
 
   return result

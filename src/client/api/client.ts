@@ -1,4 +1,4 @@
-import type { Vault, ParsedNote, FilterRule, Operation, OperationResult, GitStatus, DocPage, ApiResponse, PropertyDef } from '@shared/types'
+import type { Vault, ParsedNote, FilterCriteria, Operation, OperationResult, GitStatus, DocPage, ApiResponse, PropertyDef } from '@shared/types'
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
@@ -34,19 +34,19 @@ export const api = {
 
   notes: {
     scan: (vaultId: string) => request<{ count: number }>('POST', '/notes/scan', { vaultId }),
-    filter: (vaultId: string, rules: FilterRule[]) =>
-      request<ParsedNote[]>('POST', '/notes/filter', { vaultId, rules }),
-    previewOperation: (vaultId: string, rules: FilterRule[], operation: Operation) =>
-      request<ParsedNote[]>('POST', '/notes/preview-operation', { vaultId, rules, operation }),
+    filter: (vaultId: string, criteria: FilterCriteria) =>
+      request<ParsedNote[]>('POST', '/notes/filter', { vaultId, criteria }),
+    previewOperation: (vaultId: string, criteria: FilterCriteria, operation: Operation) =>
+      request<ParsedNote[]>('POST', '/notes/preview-operation', { vaultId, criteria, operation }),
     applyOperation: (
       vaultId: string,
-      rules: FilterRule[],
+      criteria: FilterCriteria,
       operation: Operation,
       commitMessage?: string,
     ) =>
       request<OperationResult>('POST', '/notes/apply-operation', {
         vaultId,
-        rules,
+        criteria,
         operation,
         commitMessage,
       }),
