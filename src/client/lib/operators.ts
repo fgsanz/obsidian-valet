@@ -74,8 +74,8 @@ export const DIRECTORY_OPERATORS: OperatorOption[] = [
 ]
 
 export const SIMPLE_PROPERTY_OPERATORS: PropertyOperatorOption[] = [
-  { value: 'contains', label: 'contains' },
-  { value: 'not-contains', label: 'does not contain' },
+  { value: 'contains', label: 'exists and contains' },
+  { value: 'not-contains', label: 'exists and does not contain' },
   { value: 'exists-and-empty', label: 'exists and is empty' },
   { value: 'does-not-exist', label: 'does not exist' },
 ]

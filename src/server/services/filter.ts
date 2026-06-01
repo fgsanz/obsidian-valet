@@ -216,6 +216,11 @@ function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: Pro
     return value == null || (Array.isArray(value) && value.length === 0)
   }
 
+  // For 'contains' and 'not-contains', property must exist
+  if (!hasProperty) {
+    return false
+  }
+
   const type = getPropertyType(rule.property, defs)
   const value = note.frontmatter[rule.property]
 

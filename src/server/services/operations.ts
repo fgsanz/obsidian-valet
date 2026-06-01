@@ -29,7 +29,7 @@ function mutateNote(note: ParsedNote, operation: Operation): ParsedNote | null {
     } else {
       return null
     }
-  } else if (operation.type === 'change-value') {
+  } else if (operation.type === 'replace') {
     const { property, oldValue, newValue } = operation
     const current = fm[property]
     if (Array.isArray(current)) {

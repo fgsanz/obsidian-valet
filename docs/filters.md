@@ -13,12 +13,14 @@ Filters can match notes by **property** (frontmatter value) or by **directory** 
 
 Property filters test frontmatter values. Four operators are available:
 
-- **contains** — match notes where the property value includes the query (requires a value)
-- **does not contain** — match notes where the property value does not include the query (requires a value)
+- **exists and contains** — match notes where the property IS defined in frontmatter AND the value includes the query (requires a value)
+- **exists and does not contain** — match notes where the property IS defined in frontmatter AND the value does not include the query (requires a value)
 - **exists and is empty** — match notes where the property is defined in frontmatter but has an empty or null value
 - **does not exist** — match notes where the property is not defined in frontmatter at all
 
-For **link and link-array** properties with `contains` or `does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively.
+Note: For the first two operators, if the property is not defined in frontmatter, the note does NOT match the criteria.
+
+For **link and link-array** properties with `exists and contains` or `exists and does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively.
 
 For other property types, type-specific placeholders guide entry (e.g., `tag/subtag` for tags, `[[YYYY-Www]]` for week links).
 

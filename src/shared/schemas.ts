@@ -55,7 +55,7 @@ export const filterRuleSchema = z.object({
 
 export const operationSchema = z.discriminatedUnion('type', [
   z.object({
-    type: z.literal('change-value'),
+    type: z.literal('replace'),
     property: z.string(),
     oldValue: z.string(),
     newValue: z.string(),

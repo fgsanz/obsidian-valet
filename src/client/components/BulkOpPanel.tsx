@@ -11,7 +11,7 @@ interface Props {
   isApplying: boolean
 }
 
-type OpType = 'delete-value' | 'change-value' | 'move-value'
+type OpType = 'delete-value' | 'replace' | 'move-value'
 
 export default function BulkOpPanel({
   properties,
@@ -36,9 +36,9 @@ export default function BulkOpPanel({
       if (!property || !value) return null
       return { type: 'delete-value', property, value }
     }
-    if (opType === 'change-value') {
+    if (opType === 'replace') {
       if (!property || !value || !newValue) return null
-      return { type: 'change-value', property, oldValue: value, newValue }
+      return { type: 'replace', property, oldValue: value, newValue }
     }
     if (opType === 'move-value') {
       if (!fromProperty || !toProperty || !value) return null
@@ -58,14 +58,14 @@ export default function BulkOpPanel({
       </datalist>
 
       <div className={styles.typeRow}>
-        {(['delete-value', 'change-value', 'move-value'] as OpType[]).map((t) => (
+        {(['delete-value', 'replace', 'move-value'] as OpType[]).map((t) => (
           <button
             key={t}
             type="button"
             className={`${styles.typeBtn} ${opType === t ? styles.selected : ''}`}
             onClick={() => setOpType(t)}
           >
-            {t === 'delete-value' ? 'Delete value' : t === 'change-value' ? 'Change value' : 'Move value'}
+            {t === 'delete-value' ? 'Delete value' : t === 'replace' ? 'Replace value' : 'Move value'}
           </button>
         ))}
       </div>
@@ -84,7 +84,7 @@ export default function BulkOpPanel({
           </>
         )}
 
-        {opType === 'change-value' && (
+        {opType === 'replace' && (
           <>
             <div className={styles.field}>
               <label>Property</label>
