@@ -20,31 +20,48 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
 
   return (
     <div className={styles.container}>
-      <div className={styles.list}>
-        {notes.map((note) => (
-          <div key={note.filePath} className={styles.item}>
-            <div className={styles.itemHeader}>
-              <span className={styles.title}>{note.title}</span>
-              <span className={styles.path}>{note.relativePath}</span>
-            </div>
-            {highlightProperties.length > 0 && (
-              <div className={styles.props}>
-                {highlightProperties.map((prop) => {
-                  const val = note.frontmatter[prop]
-                  if (val == null && !Object.hasOwn(note.frontmatter, prop)) return null
-                  return (
-                    <span key={prop} className={styles.prop}>
-                      <span className={styles.propKey}>{prop}</span>
-                      <span className={styles.propSep}>:</span>
-                      <span className={styles.propVal}>{renderPropValue(val)}</span>
-                    </span>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th className={styles.colName}>Note name</th>
+            <th className={styles.colLocation}>Location</th>
+            <th className={styles.colProps}>Property info</th>
+          </tr>
+        </thead>
+        <tbody>
+          {notes.map((note) => {
+            const dirname = note.relativePath.includes('/')
+              ? note.relativePath.substring(0, note.relativePath.lastIndexOf('/'))
+              : '(root)'
+
+            return (
+              <tr key={note.filePath}>
+                <td className={styles.colName}>{note.title}</td>
+                <td className={styles.colLocation}>{dirname}</td>
+                <td className={styles.colProps}>
+                  {highlightProperties.length > 0 ? (
+                    <div className={styles.propsList}>
+                      {highlightProperties.map((prop) => {
+                        const val = note.frontmatter[prop]
+                        if (val == null && !Object.hasOwn(note.frontmatter, prop)) return null
+                        return (
+                          <div key={prop} className={styles.propItem}>
+                            <span className={styles.propKey}>{prop}</span>
+                            <span className={styles.propSep}>:</span>
+                            <span className={styles.propVal}>{renderPropValue(val)}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <span className={styles.noProps}>—</span>
+                  )}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
 
       {result && result.errors.length > 0 && (
         <div className={styles.errors}>
