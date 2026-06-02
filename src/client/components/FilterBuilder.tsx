@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
 import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
 import DirSelect from './DirSelect'
+import Tooltip from './Tooltip'
 import styles from './FilterBuilder.module.css'
 
 interface Props {
@@ -148,15 +149,16 @@ export default function FilterBuilder({
                 />
               )}
 
-              <button
-                type="button"
-                className={styles.removeBtn}
-                onClick={() => removeLocationRule(idx)}
-                title="Remove rule"
-                disabled={criteria.location.length === 1}
-              >
-                <X size={18} />
-              </button>
+              <Tooltip content="Remove rule">
+                <button
+                  type="button"
+                  className={styles.removeBtn}
+                  onClick={() => removeLocationRule(idx)}
+                  disabled={criteria.location.length === 1}
+                >
+                  <X size={18} />
+                </button>
+              </Tooltip>
             </div>
           ))}
         </div>
@@ -237,15 +239,16 @@ export default function FilterBuilder({
                   />
                 )}
 
-                <button
-                  type="button"
-                  className={styles.removeBtn}
-                  onClick={() => removePropertyRule(idx)}
-                  title="Remove rule"
-                  disabled={criteria.properties.length === 1}
-                >
-                  ×
-                </button>
+                <Tooltip content="Remove rule">
+                  <button
+                    type="button"
+                    className={styles.removeBtn}
+                    onClick={() => removePropertyRule(idx)}
+                    disabled={criteria.properties.length === 1}
+                  >
+                    <X size={18} />
+                  </button>
+                </Tooltip>
               </div>
             )
           })}

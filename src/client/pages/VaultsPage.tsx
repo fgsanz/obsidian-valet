@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus } from 'lucide-react'
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
+import Tooltip from '../components/Tooltip'
 import styles from './VaultsPage.module.css'
 
 export default function VaultsPage() {
@@ -150,15 +151,16 @@ export default function VaultsPage() {
                 placeholder="~/Obsidian/MyVault"
                 autoFocus
               />
-              <button
-                type="button"
-                className={`${styles.btn} ${styles.btnSecondary} ${styles.btnIcon}`}
-                onClick={browsePath}
-                disabled={isBrowsing}
-                title="Browse for folder"
-              >
-                {isBrowsing ? '…' : <FolderOpen size={18} />}
-              </button>
+              <Tooltip content="Browse for folder">
+                <button
+                  type="button"
+                  className={`${styles.btn} ${styles.btnSecondary} ${styles.btnIcon}`}
+                  onClick={browsePath}
+                  disabled={isBrowsing}
+                >
+                  {isBrowsing ? '…' : <FolderOpen size={18} />}
+                </button>
+              </Tooltip>
             </div>
           </div>
           <div className={styles.addFormActions}>
@@ -199,21 +201,22 @@ export default function VaultsPage() {
                     <span className={styles.vaultName}>{vault.name}</span>
                     {isActive && <span className={styles.activeBadge}>Active</span>}
                   </div>
-                  <button
-                    type="button"
-                    className={styles.deleteBtn}
-                    onClick={() => {
-                      if (confirm(`Remove vault "${vault.name}"?`)) {
-                        removeMutation.mutate(vault.id)
-                      }
-                    }}
-                    title="Delete vault"
-                    disabled={removeMutation.isPending}
-                    onMouseEnter={() => setDeleteHoverVaultId(vault.id)}
-                    onMouseLeave={() => setDeleteHoverVaultId(null)}
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  <Tooltip content="Delete vault">
+                    <button
+                      type="button"
+                      className={styles.deleteBtn}
+                      onClick={() => {
+                        if (confirm(`Remove vault "${vault.name}"?`)) {
+                          removeMutation.mutate(vault.id)
+                        }
+                      }}
+                      disabled={removeMutation.isPending}
+                      onMouseEnter={() => setDeleteHoverVaultId(vault.id)}
+                      onMouseLeave={() => setDeleteHoverVaultId(null)}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <div className={styles.vaultPath}>{vault.path}</div>
