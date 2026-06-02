@@ -11,13 +11,6 @@ export default function Layout() {
         <Link to="/" className={styles.brand}>{APP_NAME}</Link>
         <div className={styles.links}>
           <NavLink
-            to="/"
-            end
-            className={({ isActive }) => (isActive ? styles.active : undefined)}
-          >
-            Home
-          </NavLink>
-          <NavLink
             to="/vaults"
             className={({ isActive }) => (isActive ? styles.active : undefined)}
           >
