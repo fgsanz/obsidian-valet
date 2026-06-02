@@ -200,7 +200,7 @@
 
 .vaultPath {
   color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  font-size: calc(var(--text-sm) * 0.9);
   font-family: var(--font-mono);
   margin-bottom: calc(var(--space-4) * 2);
   word-break: break-all;
@@ -322,7 +322,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-1) var(--space-4);
-  margin-top: var(--space-3);
+  margin-top: calc(var(--space-3) * 2);
   margin-bottom: calc(var(--space-3) * 2);
 }
 

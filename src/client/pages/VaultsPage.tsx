@@ -312,11 +312,6 @@ export default function VaultsPage() {
                   {isAccordionOpen(vault.id, 'properties') && (
                     <div className={styles.accordionContent}>
                       <div className={styles.propsSectionHeader}>
-                        <span className={styles.propsLabel}>
-                          {vault.properties.length > 0
-                            ? `${vault.properties.length} propert${vault.properties.length === 1 ? 'y' : 'ies'} discovered`
-                            : 'Properties not yet discovered'}
-                        </span>
                         <button
                           type="button"
                           className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`}
