@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
 import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
 import DirSelect from './DirSelect'
@@ -154,7 +155,7 @@ export default function FilterBuilder({
                 title="Remove rule"
                 disabled={criteria.location.length === 1}
               >
-                ×
+                <X size={18} />
               </button>
             </div>
           ))}

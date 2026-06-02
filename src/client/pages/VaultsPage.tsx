@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus } from 'lucide-react'
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
 import styles from './VaultsPage.module.css'
@@ -156,7 +157,7 @@ export default function VaultsPage() {
                 disabled={isBrowsing}
                 title="Browse for folder"
               >
-                {isBrowsing ? '…' : '📁'}
+                {isBrowsing ? '…' : <FolderOpen size={18} />}
               </button>
             </div>
           </div>
@@ -211,7 +212,7 @@ export default function VaultsPage() {
                     onMouseEnter={() => setDeleteHoverVaultId(vault.id)}
                     onMouseLeave={() => setDeleteHoverVaultId(null)}
                   >
-                    🗑️
+                    <Trash2 size={18} />
                   </button>
                 </div>
 
@@ -226,7 +227,7 @@ export default function VaultsPage() {
                   >
                     <span className={styles.accordionTitle}>Forbidden directories</span>
                     <span className={styles.accordionIcon}>
-                      {isAccordionOpen(vault.id, 'forbidden') ? '▼' : '▶'}
+                      {isAccordionOpen(vault.id, 'forbidden') ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </span>
                   </button>
                   {isAccordionOpen(vault.id, 'forbidden') && (
@@ -240,7 +241,7 @@ export default function VaultsPage() {
                               className={styles.tagRemove}
                               onClick={() => removeForbiddenDir(vault.id, dir)}
                             >
-                              ×
+                              <X size={14} />
                             </button>
                           </span>
                         ))}
@@ -283,7 +284,7 @@ export default function VaultsPage() {
                       )}
                     </span>
                     <span className={styles.accordionIcon}>
-                      {isAccordionOpen(vault.id, 'properties') ? '▼' : '▶'}
+                      {isAccordionOpen(vault.id, 'properties') ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </span>
                   </button>
                   {isAccordionOpen(vault.id, 'properties') && (
@@ -300,9 +301,10 @@ export default function VaultsPage() {
                           onClick={() => discoverMutation.mutate(vault.id)}
                           disabled={discoverMutation.isPending && discoverMutation.variables === vault.id}
                         >
+                          <RefreshCw size={14} style={{ marginRight: '4px' }} />
                           {discoverMutation.isPending && discoverMutation.variables === vault.id
-                            ? '↺ Scanning…'
-                            : '↺ Refresh properties'}
+                            ? 'Scanning…'
+                            : 'Refresh properties'}
                         </button>
                       </div>
                       {vault.properties.length > 0 ? (
@@ -318,7 +320,7 @@ export default function VaultsPage() {
                         </div>
                       ) : (
                         <span className={styles.discoveringState}>
-                          No properties yet — click ↺ Refresh properties to scan the vault.
+                          No properties yet — click "Refresh properties" to scan the vault.
                         </span>
                       )}
                     </div>

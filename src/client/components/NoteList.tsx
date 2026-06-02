@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowUp, ArrowDown } from 'lucide-react'
 import type { ParsedNote, OperationResult } from '@shared/types'
 import styles from './NoteList.module.css'
 
@@ -74,9 +75,9 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
     return sortDirection === 'asc' ? cmp : -cmp
   })
 
-  function getSortIndicator(column: SortColumn): string {
-    if (sortColumn !== column) return ''
-    return sortDirection === 'asc' ? ' ▲' : ' ▼'
+  function getSortIndicator(column: SortColumn): React.ReactNode {
+    if (sortColumn !== column) return null
+    return sortDirection === 'asc' ? <ArrowUp size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'text-bottom' }} /> : <ArrowDown size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'text-bottom' }} />
   }
 
   return (
