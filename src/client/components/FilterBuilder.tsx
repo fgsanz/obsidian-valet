@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Trash2 } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
 import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
 import DirSelect from './DirSelect'
@@ -43,6 +43,8 @@ export default function FilterBuilder({
   dirs,
 }: Props) {
   const [invalidRuleIdx, setInvalidRuleIdx] = useState<number | null>(null)
+  const [hoveredLocationIdx, setHoveredLocationIdx] = useState<number | null>(null)
+  const [hoveredPropertyIdx, setHoveredPropertyIdx] = useState<number | null>(null)
 
   function updateLocationRule(idx: number, patch: Partial<LocationRule>) {
     const next = { ...criteria }
@@ -110,7 +112,7 @@ export default function FilterBuilder({
         <div className={styles.sectionTitle}>Location</div>
         <div className={styles.rules}>
           {criteria.location.map((rule, idx) => (
-            <div key={idx} className={styles.rule}>
+            <div key={idx} className={`${styles.rule} ${hoveredLocationIdx === idx ? styles.ruleHoverDelete : ''}`}>
               {idx === 0 ? (
                 <span className={styles.combinator}>Where</span>
               ) : (
@@ -149,14 +151,16 @@ export default function FilterBuilder({
                 />
               )}
 
-              <Tooltip content="Remove rule">
+              <Tooltip content="Delete rule">
                 <button
                   type="button"
                   className={styles.removeBtn}
                   onClick={() => removeLocationRule(idx)}
                   disabled={criteria.location.length === 1}
+                  onMouseEnter={() => setHoveredLocationIdx(idx)}
+                  onMouseLeave={() => setHoveredLocationIdx(null)}
                 >
-                  <X size={18} />
+                  <Trash2 size={18} />
                 </button>
               </Tooltip>
             </div>
@@ -178,7 +182,7 @@ export default function FilterBuilder({
             const isLink = type === 'link' || type === 'link-array'
 
             return (
-              <div key={idx} className={styles.rule}>
+              <div key={idx} className={`${styles.rule} ${hoveredPropertyIdx === idx ? styles.ruleHoverDelete : ''}`}>
                 {idx === 0 ? (
                   <span className={styles.combinator}>Where</span>
                 ) : (
@@ -239,16 +243,33 @@ export default function FilterBuilder({
                   />
                 )}
 
-                <Tooltip content="Remove rule">
-                  <button
-                    type="button"
-                    className={styles.removeBtn}
-                    onClick={() => removePropertyRule(idx)}
-                    disabled={criteria.properties.length === 1}
-                  >
-                    <X size={18} />
-                  </button>
-                </Tooltip>
+                <div className={styles.ruleActions}>
+                  {rule.operator !== 'exists-and-empty' && rule.operator !== 'does-not-exist' && (
+                    <Tooltip content={rule.caseSensitive ? 'Match case ON' : 'Match case OFF'}>
+                      <button
+                        type="button"
+                        className={`${styles.caseBtn} ${rule.caseSensitive ? styles.caseBtnActive : ''}`}
+                        onClick={() => updatePropertyRule(idx, { caseSensitive: !rule.caseSensitive })}
+                        title={rule.caseSensitive ? 'Match case ON' : 'Match case OFF'}
+                      >
+                        Aa
+                      </button>
+                    </Tooltip>
+                  )}
+
+                  <Tooltip content="Delete rule">
+                    <button
+                      type="button"
+                      className={styles.removeBtn}
+                      onClick={() => removePropertyRule(idx)}
+                      disabled={criteria.properties.length === 1}
+                      onMouseEnter={() => setHoveredPropertyIdx(idx)}
+                      onMouseLeave={() => setHoveredPropertyIdx(null)}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </Tooltip>
+                </div>
               </div>
             )
           })}

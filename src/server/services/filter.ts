@@ -222,12 +222,24 @@ function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: Pro
   }
 
   const type = getPropertyType(rule.property, defs)
-  const value = note.frontmatter[rule.property]
+  let value = note.frontmatter[rule.property]
+  let query = rule.value ?? ''
+
+  // Handle case sensitivity for text-based types
+  if (!rule.caseSensitive && (type === 'text' || type === 'text-array')) {
+    // Convert to lowercase for case-insensitive matching
+    if (Array.isArray(value)) {
+      value = value.map((v) => String(v).toLowerCase())
+    } else if (value != null) {
+      value = String(value).toLowerCase()
+    }
+    query = query.toLowerCase()
+  }
 
   if (rule.operator === 'contains') {
-    return matchesOperator(value, 'contains', rule.value ?? '', type)
+    return matchesOperator(value, 'contains', query, type)
   } else if (rule.operator === 'not-contains') {
-    return matchesOperator(value, 'not-contains', rule.value ?? '', type)
+    return matchesOperator(value, 'not-contains', query, type)
   }
 
   return false

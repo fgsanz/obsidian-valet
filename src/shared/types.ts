@@ -42,6 +42,7 @@ export interface PropertyRule {
   operator: PropertyOperator
   value?: string
   combinator: 'and' | 'or'
+  caseSensitive?: boolean
 }
 
 export interface FilterCriteria {

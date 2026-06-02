@@ -38,6 +38,7 @@ export const propertyRuleSchema = z.object({
   operator: z.enum(['contains', 'not-contains', 'exists-and-empty', 'does-not-exist']),
   value: z.string().optional(),
   combinator: z.enum(['and', 'or']),
+  caseSensitive: z.boolean().optional().default(false),
 })
 
 export const filterCriteriaSchema = z.object({
