@@ -251,8 +251,9 @@ export default function OperationsPage() {
           {!result && matchedNotes !== null && (
             <>
               <div className={styles.section}>
-                <div className={styles.sectionTitle}>
-                  {matchedNotes.length} note{matchedNotes.length === 1 ? '' : 's'} matched — choose an operation
+                <div className={styles.operationHeader}>
+                  <span className={styles.matchCount}>{matchedNotes.length}</span>
+                  {' '}note{matchedNotes.length === 1 ? '' : 's'} matched. Choose an operation…
                 </div>
                 <BulkOpPanel
                   properties={activeVault.properties}
