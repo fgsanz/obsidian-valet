@@ -170,7 +170,7 @@ export default function FilterBuilder({
         </div>
 
         <button type="button" className={styles.addBtn} onClick={addLocationRule}>
-          + Add location rule
+          + Add rule
         </button>
       </div>
 
@@ -278,7 +278,7 @@ export default function FilterBuilder({
         </div>
 
         <button type="button" className={styles.addBtn} onClick={addPropertyRule}>
-          + Add property rule
+          + Add rule
         </button>
       </div>
 
