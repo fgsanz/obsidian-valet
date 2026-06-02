@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowUp, ArrowDown, Check, XCircle } from 'lucide-react'
 import type { ParsedNote, OperationResult } from '@shared/types'
+import { RESULT_ORDER, type ResultStatus, getResultStatus } from '../lib/resultOrder'
 import styles from './NoteList.module.css'
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   result?: OperationResult | null
 }
 
-type SortColumn = 'name' | 'location' | 'props'
+type SortColumn = 'name' | 'location' | 'props' | 'result'
 type SortDirection = 'asc' | 'desc'
 
 function renderPropValue(value: unknown): string {
@@ -19,7 +20,7 @@ function renderPropValue(value: unknown): string {
 }
 
 export default function NoteList({ notes, highlightProperties = [], result }: Props) {
-  const [sortColumn, setSortColumn] = useState<SortColumn>('location')
+  const [sortColumn, setSortColumn] = useState<SortColumn>(result ? 'result' : 'location')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   if (notes.length === 0) {
@@ -36,6 +37,23 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
   }
 
   const sortedNotes = [...notes].sort((a, b) => {
+    if (sortColumn === 'result' && result) {
+      // Custom sort order for result column
+      const aFailed = result.errors.some((e) => e.filePath === a.filePath)
+      const bFailed = result.errors.some((e) => e.filePath === b.filePath)
+      const aSucceeded = result.errors.length === 0 || !aFailed
+      const bSucceeded = result.errors.length === 0 || !bFailed
+
+      const aStatus = getResultStatus(a.filePath, aSucceeded, aFailed)
+      const bStatus = getResultStatus(b.filePath, bSucceeded, bFailed)
+
+      const aOrder = RESULT_ORDER[aStatus]
+      const bOrder = RESULT_ORDER[bStatus]
+
+      const cmp = aOrder - bOrder
+      return sortDirection === 'asc' ? cmp : -cmp
+    }
+
     let aVal: string
     let bVal: string
 
@@ -106,6 +124,15 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
             >
               Property info{getSortIndicator('props')}
             </th>
+            {result && (
+              <th
+                className={`${styles.colResult} ${sortColumn === 'result' ? styles.sortActive : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleHeaderClick('result')}
+              >
+                Result{getSortIndicator('result')}
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -113,6 +140,16 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
             const dirname = note.relativePath.includes('/')
               ? note.relativePath.substring(0, note.relativePath.lastIndexOf('/'))
               : '(root)'
+
+            const hasFailed = result?.errors.some((e) => e.filePath === note.filePath) ?? false
+            const hasSucceeded = result && !hasFailed ? true : false
+            const resultStatus = result
+              ? hasFailed
+                ? 'failed'
+                : hasSucceeded
+                  ? 'success'
+                  : 'not-applied'
+              : null
 
             return (
               <tr key={note.filePath}>
@@ -137,6 +174,13 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
                     <span className={styles.noProps}>—</span>
                   )}
                 </td>
+                {result && (
+                  <td className={styles.colResult}>
+                    {resultStatus === 'failed' && <XCircle size={18} color="var(--color-error)" />}
+                    {resultStatus === 'success' && <Check size={18} color="var(--color-success)" />}
+                    {resultStatus === 'not-applied' && <span className={styles.resultNA}>N/A</span>}
+                  </td>
+                )}
               </tr>
             )
           })}
