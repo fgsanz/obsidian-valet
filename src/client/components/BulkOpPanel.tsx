@@ -180,7 +180,7 @@ export default function BulkOpPanel({
           onClick={() => op && onApply(op)}
           disabled={!op || isPreviewing || isApplying}
         >
-          {isApplying ? 'Applying…' : 'Apply to matched notes'}
+          {isApplying ? 'Applying…' : 'Apply changes'}
         </button>
       </div>
     </div>
