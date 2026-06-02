@@ -100,7 +100,7 @@ export default function BulkOpPanel({
 
       <div className={styles.fields}>
         {opType === 'delete-value' && (
-          <>
+          <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>Property</label>
               <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
@@ -109,11 +109,11 @@ export default function BulkOpPanel({
               <label>Value to delete</label>
               <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
             </div>
-          </>
+          </div>
         )}
 
         {opType === 'replace' && (
-          <>
+          <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>Property</label>
               <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
@@ -126,11 +126,11 @@ export default function BulkOpPanel({
               <label>New value</label>
               <input value={newValue} onChange={(e) => setNewValue(e.target.value)} placeholder="[[New Note]]" />
             </div>
-          </>
+          </div>
         )}
 
         {opType === 'move-value' && (
-          <>
+          <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>From property</label>
               <input list={propListId} value={fromProperty} onChange={(e) => setFromProperty(e.target.value)} placeholder="parent" />
@@ -143,24 +143,26 @@ export default function BulkOpPanel({
               <label>Value to move</label>
               <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
             </div>
-          </>
+          </div>
         )}
 
         {opType === 'add-value' && (
           <>
-            <div className={styles.field}>
-              <label>Property</label>
-              <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
-              {property && !allowsMultipleValues(getPropertyType(property) || 'text') && matchedNotes.some((n) => n.frontmatter[property] != null) && (
-                <div className={styles.warning}>
-                  Some notes already have a value for this single-value property. They won't be affected by this operation.
-                </div>
-              )}
+            <div className={styles.fieldRow}>
+              <div className={styles.field}>
+                <label>Property</label>
+                <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
+              </div>
+              <div className={styles.field}>
+                <label>Value to add</label>
+                <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
+              </div>
             </div>
-            <div className={styles.field}>
-              <label>Value to add</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
-            </div>
+            {property && !allowsMultipleValues(getPropertyType(property) || 'text') && matchedNotes.some((n) => n.frontmatter[property] != null) && (
+              <div className={styles.warning}>
+                Some notes already have a value for this single-value property. They won't be affected by this operation.
+              </div>
+            )}
           </>
         )}
       </div>

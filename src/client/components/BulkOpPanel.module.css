@@ -37,6 +37,15 @@
   gap: var(--space-3);
 }
 
+.fieldRow {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.fieldRow .field {
+  flex: 1;
+}
+
 .field {
   display: flex;
   flex-direction: column;
