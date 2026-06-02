@@ -151,18 +151,20 @@ export default function FilterBuilder({
                 />
               )}
 
-              <Tooltip content="Delete rule">
-                <button
-                  type="button"
-                  className={styles.removeBtn}
-                  onClick={() => removeLocationRule(idx)}
-                  disabled={criteria.location.length === 1}
-                  onMouseEnter={() => setHoveredLocationIdx(idx)}
-                  onMouseLeave={() => setHoveredLocationIdx(null)}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </Tooltip>
+              <div className={styles.ruleActions}>
+                <Tooltip content="Delete rule">
+                  <button
+                    type="button"
+                    className={styles.removeBtn}
+                    onClick={() => removeLocationRule(idx)}
+                    disabled={criteria.location.length === 1}
+                    onMouseEnter={() => setHoveredLocationIdx(idx)}
+                    onMouseLeave={() => setHoveredLocationIdx(null)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </Tooltip>
+              </div>
             </div>
           ))}
         </div>
