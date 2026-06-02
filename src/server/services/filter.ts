@@ -21,6 +21,7 @@ function matchesOperator(
   operator: FilterRule['operator'],
   query: string,
   type: PropertyType,
+  caseSensitive: boolean = false,
 ): boolean {
   if (rawValue == null) {
     return operator === 'not-equals' || operator === 'not-contains'
@@ -34,16 +35,26 @@ function matchesOperator(
       const links: string[] = Array.isArray(rawValue)
         ? rawValue.map(String)
         : [String(rawValue)]
-      const qNorm = normalizeLinkTarget(q).toLowerCase()
+      const qNorm = caseSensitive
+        ? normalizeLinkTarget(q)
+        : normalizeLinkTarget(q).toLowerCase()
       const anyMatch = links.some((link) => {
-        const norm = normalizeLinkTarget(link).toLowerCase()
+        const norm = caseSensitive
+          ? normalizeLinkTarget(link)
+          : normalizeLinkTarget(link).toLowerCase()
         const aliasMatch = link.includes('|')
-          ? link
-              .replace(/^\[\[/, '')
-              .replace(/\]\]$/, '')
-              .split('|')[1]
-              ?.trim()
-              .toLowerCase() === qNorm
+          ? caseSensitive
+            ? link
+                .replace(/^\[\[/, '')
+                .replace(/\]\]$/, '')
+                .split('|')[1]
+                ?.trim() === qNorm
+            : link
+                .replace(/^\[\[/, '')
+                .replace(/\]\]$/, '')
+                .split('|')[1]
+                ?.trim()
+                .toLowerCase() === qNorm
           : false
         return norm === qNorm || aliasMatch
       })
@@ -56,22 +67,37 @@ function matchesOperator(
 
     case 'tag-array': {
       const tags: string[] = Array.isArray(rawValue) ? rawValue.map(String) : [String(rawValue)]
-      const qNorm = q.replace(/^#/, '').toLowerCase()
-      const anyMatch = tags.some((tag) => tag.toLowerCase().startsWith(qNorm))
+      const qNorm = caseSensitive
+        ? q.replace(/^#/, '')
+        : q.replace(/^#/, '').toLowerCase()
+      const anyMatch = caseSensitive
+        ? tags.some((tag) => tag.startsWith(qNorm))
+        : tags.some((tag) => tag.toLowerCase().startsWith(qNorm))
       if (operator === 'contains') return anyMatch
       if (operator === 'not-contains') return !anyMatch
-      if (operator === 'equals') return tags.some((t) => t.toLowerCase() === qNorm)
-      if (operator === 'not-equals') return !tags.some((t) => t.toLowerCase() === qNorm)
+      if (operator === 'equals') return caseSensitive
+        ? tags.some((t) => t === qNorm)
+        : tags.some((t) => t.toLowerCase() === qNorm)
+      if (operator === 'not-equals') return caseSensitive
+        ? !tags.some((t) => t === qNorm)
+        : !tags.some((t) => t.toLowerCase() === qNorm)
       return false
     }
 
     case 'text-array': {
       const arr: string[] = Array.isArray(rawValue) ? rawValue.map(String) : [String(rawValue)]
-      const qLow = q.toLowerCase()
-      if (operator === 'contains') return arr.some((v) => v.toLowerCase().includes(qLow))
-      if (operator === 'not-contains') return !arr.some((v) => v.toLowerCase().includes(qLow))
-      if (operator === 'equals') return arr.some((v) => v.toLowerCase() === qLow)
-      if (operator === 'not-equals') return !arr.some((v) => v.toLowerCase() === qLow)
+      if (caseSensitive) {
+        if (operator === 'contains') return arr.some((v) => v.includes(q))
+        if (operator === 'not-contains') return !arr.some((v) => v.includes(q))
+        if (operator === 'equals') return arr.some((v) => v === q)
+        if (operator === 'not-equals') return !arr.some((v) => v === q)
+      } else {
+        const qLow = q.toLowerCase()
+        if (operator === 'contains') return arr.some((v) => v.toLowerCase().includes(qLow))
+        if (operator === 'not-contains') return !arr.some((v) => v.toLowerCase().includes(qLow))
+        if (operator === 'equals') return arr.some((v) => v.toLowerCase() === qLow)
+        if (operator === 'not-equals') return !arr.some((v) => v.toLowerCase() === qLow)
+      }
       return false
     }
 
@@ -109,12 +135,12 @@ function matchesOperator(
     }
 
     default: {
-      const val = String(rawValue).toLowerCase()
-      const qLow = q.toLowerCase()
-      if (operator === 'equals') return val === qLow
-      if (operator === 'not-equals') return val !== qLow
-      if (operator === 'contains') return val.includes(qLow)
-      if (operator === 'not-contains') return !val.includes(qLow)
+      const val = caseSensitive ? String(rawValue) : String(rawValue).toLowerCase()
+      const qVal = caseSensitive ? q : q.toLowerCase()
+      if (operator === 'equals') return val === qVal
+      if (operator === 'not-equals') return val !== qVal
+      if (operator === 'contains') return val.includes(qVal)
+      if (operator === 'not-contains') return !val.includes(qVal)
       return false
     }
   }
@@ -222,24 +248,14 @@ function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: Pro
   }
 
   const type = getPropertyType(rule.property, defs)
-  let value = note.frontmatter[rule.property]
-  let query = rule.value ?? ''
-
-  // Handle case sensitivity for text-based types
-  if (!rule.caseSensitive && (type === 'text' || type === 'text-array')) {
-    // Convert to lowercase for case-insensitive matching
-    if (Array.isArray(value)) {
-      value = value.map((v) => String(v).toLowerCase())
-    } else if (value != null) {
-      value = String(value).toLowerCase()
-    }
-    query = query.toLowerCase()
-  }
+  const value = note.frontmatter[rule.property]
+  const query = rule.value ?? ''
+  const caseSensitive = rule.caseSensitive ?? false
 
   if (rule.operator === 'contains') {
-    return matchesOperator(value, 'contains', query, type)
+    return matchesOperator(value, 'contains', query, type, caseSensitive)
   } else if (rule.operator === 'not-contains') {
-    return matchesOperator(value, 'not-contains', query, type)
+    return matchesOperator(value, 'not-contains', query, type, caseSensitive)
   }
 
   return false
