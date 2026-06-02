@@ -9,6 +9,29 @@ const DEFAULT_CONFIG: AppConfig = {
   vaults: [],
 }
 
+function isHiddenPathSegment(path: string): boolean {
+  return path.split('/').some((segment) => segment.startsWith('.'))
+}
+
+function sanitizeForbiddenDirs(dirs: string[]): string[] {
+  const normalized = dirs
+    .map((dir) => dir.trim().replace(/^\/+|\/+$/g, ''))
+    .filter((dir) => dir.length > 0)
+    .filter((dir) => !isHiddenPathSegment(dir))
+
+  return [...new Set(normalized)]
+}
+
+function sanitizeConfig(config: AppConfig): AppConfig {
+  return {
+    ...config,
+    vaults: config.vaults.map((vault) => ({
+      ...vault,
+      forbiddenDirs: sanitizeForbiddenDirs(vault.forbiddenDirs),
+    })),
+  }
+}
+
 let _config: AppConfig | null = null
 
 export async function loadConfig(): Promise<AppConfig> {
@@ -19,7 +42,7 @@ export async function loadConfig(): Promise<AppConfig> {
       return _config
     }
     const raw = await readFile(CONFIG_FILE, 'utf-8')
-    _config = JSON.parse(raw) as AppConfig
+    _config = sanitizeConfig(JSON.parse(raw) as AppConfig)
     return _config
   } catch {
     _config = structuredClone(DEFAULT_CONFIG)
@@ -44,7 +67,7 @@ export async function updateConfig(
   updater: (config: AppConfig) => AppConfig,
 ): Promise<AppConfig> {
   const config = await getConfig()
-  const updated = updater(structuredClone(config))
+  const updated = sanitizeConfig(updater(structuredClone(config)))
   await saveConfig(updated)
   return updated
 }

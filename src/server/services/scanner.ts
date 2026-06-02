@@ -10,6 +10,16 @@ interface CacheEntry {
 
 const cache = new Map<string, CacheEntry>()
 
+function normalizeForbiddenDirs(dirs: string[]): string[] {
+  return dirs
+    .map((d) => d.replace(/^\/+|\/+$/g, ''))
+    .filter((d) => d.length > 0)
+}
+
+function isForbiddenDirectory(dirRel: string, forbiddenDirs: string[]): boolean {
+  return forbiddenDirs.some((forbidden) => dirRel === forbidden || dirRel.startsWith(forbidden + '/'))
+}
+
 export function invalidateCache(vaultId: string): void {
   cache.delete(vaultId)
 }
@@ -18,7 +28,12 @@ export function getCachedNotes(vaultId: string): ParsedNote[] | null {
   return cache.get(vaultId)?.notes ?? null
 }
 
-export async function collectFiles(dir: string, forbidden: Set<string>, out: string[]): Promise<void> {
+export async function collectFiles(
+  dir: string,
+  forbiddenDirs: string[],
+  out: string[],
+  rel: string = '',
+): Promise<void> {
   let entries
   try {
     entries = await readdir(dir, { withFileTypes: true })
@@ -26,10 +41,12 @@ export async function collectFiles(dir: string, forbidden: Set<string>, out: str
     return
   }
   for (const entry of entries) {
-    if (entry.name.startsWith('.') || forbidden.has(entry.name)) continue
+    if (entry.name.startsWith('.')) continue
+    const entryRel = rel ? `${rel}/${entry.name}` : entry.name
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
-      await collectFiles(full, forbidden, out)
+      if (isForbiddenDirectory(entryRel, forbiddenDirs)) continue
+      await collectFiles(full, forbiddenDirs, out, entryRel)
     } else if (entry.isFile() && extname(entry.name) === '.md') {
       out.push(full)
     }
@@ -61,7 +78,7 @@ export async function collectDirectories(
 }
 
 export async function scanVault(vault: Vault): Promise<ParsedNote[]> {
-  const forbidden = new Set(vault.forbiddenDirs.map((d) => d.replace(/^\//, '')))
+  const forbidden = normalizeForbiddenDirs(vault.forbiddenDirs)
   const files: string[] = []
   await collectFiles(vault.path, forbidden, files)
 
@@ -82,7 +99,7 @@ export async function scanVault(vault: Vault): Promise<ParsedNote[]> {
 }
 
 export async function discoverProperties(vault: Vault): Promise<PropertyDef[]> {
-  const forbidden = new Set(vault.forbiddenDirs.map((d) => d.replace(/^\//, '')))
+  const forbidden = normalizeForbiddenDirs(vault.forbiddenDirs)
   const files: string[] = []
   await collectFiles(vault.path, forbidden, files)
 

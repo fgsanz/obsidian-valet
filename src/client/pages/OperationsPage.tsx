@@ -201,7 +201,6 @@ export default function OperationsPage() {
       {activeTab === 'filter' && (
         <>
           <div className={styles.section}>
-            <div className={styles.sectionTitle}>Filter rules</div>
             <FilterBuilder
               criteria={criteria}
               onChange={setCriteria}

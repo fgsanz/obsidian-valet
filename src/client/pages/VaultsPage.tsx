@@ -35,7 +35,7 @@ export default function VaultsPage() {
       const vault = await api.vaults.create({
         name,
         path,
-        forbiddenDirs: ['.obsidian', '.trash'],
+        forbiddenDirs: [],
         properties: [],
       })
       try { await api.vaults.discoverProperties(vault.id) } catch { /* non-fatal */ }
@@ -113,6 +113,10 @@ export default function VaultsPage() {
         data: { forbiddenDirs: vault.forbiddenDirs.filter((d) => d !== dir) },
       })
     }
+  }
+
+  function isForbiddenOrChild(dir: string, forbiddenDirs: string[]): boolean {
+    return forbiddenDirs.some((forbidden) => dir === forbidden || dir.startsWith(forbidden + '/'))
   }
 
   async function browsePath() {
@@ -269,14 +273,18 @@ export default function VaultsPage() {
                         <DirSelect
                           value={dirInputs[vault.id] ?? ''}
                           onChange={(value) => {
-                            const availableDirs = vaultDirs[vault.id] ?? []
+                            const availableDirs = (vaultDirs[vault.id] ?? []).filter(
+                              (d) => !isForbiddenOrChild(d, vault.forbiddenDirs),
+                            )
                             if (availableDirs.includes(value) && !vault.forbiddenDirs.includes(value)) {
                               addForbiddenDir(vault.id, value)
                             } else {
                               setDirInputs((prev) => ({ ...prev, [vault.id]: value }))
                             }
                           }}
-                          dirs={(vaultDirs[vault.id] ?? []).filter((d) => !vault.forbiddenDirs.includes(d))}
+                          dirs={(vaultDirs[vault.id] ?? []).filter(
+                            (d) => !isForbiddenOrChild(d, vault.forbiddenDirs),
+                          )}
                           placeholder="Add directory..."
                         />
                       </div>
