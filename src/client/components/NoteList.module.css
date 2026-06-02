@@ -82,6 +82,10 @@
   white-space: normal;
 }
 
+.sortActive {
+  color: var(--color-accent);
+}
+
 .propsList {
   display: flex;
   flex-direction: column;

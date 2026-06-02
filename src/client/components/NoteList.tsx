@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ParsedNote, OperationResult } from '@shared/types'
 import styles from './NoteList.module.css'
 
@@ -7,6 +8,9 @@ interface Props {
   result?: OperationResult | null
 }
 
+type SortColumn = 'name' | 'location' | 'props'
+type SortDirection = 'asc' | 'desc'
+
 function renderPropValue(value: unknown): string {
   if (value == null) return '(empty)'
   if (Array.isArray(value)) return value.join(', ')
@@ -14,8 +18,65 @@ function renderPropValue(value: unknown): string {
 }
 
 export default function NoteList({ notes, highlightProperties = [], result }: Props) {
+  const [sortColumn, setSortColumn] = useState<SortColumn>('location')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+
   if (notes.length === 0) {
     return <p className={styles.empty}>No notes matched the filter.</p>
+  }
+
+  function handleHeaderClick(column: SortColumn) {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection('asc')
+    }
+  }
+
+  const sortedNotes = [...notes].sort((a, b) => {
+    let aVal: string
+    let bVal: string
+
+    if (sortColumn === 'name') {
+      aVal = a.title.toLowerCase()
+      bVal = b.title.toLowerCase()
+    } else if (sortColumn === 'location') {
+      const aDirname = a.relativePath.includes('/')
+        ? a.relativePath.substring(0, a.relativePath.lastIndexOf('/'))
+        : '(root)'
+      const bDirname = b.relativePath.includes('/')
+        ? b.relativePath.substring(0, b.relativePath.lastIndexOf('/'))
+        : '(root)'
+      aVal = aDirname.toLowerCase()
+      bVal = bDirname.toLowerCase()
+    } else {
+      // Sort by property info: concatenate all highlighted properties
+      const aPropStr = highlightProperties
+        .map((prop) => {
+          const val = a.frontmatter[prop]
+          return val == null ? '' : String(val)
+        })
+        .join(' ')
+        .toLowerCase()
+      const bPropStr = highlightProperties
+        .map((prop) => {
+          const val = b.frontmatter[prop]
+          return val == null ? '' : String(val)
+        })
+        .join(' ')
+        .toLowerCase()
+      aVal = aPropStr
+      bVal = bPropStr
+    }
+
+    const cmp = aVal.localeCompare(bVal)
+    return sortDirection === 'asc' ? cmp : -cmp
+  })
+
+  function getSortIndicator(column: SortColumn): string {
+    if (sortColumn !== column) return ''
+    return sortDirection === 'asc' ? ' ▲' : ' ▼'
   }
 
   return (
@@ -23,13 +84,31 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
       <table className={styles.table}>
         <thead>
           <tr>
-            <th className={styles.colName}>Note name</th>
-            <th className={styles.colLocation}>Location</th>
-            <th className={styles.colProps}>Property info</th>
+            <th
+              className={`${styles.colName} ${sortColumn === 'name' ? styles.sortActive : ''}`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleHeaderClick('name')}
+            >
+              Note name{getSortIndicator('name')}
+            </th>
+            <th
+              className={`${styles.colLocation} ${sortColumn === 'location' ? styles.sortActive : ''}`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleHeaderClick('location')}
+            >
+              Location{getSortIndicator('location')}
+            </th>
+            <th
+              className={`${styles.colProps} ${sortColumn === 'props' ? styles.sortActive : ''}`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleHeaderClick('props')}
+            >
+              Property info{getSortIndicator('props')}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {notes.map((note) => {
+          {sortedNotes.map((note) => {
             const dirname = note.relativePath.includes('/')
               ? note.relativePath.substring(0, note.relativePath.lastIndexOf('/'))
               : '(root)'

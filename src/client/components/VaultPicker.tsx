@@ -34,7 +34,7 @@ export default function VaultPicker() {
 
   return (
     <div className={styles.wrapper}>
-      <span className={styles.label}>Vault</span>
+      <span className={styles.label}>Active vault</span>
       <select
         className={styles.select}
         value={activeVault?.id ?? ''}
