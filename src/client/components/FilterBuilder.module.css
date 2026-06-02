@@ -1,7 +1,7 @@
 .builder {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-8);
 }
 
 .section {
@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-1);
 }
 
 .rule {
@@ -168,18 +168,18 @@
 }
 
 .addBtn {
-  background: transparent;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  padding: var(--space-1) var(--space-3);
+  padding: 0;
   cursor: pointer;
-  transition: border-color 0.12s, color 0.12s;
+  align-self: flex-start;
+  text-align: left;
+  transition: color 0.12s;
 }
 
 .addBtn:hover {
-  border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
