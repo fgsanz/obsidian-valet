@@ -24,7 +24,7 @@ export default function DocsPage() {
       <nav className={styles.sidebar}>
         <div className={styles.sidebarTitle}>Documentation</div>
         <div className={styles.nav}>
-          {pages.map((p) => (
+          {pages.filter((p) => p.slug !== 'index').map((p) => (
             <NavLink
               key={p.slug}
               to={p.slug === 'index' ? '/docs' : `/docs/${p.slug}`}

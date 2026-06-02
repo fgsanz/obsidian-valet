@@ -5,7 +5,12 @@
   align-items: start;
 }
 
-.sidebar {}
+.sidebar {
+  position: sticky;
+  top: calc(56px + var(--space-4));
+  max-height: calc(100vh - 56px - var(--space-6));
+  overflow: auto;
+}
 
 .sidebarTitle {
   font-size: var(--text-xs);
