@@ -72,4 +72,9 @@ export const operationSchema = z.discriminatedUnion('type', [
     property: z.string(),
     value: z.string(),
   }),
+  z.object({
+    type: z.literal('add-value'),
+    property: z.string(),
+    value: z.string(),
+  }),
 ])

@@ -69,6 +69,18 @@ function mutateNote(note: ParsedNote, operation: Operation): ParsedNote | null {
     } else {
       fm[toProperty] = [value]
     }
+  } else if (operation.type === 'add-value') {
+    const { property, value } = operation
+    const current = fm[property]
+
+    if (Array.isArray(current)) {
+      if (current.some((v) => valuesMatch(v, value))) return null
+      fm[property] = [...current, value]
+    } else if (current == null) {
+      fm[property] = value
+    } else {
+      return null
+    }
   }
 
   return { ...note, frontmatter: fm }

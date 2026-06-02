@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Operation, PropertyDef } from '@shared/types'
+import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import styles from './BulkOpPanel.module.css'
 
 interface Props {
@@ -9,9 +9,14 @@ interface Props {
   onApply: (op: Operation) => void
   isPreviewing: boolean
   isApplying: boolean
+  matchedNotes?: Array<{ frontmatter: Record<string, unknown> }>
 }
 
-type OpType = 'delete-value' | 'replace' | 'move-value'
+type OpType = 'delete-value' | 'replace' | 'move-value' | 'add-value'
+
+function allowsMultipleValues(type: PropertyType): boolean {
+  return type === 'text-array' || type === 'tag-array' || type === 'link-array'
+}
 
 export default function BulkOpPanel({
   properties,
@@ -20,6 +25,7 @@ export default function BulkOpPanel({
   onApply,
   isPreviewing,
   isApplying,
+  matchedNotes = [],
 }: Props) {
   const [opType, setOpType] = useState<OpType>('delete-value')
   const [property, setProperty] = useState(suggestedProperty)
@@ -30,6 +36,23 @@ export default function BulkOpPanel({
 
   const propList = properties.map((p) => p.name)
   const propListId = 'op-prop-list'
+
+  function getPropertyType(propName: string): PropertyType | undefined {
+    return properties.find((p) => p.name === propName)?.type
+  }
+
+  function canApplyAddValue(): boolean {
+    if (!property) return false
+    const propType = getPropertyType(property)
+    if (!propType) return false
+
+    if (allowsMultipleValues(propType)) return true
+
+    const someNotesHaveProperty = matchedNotes.some(
+      (note) => note.frontmatter[property] != null
+    )
+    return !someNotesHaveProperty
+  }
 
   function buildOperation(): Operation | null {
     if (opType === 'delete-value') {
@@ -43,6 +66,11 @@ export default function BulkOpPanel({
     if (opType === 'move-value') {
       if (!fromProperty || !toProperty || !value) return null
       return { type: 'move-value', fromProperty, toProperty, value }
+    }
+    if (opType === 'add-value') {
+      if (!property || !value) return null
+      if (!canApplyAddValue()) return null
+      return { type: 'add-value', property, value }
     }
     return null
   }
@@ -58,14 +86,14 @@ export default function BulkOpPanel({
       </datalist>
 
       <div className={styles.typeRow}>
-        {(['delete-value', 'replace', 'move-value'] as OpType[]).map((t) => (
+        {(['delete-value', 'replace', 'move-value', 'add-value'] as OpType[]).map((t) => (
           <button
             key={t}
             type="button"
             className={`${styles.typeBtn} ${opType === t ? styles.selected : ''}`}
             onClick={() => setOpType(t)}
           >
-            {t === 'delete-value' ? 'Delete value' : t === 'replace' ? 'Replace value' : 'Move value'}
+            {t === 'delete-value' ? 'Delete value' : t === 'replace' ? 'Replace value' : t === 'move-value' ? 'Move value' : 'Add value'}
           </button>
         ))}
       </div>
@@ -113,6 +141,24 @@ export default function BulkOpPanel({
             </div>
             <div className={styles.field}>
               <label>Value to move</label>
+              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
+            </div>
+          </>
+        )}
+
+        {opType === 'add-value' && (
+          <>
+            <div className={styles.field}>
+              <label>Property</label>
+              <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
+              {property && !allowsMultipleValues(getPropertyType(property) || 'text') && matchedNotes.some((n) => n.frontmatter[property] != null) && (
+                <div className={styles.warning}>
+                  Some notes already have a value for this single-value property. They won't be affected by this operation.
+                </div>
+              )}
+            </div>
+            <div className={styles.field}>
+              <label>Value to add</label>
               <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
             </div>
           </>

@@ -262,6 +262,7 @@ export default function OperationsPage() {
                   onApply={handleApply}
                   isPreviewing={isPreviewing}
                   isApplying={isApplying}
+                  matchedNotes={matchedNotes}
                 />
               </div>
               {isPreviewing && (
@@ -303,5 +304,6 @@ function describeOperation(op: Operation): string {
   if (op.type === 'delete-value') return `delete "${op.value}" from ${op.property}`
   if (op.type === 'replace') return `replace "${op.oldValue}" with "${op.newValue}" in ${op.property}`
   if (op.type === 'move-value') return `move "${op.value}" from ${op.fromProperty} to ${op.toProperty}`
+  if (op.type === 'add-value') return `add "${op.value}" to ${op.property}`
   return 'operation'
 }

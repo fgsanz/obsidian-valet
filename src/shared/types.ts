@@ -70,6 +70,7 @@ export type Operation =
   | { type: 'replace'; property: string; oldValue: string; newValue: string }
   | { type: 'move-value'; fromProperty: string; toProperty: string; value: string }
   | { type: 'delete-value'; property: string; value: string }
+  | { type: 'add-value'; property: string; value: string }
 
 export interface OperationError {
   filePath: string

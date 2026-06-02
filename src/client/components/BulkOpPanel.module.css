@@ -65,6 +65,12 @@
   border-color: var(--color-accent);
 }
 
+.warning {
+  font-size: var(--text-sm);
+  color: var(--color-warning);
+  margin-top: var(--space-1);
+}
+
 .actions {
   display: flex;
   align-items: center;
