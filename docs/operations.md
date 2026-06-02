@@ -26,8 +26,13 @@ Select a directory from the dropdown if using "directory is" or "directory is no
 Filter notes by frontmatter values:
 
 - **Property** — the frontmatter key to test (e.g. `parent`, `tags`, `date`)
-- **Operator** — `contains` (value exists), `does not contain` (value absent), or `is empty` (property is null or blank)
-- **Value** — the value to match (required for `contains` and `does not contain`; omitted for `is empty`)
+- **Operator** — choose from:
+  - `exists and contains` — property is defined AND value includes the query
+  - `exists and does not contain` — property is defined AND value does not include the query
+  - `exists and is empty` — property is defined but null or blank
+  - `does not exist` — property not defined in frontmatter
+- **Value** — the value to match (required for `exists and contains` and `exists and does not contain`; omitted for other operators)
+- **Case sensitivity** — click the **Aa** button to toggle case-sensitive matching (default is case-insensitive)
 
 For link properties, provide the link in `[[Note Name]]` syntax. The tool validates this format.
 
@@ -48,7 +53,7 @@ The count in the stats bar shows how many notes matched. If the count is higher 
 Three bulk operations are available:
 
 - **Delete value** — removes a specific value from a property (e.g. remove `[[OldNote]]` from `parent`)
-- **Change value** — replaces a specific value with another (e.g. change `[[OldNote]]` to `[[NewNote]]` in `parent`)
+- **Replace value** — replaces a specific value with another (e.g. replace `[[OldNote]]` with `[[NewNote]]` in `parent`)
 - **Move value** — removes a value from one property and adds it to another (e.g. move `[[OldNote]]` from `parent` to `related`)
 
 Click **Preview** to see which notes would be affected without writing any files.
@@ -69,13 +74,13 @@ If the vault has git, a **Commit changes to git** button appears after a success
 ## Examples
 
 **List all notes where `parent` or `related` contain `[[ProjectX]]`:**
-- Rule 1: `parent` `contains link to` `[[ProjectX]]`
-- Rule 2 (OR): `related` `contains link to` `[[ProjectX]]`
+- Rule 1: `parent` `exists and contains` `[[ProjectX]]`
+- Rule 2 (OR): `related` `exists and contains` `[[ProjectX]]`
 
 **In all notes where `parent` contains `[[ProjectX]]`, move it to `related`:**
-- Filter: `parent` `contains link to` `[[ProjectX]]`
+- Filter: `parent` `exists and contains` `[[ProjectX]]`
 - Operation: Move value · From `parent` · To `related` · Value `[[ProjectX]]`
 
 **Delete `[[OldNote]]` from `parent` in all matching notes:**
-- Filter: `parent` `contains link to` `[[OldNote]]`
+- Filter: `parent` `exists and contains` `[[OldNote]]`
 - Operation: Delete value · Property `parent` · Value `[[OldNote]]`

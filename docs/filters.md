@@ -20,9 +20,17 @@ Property filters test frontmatter values. Four operators are available:
 
 Note: For the first two operators, if the property is not defined in frontmatter, the note does NOT match the criteria.
 
-For **link and link-array** properties with `exists and contains` or `exists and does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively.
+For **link and link-array** properties with `exists and contains` or `exists and does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively by default.
 
 For other property types, type-specific placeholders guide entry (e.g., `tag/subtag` for tags, `[[YYYY-Www]]` for week links).
+
+### Case sensitivity
+
+For **text and text-array** properties, you can toggle case-sensitive matching using the **Aa** button on each rule:
+- **Dimmed "Aa"** (default) — case-insensitive matching ("Match case OFF")
+- **Bold white "Aa"** — case-sensitive matching ("Match case ON")
+
+By default, all text matching is case-insensitive. Click the "Aa" button to switch to case-sensitive mode for that specific rule.
 
 ### Directory filters
 
