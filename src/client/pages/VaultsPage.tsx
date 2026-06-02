@@ -4,6 +4,7 @@ import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus } fro
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
 import Tooltip from '../components/Tooltip'
+import DirSelect from '../components/DirSelect'
 import styles from './VaultsPage.module.css'
 
 export default function VaultsPage() {
@@ -14,6 +15,7 @@ export default function VaultsPage() {
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, Set<string>>>({})
   const [dirInputs, setDirInputs] = useState<Record<string, string>>({})
   const [deleteHoverVaultId, setDeleteHoverVaultId] = useState<string | null>(null)
+  const [vaultDirs, setVaultDirs] = useState<Record<string, string[]>>({})
 
   const { data: vaults = [], isError } = useQuery({
     queryKey: ['vaults'],
@@ -69,6 +71,20 @@ export default function VaultsPage() {
         vaultSet.delete(section)
       } else {
         vaultSet.add(section)
+        // Fetch directories when opening forbidden directories accordion
+        if (section === 'forbidden' && !vaultDirs[vaultId]) {
+          const vault = vaults.find((v) => v.id === vaultId)
+          if (vault && vault.path) {
+            ;(async () => {
+              try {
+                const dirs = await api.fs.listDirectories(vault.path)
+                setVaultDirs((prev) => ({ ...prev, [vaultId]: dirs }))
+              } catch (err) {
+                setVaultDirs((prev) => ({ ...prev, [vaultId]: [] }))
+              }
+            })()
+          }
+        }
       }
       return { ...prev, [vaultId]: vaultSet }
     })
@@ -250,24 +266,19 @@ export default function VaultsPage() {
                         ))}
                       </div>
                       <div className={styles.dirSelectWrapper}>
-                        <div className={styles.dirInput}>
-                          <input
-                            type="text"
-                            value={dirInputs[vault.id] ?? ''}
-                            onChange={(e) =>
-                              setDirInputs((prev) => ({ ...prev, [vault.id]: e.target.value }))
+                        <DirSelect
+                          value={dirInputs[vault.id] ?? ''}
+                          onChange={(value) => {
+                            const availableDirs = vaultDirs[vault.id] ?? []
+                            if (availableDirs.includes(value) && !vault.forbiddenDirs.includes(value)) {
+                              addForbiddenDir(vault.id, value)
+                            } else {
+                              setDirInputs((prev) => ({ ...prev, [vault.id]: value }))
                             }
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                const value = dirInputs[vault.id]?.trim()
-                                if (value && !vault.forbiddenDirs.includes(value)) {
-                                  addForbiddenDir(vault.id, value)
-                                }
-                              }
-                            }}
-                            placeholder="Type directory name and press Enter"
-                          />
-                        </div>
+                          }}
+                          dirs={(vaultDirs[vault.id] ?? []).filter((d) => !vault.forbiddenDirs.includes(d))}
+                          placeholder="Add directory..."
+                        />
                       </div>
                     </div>
                   )}
