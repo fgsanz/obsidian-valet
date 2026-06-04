@@ -48,6 +48,7 @@
 .content table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: var(--space-12);
   margin-bottom: var(--space-4);
   font-size: var(--text-sm);
 }

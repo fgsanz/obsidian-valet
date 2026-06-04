@@ -10,7 +10,7 @@ The test vault is a small, hand-crafted collection of notes used by the BDD test
 
 The notes are designed to exercise as many property types, value formats, and edge cases as possible in a compact set. The two structural variants (collapsed vs. expanded YAML) ensure that formatting differences do not affect parsing or filtering.
 
----
+
 
 ## Frontmatter properties
 
@@ -26,7 +26,7 @@ The notes are designed to exercise as many property types, value formats, and ed
 | parent          | link-array |
 | related         | link-array |
 
----
+
 
 ## Test vault
 
@@ -51,7 +51,7 @@ The notes are designed to exercise as many property types, value formats, and ed
 | Dir 3                         | Note with empty YAML | (empty)     | N/A         | (undefined)                            | (undefined)          | (undefined) | (undefined)      | (undefined) | (undefined)    | (undefined)                                    | (undefined)                                                                            | (undefined)                                     |
 | Dir 3                         | Note without YAML    | (undefined) | (undefined) | (undefined)                            | (undefined)          | (undefined) | (undefined)      | (undefined) | (undefined)    | (undefined)                                    | (undefined)                                                                            | (undefined)                                     |
 
----
+
 
 # Frontmatter format
 
