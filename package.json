@@ -9,7 +9,8 @@
     "start": "tsx src/server/index.ts",
     "preview": "npm run build && npm run start",
     "check-docs": "tsx scripts/check-docs.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js"
   },
   "dependencies": {
     "@fastify/static": "^8.0.0",
@@ -27,6 +28,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^13.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
