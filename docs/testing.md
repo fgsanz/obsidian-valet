@@ -50,18 +50,14 @@ tests/
 │       ├── when.steps.ts
 │       └── then.steps.ts
 ├── fixtures/
-│   └── dummy-vault/           ← committed vault (never modified at runtime)
-│       ├── Projects/          Alpha.md, Beta.md, Gamma.md
-│       ├── Areas/             Health.md
-│       ├── Inbox/             Scratch.md
-│       └── People/            Jordan.md
+│   └── test-vault/            ← committed vault (never modified at runtime)
 └── support/
     ├── world.ts               ← per-scenario state
     ├── hooks.ts               ← Before: copy vault to tmp; After: delete tmp
-    └── vault-schema.ts        ← property type definitions for the dummy vault
+    └── vault-schema.ts        ← property type definitions for the test vault
 ```
 
-Each scenario automatically gets a **fresh throwaway copy** of the dummy vault in the OS temp directory. The committed fixture is never modified. You don't manage setup or teardown.
+Each scenario automatically gets a **fresh throwaway copy** of the test vault in the OS temp directory. The committed fixture is never modified. You don't manage setup or teardown.
 
 ---
 
@@ -73,7 +69,7 @@ Add a `.feature` file under `tests/features/` (or append to an existing one).
 Feature: Your feature description
 
   Scenario: A clear sentence describing the behaviour
-    Given a fresh copy of the dummy vault
+    Given a fresh copy of the test vault
     When I filter notes where "parent" "contains" "[[ProjectX]]"
     And I apply add-value on property "related" with value "[[ProjectZ]]"
     Then 2 notes are changed
@@ -87,7 +83,7 @@ Feature: Your feature description
 
 | Step | Purpose |
 |---|---|
-| `Given a fresh copy of the dummy vault` | Always the first step of a scenario |
+| `Given a fresh copy of the test vault` | Always the first step of a scenario |
 
 **When — filtering**
 
@@ -131,18 +127,11 @@ Property values are compared loosely: `[[ProjectX]]` and `ProjectX` are treated 
 
 ---
 
-## Dummy vault contents
+## Test vault
 
-| Note | parent | related | tags | date | status | aliases |
-|---|---|---|---|---|---|---|
-| Projects/Alpha | `[[ProjectX]]` | `[[Beta]]` | `#active` `#project` | 2026-01-15 | in-progress | — |
-| Projects/Beta | `[[ProjectX]]` | — | `#active` | — | in-progress | — |
-| Projects/Gamma | `[[ProjectY]]` | `[[Alpha]]` | `#archived` | — | done | — |
-| Areas/Health | — | — | `#area` | 2026-03-01 | active | — |
-| Inbox/Scratch | — (no frontmatter) | — | — | — | — | — |
-| People/Jordan | — | `[[Alpha]]` | `#person` `#colleague` | — | — | `Jordan Lee`, `J. Lee` |
+The test vault lives at `tests/fixtures/test-vault/`. See the [Test vault](test-vault) document for the full note inventory, property schema, and YAML format details.
 
-To add notes to the vault, create `.md` files under `tests/fixtures/dummy-vault/`. They are picked up automatically on the next run.
+To add notes to the vault, create `.md` files anywhere under `tests/fixtures/test-vault/`. They are picked up automatically on the next run.
 
 ---
 

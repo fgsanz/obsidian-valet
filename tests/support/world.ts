@@ -8,7 +8,7 @@ import type {
 } from '@shared/types'
 import { scanVault } from '../../src/server/services/scanner'
 import { parseNote } from '../../src/server/services/frontmatter'
-import { DUMMY_VAULT_PROPERTIES } from './vault-schema'
+import { TEST_VAULT_PROPERTIES } from './vault-schema'
 
 /**
  * Per-scenario test state. A fresh instance is created by Cucumber for every scenario,
@@ -16,7 +16,7 @@ import { DUMMY_VAULT_PROPERTIES } from './vault-schema'
  * and removed in the After hook (see hooks.ts).
  */
 export class ValetWorld extends World {
-  /** Absolute path to the throwaway copy of the dummy vault for this scenario. */
+  /** Absolute path to the throwaway copy of the test vault for this scenario. */
   tmpVaultDir = ''
   /** Vault object pointing at the temp copy. */
   vault!: Vault
@@ -56,7 +56,7 @@ export class ValetWorld extends World {
   async reread(title: string): Promise<ParsedNote> {
     const known = this.noteByTitle(title)
     const content = await readFile(known.filePath, 'utf-8')
-    return parseNote(known.filePath, known.relativePath, content, DUMMY_VAULT_PROPERTIES)
+    return parseNote(known.filePath, known.relativePath, content, TEST_VAULT_PROPERTIES)
   }
 }
 

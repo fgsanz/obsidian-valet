@@ -5,13 +5,13 @@ import { fileURLToPath } from 'node:url'
 import { randomUUID } from 'node:crypto'
 import { Before, After } from '@cucumber/cucumber'
 import { invalidateCache } from '../../src/server/services/scanner'
-import { DUMMY_VAULT_PROPERTIES } from './vault-schema'
+import { TEST_VAULT_PROPERTIES } from './vault-schema'
 import type { ValetWorld } from './world'
 
-const FIXTURE_VAULT = fileURLToPath(new URL('../fixtures/dummy-vault', import.meta.url))
+const FIXTURE_VAULT = fileURLToPath(new URL('../fixtures/test-vault', import.meta.url))
 
 /**
- * Before each scenario: copy the committed dummy vault into a unique OS temp directory and
+ * Before each scenario: copy the committed test vault into a unique OS temp directory and
  * point the Vault object at the copy. Every write the valet performs lands in the copy, so
  * the committed fixture is never mutated.
  */
@@ -21,10 +21,10 @@ Before(async function (this: ValetWorld) {
 
   this.vault = {
     id: `test-${randomUUID()}`,
-    name: 'Dummy Test Vault',
+    name: 'Test Vault',
     path: this.tmpVaultDir,
     forbiddenDirs: [],
-    properties: DUMMY_VAULT_PROPERTIES,
+    properties: TEST_VAULT_PROPERTIES,
   }
 
   await this.scan()

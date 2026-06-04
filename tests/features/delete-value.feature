@@ -3,7 +3,7 @@ Feature: Delete value operation
   without corrupting the YAML frontmatter.
 
   Scenario: Remove a parent link from matching notes
-    Given a fresh copy of the dummy vault
+    Given a fresh copy of the test vault
     When I filter notes where "parent" "contains" "[[ProjectX]]"
     And I apply delete-value on property "parent" with value "[[ProjectX]]"
     Then 2 notes are changed
@@ -13,7 +13,7 @@ Feature: Delete value operation
     And the YAML of "Alpha" is still valid
 
   Scenario: A non-matching note keeps its parent untouched
-    Given a fresh copy of the dummy vault
+    Given a fresh copy of the test vault
     When I filter notes where "parent" "contains" "[[ProjectX]]"
     And I apply delete-value on property "parent" with value "[[ProjectX]]"
     Then note "Gamma" has "[[ProjectY]]" in "parent"
