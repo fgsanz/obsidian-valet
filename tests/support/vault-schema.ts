@@ -5,11 +5,13 @@ import type { PropertyDef } from '@shared/types'
  * runtime type discovery) so that filtering behaviour in tests is deterministic.
  */
 export const TEST_VAULT_PROPERTIES: PropertyDef[] = [
-  { name: 'title', type: 'text' },
-  { name: 'parent', type: 'link-array' },
-  { name: 'related', type: 'link-array' },
   { name: 'tags', type: 'tag-array' },
   { name: 'aliases', type: 'text-array' },
   { name: 'date', type: 'date' },
-  { name: 'status', type: 'text' },
+  { name: 'week', type: 'week-link' },
+  { name: 'time', type: 'text' },
+  { name: 'read', type: 'boolean' },
+  { name: 'number headings', type: 'text' },
+  { name: 'parent', type: 'link-array' },
+  { name: 'related', type: 'link-array' },
 ]

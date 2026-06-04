@@ -73,3 +73,61 @@
   margin: 0 0 var(--space-3);
   color: var(--color-text-muted);
 }
+
+/* ── Test-cases accordion ─────────────────────────────────────────────────── */
+
+.content :global(.tc-scenario) {
+  margin-bottom: var(--space-1);
+}
+
+.content :global(.tc-scenario) summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-1) 0;
+  user-select: none;
+}
+
+.content :global(.tc-scenario) summary::-webkit-details-marker {
+  display: none;
+}
+
+.content :global(.tc-scenario) summary::before {
+  content: '';
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0;
+  height: 0;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+  border-left: 5px solid currentColor;
+  opacity: 0.35;
+  transition: transform 0.15s ease;
+}
+
+.content :global(.tc-scenario[open]) summary::before {
+  transform: rotate(90deg);
+}
+
+.content :global(.tc-scenario) ul {
+  margin: var(--space-2) 0 var(--space-3) var(--space-5);
+  padding: 0;
+}
+
+.content :global(.tc-scenario) li {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.content :global(.tc-kw) {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-subtle);
+  margin-right: var(--space-2);
+}
