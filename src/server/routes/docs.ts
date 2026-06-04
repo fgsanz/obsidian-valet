@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { readdir, readFile } from 'fs/promises'
-import { join, extname, basename } from 'path'
+import { join, extname } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import yaml from 'js-yaml'
@@ -14,6 +14,7 @@ const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/
 interface DocMeta {
   title: string
   slug: string
+  description?: string
 }
 
 function parseMeta(content: string): { meta: DocMeta; body: string } | null {
@@ -34,10 +35,18 @@ async function listDocs(): Promise<DocPage[]> {
     if (extname(file) !== '.md') continue
     const content = await readFile(join(DOCS_DIR, file), 'utf-8')
     const parsed = parseMeta(content)
-    if (parsed) pages.push({ title: parsed.meta.title, slug: parsed.meta.slug })
+    if (parsed)
+      pages.push({ title: parsed.meta.title, slug: parsed.meta.slug, description: parsed.meta.description })
   }
-  const ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-integration']
-  return pages.sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug))
+  const KNOWN_ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-integration', 'npm-scripts']
+  return pages.sort((a, b) => {
+    const ai = KNOWN_ORDER.indexOf(a.slug)
+    const bi = KNOWN_ORDER.indexOf(b.slug)
+    if (ai !== -1 && bi !== -1) return ai - bi
+    if (ai !== -1) return -1
+    if (bi !== -1) return 1
+    return a.title.localeCompare(b.title)
+  })
 }
 
 export const docsPlugin: FastifyPluginAsync = async (fastify) => {

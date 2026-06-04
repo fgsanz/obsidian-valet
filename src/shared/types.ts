@@ -104,6 +104,7 @@ export interface ParsedNote {
 export interface DocPage {
   title: string
   slug: string
+  description?: string
 }
 
 export interface ApiResponse<T> {

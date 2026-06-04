@@ -1,6 +1,7 @@
 ---
 title: Frontmatter types
 slug: frontmatter-types
+description: How each property type is stored and matched
 ---
 
 # Frontmatter types

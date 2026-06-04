@@ -1,6 +1,7 @@
 ---
 title: Operations
 slug: operations
+description: Filter notes by property values and apply bulk changes
 ---
 
 # Operations

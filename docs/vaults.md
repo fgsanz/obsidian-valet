@@ -1,6 +1,7 @@
 ---
 title: Vaults
 slug: vaults
+description: Add and configure vaults, forbidden directories, and property definitions
 ---
 
 # Vaults

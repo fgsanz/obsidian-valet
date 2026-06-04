@@ -1,6 +1,7 @@
 ---
 title: Git integration
 slug: git-integration
+description: Safety checkpoints before and after operations
 ---
 
 # Git integration

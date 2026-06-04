@@ -1,6 +1,7 @@
 ---
 title: Filters
 slug: filters
+description: All filter operators and type-specific behaviour
 ---
 
 # Filters

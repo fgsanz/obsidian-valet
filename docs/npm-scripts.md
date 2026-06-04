@@ -1,6 +1,7 @@
 ---
 title: npm scripts
 slug: npm-scripts
+description: What each npm run command does
 ---
 
 # npm scripts
