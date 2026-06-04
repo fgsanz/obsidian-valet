@@ -8,9 +8,8 @@ description: BDD test suite — running tests, writing scenarios, step vocabular
 
 Obsidian Valet has a BDD test suite driven by [Cucumber.js](https://cucumber.io/docs/cucumber/) and written in Gherkin. Tests run in-process against the real filter/operation services — no HTTP server is needed.
 
----
 
-## Running the suite
+# Running the suite
 
 ```bash
 npm test
@@ -18,9 +17,8 @@ npm test
 
 Cucumber picks up [`cucumber.mjs`](../cucumber.mjs) automatically and runs every `.feature` file under `tests/features/`.
 
----
 
-## Reading the results
+# Reading the results
 
 Output has two layers:
 
@@ -35,9 +33,8 @@ AssertionError: Expected 2 matching notes but got 3: Alpha, Beta, Gamma
   in Scenario: Filter by a link property  (filter.feature:5)
 ```
 
----
 
-## File layout
+# File layout
 
 ```
 tests/
@@ -59,9 +56,9 @@ tests/
 
 Each scenario automatically gets a **fresh throwaway copy** of the test vault in the OS temp directory. The committed fixture is never modified. You don't manage setup or teardown.
 
----
 
-## Writing a new scenario
+
+# Writing a new scenario
 
 Add a `.feature` file under `tests/features/` (or append to an existing one).
 
@@ -77,15 +74,15 @@ Feature: Your feature description
     And the YAML of "Alpha" is still valid
 ```
 
-### Step vocabulary
+## Step vocabulary
 
-**Given**
+#### Given
 
 | Step | Purpose |
 |---|---|
 | `Given a fresh copy of the test vault` | Always the first step of a scenario |
 
-**When — filtering**
+#### When — filtering
 
 | Step | Purpose |
 |---|---|
@@ -97,7 +94,7 @@ Feature: Your feature description
 
 Multiple `When`/`And` filter steps combine with AND logic.
 
-**When — operations** (applied to whatever is currently matched)
+#### When — operations (applied to whatever is currently matched)
 
 | Step | Purpose |
 |---|---|
@@ -106,7 +103,7 @@ Multiple `When`/`And` filter steps combine with AND logic.
 | `When I apply replace on property "p" from "old" to "new"` | Replace a value |
 | `When I apply move on value "v" from property "a" to property "b"` | Move a value between properties |
 
-**Then — counts**
+#### Then — counts
 
 | Step | Purpose |
 |---|---|
@@ -114,7 +111,7 @@ Multiple `When`/`And` filter steps combine with AND logic.
 | `Then {int} notes are changed` | Successful operation writes |
 | `Then {int} notes fail` | Notes the operation skipped or could not change |
 
-**Then — per-note assertions** (re-reads each note from disk)
+#### Then — per-note assertions (re-reads each note from disk)
 
 | Step | Purpose |
 |---|---|
@@ -125,17 +122,17 @@ Multiple `When`/`And` filter steps combine with AND logic.
 
 Property values are compared loosely: `[[ProjectX]]` and `ProjectX` are treated as equal, and `#active` and `active` are treated as equal.
 
----
 
-## Test vault
+
+# Test vault
 
 The test vault lives at `tests/fixtures/test-vault/`. See the [Test vault](test-vault) document for the full note inventory, property schema, and YAML format details.
 
 To add notes to the vault, create `.md` files anywhere under `tests/fixtures/test-vault/`. They are picked up automatically on the next run.
 
----
 
-## Adding new step definitions
+
+# Adding new step definitions
 
 If the built-in vocabulary does not cover a new behaviour, add a step to the appropriate file under `tests/features/steps/`:
 
