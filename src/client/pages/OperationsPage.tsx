@@ -57,6 +57,16 @@ export default function OperationsPage() {
     setActiveTab('filter')
   }
 
+  // Editing the filter invalidates any results shown from a previous run, so clear them — the
+  // table and the match count should never display notes that don't correspond to the current
+  // criteria.
+  function handleCriteriaChange(next: FilterCriteria) {
+    setCriteria(next)
+    setMatchedNotes(null)
+    setResult(null)
+    setFilterError(null)
+  }
+
   async function runFilter() {
     if (!activeVault) return
     setIsFiltering(true)
@@ -203,7 +213,7 @@ export default function OperationsPage() {
           <div className={styles.section}>
             <FilterBuilder
               criteria={criteria}
-              onChange={setCriteria}
+              onChange={handleCriteriaChange}
               onRun={runFilter}
               isRunning={isFiltering}
               properties={activeVault.properties}
