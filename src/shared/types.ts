@@ -29,7 +29,12 @@ export interface AppConfig {
 }
 
 export type LocationOperator = 'all-directories' | 'directory-is' | 'directory-is-not'
-export type PropertyOperator = 'contains' | 'not-contains' | 'exists-and-empty' | 'does-not-exist'
+export type PropertyOperator =
+  | 'contains'
+  | 'not-contains'
+  | 'exists-and-empty'
+  | 'exists-and-not-empty'
+  | 'does-not-exist'
 
 export interface LocationRule {
   operator: LocationOperator

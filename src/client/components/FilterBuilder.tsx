@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
-import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
+import { SIMPLE_PROPERTY_OPERATORS, operatorNeedsValue } from '../lib/operators'
 import DirSelect from './DirSelect'
 import Tooltip from './Tooltip'
 import styles from './FilterBuilder.module.css'
@@ -21,7 +21,7 @@ function isValidPropertyRule(rule: PropertyRule, defs: PropertyDef[]): boolean {
   if (!rule.property) return false
   const def = defs.find((d) => d.name === rule.property)
   const type = def?.type ?? 'text'
-  if (rule.operator === 'exists-and-empty' || rule.operator === 'does-not-exist') return true
+  if (!operatorNeedsValue(rule.operator)) return true
   const isLink = type === 'link' || type === 'link-array'
   if (isLink && rule.value) {
     return /^\[\[.+\]\]$/.test(rule.value.trim())
@@ -76,7 +76,7 @@ export default function FilterBuilder({
     next.properties = next.properties.map((r, i) => {
       if (i !== idx) return r
       const updated = { ...r, ...patch }
-      if ('operator' in patch && (patch.operator === 'exists-and-empty' || patch.operator === 'does-not-exist')) {
+      if ('operator' in patch && patch.operator && !operatorNeedsValue(patch.operator)) {
         updated.value = undefined
       }
       return updated
@@ -222,7 +222,7 @@ export default function FilterBuilder({
                   ))}
                 </select>
 
-                {rule.operator !== 'exists-and-empty' && rule.operator !== 'does-not-exist' && (
+                {operatorNeedsValue(rule.operator) && (
                   <input
                     className={`${styles.valueInput} ${
                       invalidRuleIdx === idx && isLink ? styles.valueInputInvalid : ''
@@ -246,7 +246,7 @@ export default function FilterBuilder({
                 )}
 
                 <div className={styles.ruleActions}>
-                  {rule.operator !== 'exists-and-empty' && rule.operator !== 'does-not-exist' && (
+                  {operatorNeedsValue(rule.operator) && (
                     <Tooltip content={rule.caseSensitive ? 'Match case ON' : 'Match case OFF'}>
                       <button
                         type="button"

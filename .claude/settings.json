@@ -10,7 +10,8 @@
       "Read(//Users/fgs/.config/obsidian-valet/**)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); pkgs=['react-router-dom','marked','@tanstack/react-query','fastify']; [print\\(p,'→',d['packages']['node_modules/'+p]['version']\\) for p in pkgs]\")",
       "Bash(npx vite *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node --import tsx -e ' *)"
     ],
     "additionalDirectories": [
       "/Users/fgs/.config/obsidian-valet"

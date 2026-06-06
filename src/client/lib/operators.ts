@@ -77,8 +77,20 @@ export const SIMPLE_PROPERTY_OPERATORS: PropertyOperatorOption[] = [
   { value: 'contains', label: 'exists and contains' },
   { value: 'not-contains', label: 'exists and does not contain' },
   { value: 'exists-and-empty', label: 'exists and is empty' },
+  { value: 'exists-and-not-empty', label: 'exists and is not empty' },
   { value: 'does-not-exist', label: 'does not exist' },
 ]
+
+/** Operators that filter purely on presence/emptiness and take no value input. */
+export const VALUELESS_PROPERTY_OPERATORS: PropertyOperator[] = [
+  'exists-and-empty',
+  'exists-and-not-empty',
+  'does-not-exist',
+]
+
+export function operatorNeedsValue(operator: PropertyOperator): boolean {
+  return !VALUELESS_PROPERTY_OPERATORS.includes(operator)
+}
 
 export function getPropertyType(property: string, defs: { name: string; type: PropertyType }[]): PropertyType {
   return defs.find((d) => d.name === property)?.type ?? 'text'

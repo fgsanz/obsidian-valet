@@ -1,5 +1,5 @@
 import type { ParsedNote, FilterRule, PropertyDef, PropertyType, LocationRule, PropertyRule, FilterCriteria } from '@shared/types'
-import { normalizeLinkTarget } from './frontmatter'
+import { normalizeLinkTarget, isEmptyPropertyValue } from './frontmatter'
 
 function getPropertyType(property: string, defs: PropertyDef[]): PropertyType {
   return defs.find((d) => d.name === property)?.type ?? 'text'
@@ -238,8 +238,12 @@ function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: Pro
 
   if (rule.operator === 'exists-and-empty') {
     if (!hasProperty) return false
-    const value = note.frontmatter[rule.property]
-    return value == null || (Array.isArray(value) && value.length === 0)
+    return isEmptyPropertyValue(note.frontmatter[rule.property])
+  }
+
+  if (rule.operator === 'exists-and-not-empty') {
+    if (!hasProperty) return false
+    return !isEmptyPropertyValue(note.frontmatter[rule.property])
   }
 
   // For 'contains' and 'not-contains', property must exist

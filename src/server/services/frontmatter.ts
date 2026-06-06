@@ -147,6 +147,20 @@ export async function writeNote(note: ParsedNote, defs: PropertyDef[]): Promise<
   await rename(tmp, note.filePath)
 }
 
+/**
+ * A property value counts as empty when it is null/undefined, a blank string, or an empty array.
+ * The single source of truth shared by filtering (exists-and-empty / exists-and-not-empty) and
+ * by operations (add-value into a single-value property). Property *presence* is a separate
+ * concept — a property can exist in the frontmatter and still hold an empty value.
+ */
+export function isEmptyPropertyValue(value: unknown): boolean {
+  return (
+    value == null ||
+    (typeof value === 'string' && value.trim() === '') ||
+    (Array.isArray(value) && value.length === 0)
+  )
+}
+
 export function normalizeLinkTarget(value: string): string {
   return value
     .replace(/^\[\[/, '')

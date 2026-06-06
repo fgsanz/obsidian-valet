@@ -124,6 +124,7 @@ Feature: Your feature description
 | `When I filter notes where "prop" "exists and contains" "value"` | Property rule with a value |
 | `When I filter notes where "prop" "exists and does not contain" "value"` | Exclusion rule |
 | `When I filter notes where "prop" "exists and is empty"` | Property exists but has no value |
+| `When I filter notes where "prop" "exists and is not empty"` | Property exists and has a value |
 | `When I filter notes where "prop" "does not exist"` | Property is absent entirely |
 | `When I filter notes in directory "Projects"` | Location rule |
 

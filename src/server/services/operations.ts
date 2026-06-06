@@ -1,5 +1,5 @@
 import type { ParsedNote, Operation, OperationResult, PropertyDef, PropertyType } from '@shared/types'
-import { writeNote, normalizeLinkTarget, inferType } from './frontmatter'
+import { writeNote, normalizeLinkTarget, inferType, isEmptyPropertyValue } from './frontmatter'
 
 function valuesMatch(a: unknown, b: string): boolean {
   const aStr = String(a ?? '')
@@ -17,15 +17,6 @@ function removeValueFromArray(arr: unknown[], target: string): unknown[] {
 /** Multi-value property types accept more than one value (stored as an array). */
 function isMultiValueType(type: PropertyType): boolean {
   return type === 'text-array' || type === 'tag-array' || type === 'link-array'
-}
-
-/** A property value counts as empty when it is null/undefined, blank, or an empty array. */
-function isEmptyValue(value: unknown): boolean {
-  return (
-    value == null ||
-    (typeof value === 'string' && value.trim() === '') ||
-    (Array.isArray(value) && value.length === 0)
-  )
 }
 
 /** Resolve a property's type from the declared schema, falling back to inference. */
@@ -119,7 +110,7 @@ function mutateNote(note: ParsedNote, operation: Operation, defs: PropertyDef[])
       if (!arr.some((v) => valuesMatch(v, value))) arr.push(value)
       fm[toProperty] = arr
     } else {
-      if (!isEmptyValue(to)) return null
+      if (!isEmptyPropertyValue(to)) return null
       fm[toProperty] = value
     }
   } else if (operation.type === 'add-value') {
@@ -133,7 +124,7 @@ function mutateNote(note: ParsedNote, operation: Operation, defs: PropertyDef[])
       if (arr.some((v) => valuesMatch(v, value))) return null
       fm[property] = [...arr, value]
     } else {
-      if (!isEmptyValue(current)) return null
+      if (!isEmptyPropertyValue(current)) return null
       fm[property] = value
     }
   }

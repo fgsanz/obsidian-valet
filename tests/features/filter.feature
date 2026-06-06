@@ -22,3 +22,13 @@ Feature: Filtering notes
     When I filter notes in directory "Dir 2"
     And I filter notes where "tags" "exists and contains" "tag3/subtag3b"
     Then 1 notes match
+
+  Scenario: Filter for notes where a property exists and is not empty
+    Given a fresh copy of the test vault
+    When I filter notes where "time" "exists and is not empty"
+    Then 2 notes match
+
+  Scenario: Filter for notes where a property exists and is empty
+    Given a fresh copy of the test vault
+    When I filter notes where "time" "exists and is empty"
+    Then 2 notes match

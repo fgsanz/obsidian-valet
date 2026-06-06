@@ -12,14 +12,17 @@ Filters can match notes by **property** (frontmatter value) or by **directory** 
 
 ### Property filters
 
-Property filters test frontmatter values. Four operators are available:
+Property filters test frontmatter values. Five operators are available:
 
 - **exists and contains** — match notes where the property IS defined in frontmatter AND the value includes the query (requires a value)
 - **exists and does not contain** — match notes where the property IS defined in frontmatter AND the value does not include the query (requires a value)
-- **exists and is empty** — match notes where the property is defined in frontmatter but has an empty or null value
+- **exists and is empty** — match notes where the property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)
+- **exists and is not empty** — match notes where the property is defined in frontmatter AND its value is not empty (the logical opposite of *exists and is empty*)
 - **does not exist** — match notes where the property is not defined in frontmatter at all
 
 Note: For the first two operators, if the property is not defined in frontmatter, the note does NOT match the criteria.
+
+The **exists and is empty**, **exists and is not empty**, and **does not exist** operators do not take a value — the value input and the case-sensitivity toggle are hidden when one of them is selected.
 
 For **link and link-array** properties with `exists and contains` or `exists and does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively by default.
 
@@ -120,6 +123,13 @@ Rules after the first have a combinator:
 
 AND takes left-to-right precedence. There is no grouping syntax; use separate filter runs for complex logic.
 
-## Null values
+## Presence vs. emptiness
 
-A property that is absent from a note's frontmatter or has a `null` / `~` value is treated as "not present". `contains` and `equals` against a null value return false; `not-contains` and `not-equals` return true.
+These are two independent concepts:
+
+- **Presence** — whether the property name appears in the note's YAML frontmatter at all. A property that is absent is matched only by **does not exist**; a property that appears (with any value, including an empty one) is considered to *exist*.
+- **Emptiness** — for a property that exists, whether it carries a value. A value counts as **empty** when it is `null` (or `~`), a blank string `""`, or an empty array `[]`. Anything else counts as **not empty**.
+
+This same emptiness definition is shared by the bulk operations: for example, *Add value* will only populate a single-value property when it is empty.
+
+Because the value-based operators are named **exists and contains** / **exists and does not contain**, they both require the property to exist first. A property that is absent matches *neither* of them. Among properties that exist, an empty value does not match `exists and contains` but does match `exists and does not contain`.
