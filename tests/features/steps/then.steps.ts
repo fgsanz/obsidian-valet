@@ -33,6 +33,7 @@ function requireResult(world: ValetWorld) {
 // ── Count assertions ──────────────────────────────────────────────────────────
 
 Then('{int} notes match', function (this: ValetWorld, count: number) {
+  this.log(`→ matched: ${this.matched.map((n) => n.title).join(', ') || '(none)'}`)
   assert.equal(
     this.matched.length,
     count,
@@ -44,11 +45,13 @@ Then('{int} notes match', function (this: ValetWorld, count: number) {
 
 Then('{int} notes are changed', function (this: ValetWorld, count: number) {
   const result = requireResult(this)
+  this.log(`→ ${result.succeeded} changed, ${result.failed} skipped`)
   assert.equal(result.succeeded, count, `Expected ${count} changed notes but got ${result.succeeded}`)
 })
 
 Then('{int} notes fail', function (this: ValetWorld, count: number) {
   const result = requireResult(this)
+  this.log(`→ ${result.failed} failed`)
   assert.equal(result.failed, count, `Expected ${count} failed notes but got ${result.failed}`)
 })
 
@@ -58,6 +61,7 @@ Then(
   'note {string} has {string} in {string}',
   async function (this: ValetWorld, title: string, value: string, property: string) {
     const note = await this.reread(title)
+    this.log(`→ ${title}.${property} = ${JSON.stringify(note.frontmatter[property])}`)
     assert.ok(
       propertyContains(note.frontmatter[property], value),
       `Expected note "${title}" to have "${value}" in "${property}", but value was: ${JSON.stringify(
@@ -71,6 +75,7 @@ Then(
   'note {string} no longer has {string} in {string}',
   async function (this: ValetWorld, title: string, value: string, property: string) {
     const note = await this.reread(title)
+    this.log(`→ ${title}.${property} = ${JSON.stringify(note.frontmatter[property])}`)
     assert.ok(
       !propertyContains(note.frontmatter[property], value),
       `Expected note "${title}" to NOT have "${value}" in "${property}", but value was: ${JSON.stringify(
@@ -84,6 +89,7 @@ Then(
   'note {string} has property {string} equal to {string}',
   async function (this: ValetWorld, title: string, property: string, expected: string) {
     const note = await this.reread(title)
+    this.log(`→ ${title}.${property} = ${JSON.stringify(note.frontmatter[property])}`)
     assert.equal(
       String(note.frontmatter[property] ?? ''),
       expected,
@@ -95,9 +101,7 @@ Then(
 Then('the YAML of {string} is still valid', async function (this: ValetWorld, title: string) {
   const note = this.noteByTitle(title)
   const content = await readFile(note.filePath, 'utf-8')
-  assert.notEqual(
-    extractFrontmatter(content),
-    null,
-    `Frontmatter of note "${title}" no longer parses as valid YAML`,
-  )
+  const fm = extractFrontmatter(content)
+  this.log(`→ ${title} frontmatter keys: ${fm ? Object.keys(fm).join(', ') : '(invalid)'}`)
+  assert.notEqual(fm, null, `Frontmatter of note "${title}" no longer parses as valid YAML`)
 })

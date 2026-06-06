@@ -32,10 +32,15 @@ Before(async function (this: ValetWorld) {
 
 /**
  * After each scenario: drop the scan cache and delete the temp copy.
+ * Set KEEP_VAULT=1 to preserve the temp copy for manual inspection instead.
  */
 After(async function (this: ValetWorld) {
   if (this.vault) invalidateCache(this.vault.id)
   if (this.tmpVaultDir) {
-    await rm(this.tmpVaultDir, { recursive: true, force: true })
+    if (process.env.KEEP_VAULT === '1') {
+      console.log(`\n  Vault preserved at: ${this.tmpVaultDir}`)
+    } else {
+      await rm(this.tmpVaultDir, { recursive: true, force: true })
+    }
   }
 })

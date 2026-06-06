@@ -25,6 +25,8 @@ function resolveOperator(phrase: string): PropertyOperator {
 
 function runFilter(world: ValetWorld) {
   world.matched = filterByCriteria(world.notes, world.criteria, world.properties)
+  const titles = world.matched.map((n) => n.title).join(', ') || '(none)'
+  world.log(`→ ${world.matched.length} matched: ${titles}`)
 }
 
 // ── Filter steps ──────────────────────────────────────────────────────────────
@@ -69,6 +71,11 @@ async function applyAndRescan(world: ValetWorld, operation: Operation) {
   world.result = await applyOperation(world.matched, operation, world.properties)
   invalidateCache(world.vault.id)
   await world.scan()
+  const r = world.result
+  world.log(`→ ${r.succeeded} changed, ${r.failed} skipped`)
+  if (r.errors.length) {
+    r.errors.forEach((e) => world.log(`  ✗ ${e.filePath}: ${e.error}`))
+  }
 }
 
 When(

@@ -11,27 +11,62 @@ Obsidian Valet has a BDD test suite driven by [Cucumber.js](https://cucumber.io/
 
 # Running the suite
 
+Cucumber picks up [`cucumber.mjs`](../cucumber.mjs) automatically and runs every `.feature` file under `tests/features/`.
+
+## `npm test` — fast mode
+
+The default. Use this during normal development to get a quick pass/fail signal.
+
 ```bash
 npm test
 ```
 
-Cucumber picks up [`cucumber.mjs`](../cucumber.mjs) automatically and runs every `.feature` file under `tests/features/`.
-
-
-# Reading the results
-
-Output has two layers:
-
-- A live **progress bar** as steps execute (`.` = passed, `F` = failed)
-- A **summary** at the end with scenario/step counts and the full diff of any failure
-
-A failure looks like:
+Output is a compact progress bar (`.` per passing step, `F` per failure) followed by a summary. On failure the full assertion diff is printed:
 
 ```
 AssertionError: Expected 2 matching notes but got 3: Alpha, Beta, Gamma
   at Then(2 notes match) in then.steps.ts:36
   in Scenario: Filter by a link property  (filter.feature:5)
 ```
+
+## `npm run test:verbose` — step-by-step evidence
+
+Use this to verify that a passing test is actually doing what you think, or to understand why a test is failing. Every step is printed with a ✔ or ✗, and underneath each step the suite logs what it observed: which notes matched, what property values were read from disk, how many notes were changed.
+
+```bash
+npm run test:verbose
+```
+
+Example output for one scenario:
+
+```
+  Scenario: Remove a parent link from all matching notes
+    ✔ Given a fresh copy of the test vault
+    ✔ When I filter notes where "parent" "contains" "[[Note X]]"
+          → 2 matched: Note A, Note D
+    ✔ And I apply delete-value on property "parent" with value "[[Note X]]"
+          → 2 changed, 0 skipped
+    ✔ And note "Note A" no longer has "[[Note X]]" in "parent"
+          → Note A.parent = ["[[Note Y|Y notes]]","[[Note Z#H1 title|Read more about Note Z]]"]
+    ✔ And the YAML of "Note A" is still valid
+          → Note A frontmatter keys: raw, data, body
+```
+
+## `npm run test:keep` — inspect the vault files
+
+Use this when you want to open the modified notes directly and read the raw YAML, for example to verify that a complex frontmatter transformation produced exactly the right output.
+
+```bash
+npm run test:keep
+```
+
+Same as verbose mode, but instead of deleting the temporary vault copy after each scenario, the path is printed so you can open the files in any text editor or in Obsidian:
+
+```
+  Vault preserved at: /var/folders/.../ov-test-a3f9c2/
+```
+
+The temporary directories are not cleaned up automatically when using this mode. Delete them manually when done.
 
 
 # File layout
@@ -54,7 +89,7 @@ tests/
     └── vault-schema.ts        ← property type definitions for the test vault
 ```
 
-Each scenario automatically gets a **fresh throwaway copy** of the test vault in the OS temp directory. The committed fixture is never modified. You don't manage setup or teardown.
+The vault is copied once **per scenario** — not once per feature file. Every test case gets its own independent directory in the OS temp folder, created just before the scenario runs and deleted immediately after. This means two scenarios in the same feature file can both modify the same note without interfering with each other, because they are each working on a separate copy. The committed fixture in `tests/fixtures/test-vault/` is never modified.
 
 
 
