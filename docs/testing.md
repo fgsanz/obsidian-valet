@@ -121,9 +121,9 @@ Feature: Your feature description
 
 | Step | Purpose |
 |---|---|
-| `When I filter notes where "prop" "contains" "value"` | Property rule with a value |
-| `When I filter notes where "prop" "does not contain" "value"` | Exclusion rule |
-| `When I filter notes where "prop" "is empty"` | Property exists but has no value |
+| `When I filter notes where "prop" "exists and contains" "value"` | Property rule with a value |
+| `When I filter notes where "prop" "exists and does not contain" "value"` | Exclusion rule |
+| `When I filter notes where "prop" "exists and is empty"` | Property exists but has no value |
 | `When I filter notes where "prop" "does not exist"` | Property is absent entirely |
 | `When I filter notes in directory "Projects"` | Location rule |
 
@@ -133,10 +133,10 @@ Multiple `When`/`And` filter steps combine with AND logic.
 
 | Step | Purpose |
 |---|---|
-| `When I apply delete-value on property "p" with value "v"` | Remove a value |
-| `When I apply add-value on property "p" with value "v"` | Append a value |
-| `When I apply replace on property "p" from "old" to "new"` | Replace a value |
-| `When I apply move on value "v" from property "a" to property "b"` | Move a value between properties |
+| `When I apply delete value on property "p" with value to delete "v"` | Remove a value |
+| `When I apply add value on property "p" with value to add "v"` | Append a value |
+| `When I apply replace value on property "p" current value "old" new value "new"` | Replace a value |
+| `When I apply move value from property "a" to property "b" value to move "v"` | Move a value between properties |
 
 #### Then — counts
 

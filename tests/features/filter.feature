@@ -4,7 +4,7 @@ Feature: Filtering notes
 
   Scenario: Filter by a tag value
     Given a fresh copy of the test vault
-    When I filter notes where "tags" "contains" "tag1"
+    When I filter notes where "tags" "exists and contains" "tag1"
     Then 4 notes match
 
   Scenario: Filter by directory
@@ -20,5 +20,5 @@ Feature: Filtering notes
   Scenario: Combine a directory and a property rule
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 2"
-    And I filter notes where "tags" "contains" "tag3/subtag3b"
+    And I filter notes where "tags" "exists and contains" "tag3/subtag3b"
     Then 1 notes match

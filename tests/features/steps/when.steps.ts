@@ -7,9 +7,9 @@ import type { ValetWorld } from '../../support/world'
 
 /** Map the natural-language operator phrase used in features to a PropertyOperator. */
 const PROPERTY_OPERATORS: Record<string, PropertyOperator> = {
-  contains: 'contains',
-  'does not contain': 'not-contains',
-  'is empty': 'exists-and-empty',
+  'exists and contains': 'contains',
+  'exists and does not contain': 'not-contains',
+  'exists and is empty': 'exists-and-empty',
   'does not exist': 'does-not-exist',
 }
 
@@ -79,29 +79,29 @@ async function applyAndRescan(world: ValetWorld, operation: Operation) {
 }
 
 When(
-  'I apply delete-value on property {string} with value {string}',
+  'I apply delete value on property {string} with value to delete {string}',
   async function (this: ValetWorld, property: string, value: string) {
     await applyAndRescan(this, { type: 'delete-value', property, value })
   },
 )
 
 When(
-  'I apply add-value on property {string} with value {string}',
+  'I apply add value on property {string} with value to add {string}',
   async function (this: ValetWorld, property: string, value: string) {
     await applyAndRescan(this, { type: 'add-value', property, value })
   },
 )
 
 When(
-  'I apply replace on property {string} from {string} to {string}',
+  'I apply replace value on property {string} current value {string} new value {string}',
   async function (this: ValetWorld, property: string, oldValue: string, newValue: string) {
     await applyAndRescan(this, { type: 'replace', property, oldValue, newValue })
   },
 )
 
 When(
-  'I apply move on value {string} from property {string} to property {string}',
-  async function (this: ValetWorld, value: string, fromProperty: string, toProperty: string) {
+  'I apply move value from property {string} to property {string} value to move {string}',
+  async function (this: ValetWorld, fromProperty: string, toProperty: string, value: string) {
     await applyAndRescan(this, { type: 'move-value', fromProperty, toProperty, value })
   },
 )
