@@ -1,8 +1,9 @@
 import type { ParsedNote, FilterRule, PropertyDef, PropertyType, LocationRule, PropertyRule, FilterCriteria } from '@shared/types'
 import { normalizeLinkTarget, isEmptyPropertyValue } from './frontmatter'
+import { resolvePropertyType } from '@shared/properties'
 
 function getPropertyType(property: string, defs: PropertyDef[]): PropertyType {
-  return defs.find((d) => d.name === property)?.type ?? 'text'
+  return resolvePropertyType(property, defs)
 }
 
 function parseISOWeek(weekLink: string): Date | null {

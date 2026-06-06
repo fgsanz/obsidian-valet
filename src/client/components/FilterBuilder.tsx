@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
 import { SIMPLE_PROPERTY_OPERATORS, operatorNeedsValue, getValuePlaceholder } from '../lib/operators'
+import { resolvePropertyType } from '@shared/properties'
 import Selector from './Selector'
 import Tooltip from './Tooltip'
 import styles from './FilterBuilder.module.css'
@@ -18,8 +19,7 @@ interface Props {
 
 function isValidPropertyRule(rule: PropertyRule, defs: PropertyDef[]): boolean {
   if (!rule.property) return false
-  const def = defs.find((d) => d.name === rule.property)
-  const type = def?.type ?? 'text'
+  const type = resolvePropertyType(rule.property, defs)
   if (!operatorNeedsValue(rule.operator)) return true
   const isLink = type === 'link' || type === 'link-array'
   if (isLink && rule.value) {
@@ -175,8 +175,7 @@ export default function FilterBuilder({
         <div className={styles.sectionTitle}>Properties</div>
         <div className={styles.rules}>
           {criteria.properties.map((rule, idx) => {
-            const def = properties.find((d) => d.name === rule.property)
-            const type = def?.type ?? 'text'
+            const type = resolvePropertyType(rule.property, properties)
             const isLink = type === 'link' || type === 'link-array'
 
             return (

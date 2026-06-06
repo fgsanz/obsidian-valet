@@ -1,4 +1,5 @@
-import type { PropertyType, FilterOperator, PropertyOperator } from '@shared/types'
+import type { PropertyType, PropertyDef, FilterOperator, PropertyOperator } from '@shared/types'
+import { resolvePropertyType } from '@shared/properties'
 
 export interface OperatorOption {
   value: FilterOperator
@@ -94,8 +95,8 @@ export function operatorNeedsValue(operator: PropertyOperator): boolean {
   return !VALUELESS_PROPERTY_OPERATORS.includes(operator)
 }
 
-export function getPropertyType(property: string, defs: { name: string; type: PropertyType }[]): PropertyType {
-  return defs.find((d) => d.name === property)?.type ?? 'text'
+export function getPropertyType(property: string, defs: PropertyDef[]): PropertyType {
+  return resolvePropertyType(property, defs)
 }
 
 const LINK_PLACEHOLDER = 'e.g., [[note name]]'
