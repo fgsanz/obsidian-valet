@@ -34,6 +34,7 @@ export type PropertyOperator =
   | 'not-contains'
   | 'exists-and-empty'
   | 'exists-and-not-empty'
+  | 'exists'
   | 'does-not-exist'
 
 export interface LocationRule {

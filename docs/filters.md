@@ -12,12 +12,13 @@ Filters can match notes by **property** (frontmatter value) or by **directory** 
 
 ### Property filters
 
-Property filters test frontmatter values. Five operators are available:
+Property filters test frontmatter values. Six operators are available:
 
 - **exists and contains** — match notes where the property IS defined in frontmatter AND the value includes the query (requires a value)
 - **exists and does not contain** — match notes where the property IS defined in frontmatter AND the value does not include the query (requires a value)
 - **exists and is empty** — match notes where the property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)
 - **exists and is not empty** — match notes where the property is defined in frontmatter AND its value is not empty (the logical opposite of *exists and is empty*)
+- **exists** — match notes where the property is defined in frontmatter, regardless of whether it has a value (the logical opposite of *does not exist*). This is the union of *exists and is empty* and *exists and is not empty*.
 - **does not exist** — match notes where the property is not defined in frontmatter at all
 
 Note: For the first two operators, if the property is not defined in frontmatter, the note does NOT match the criteria.
@@ -127,7 +128,7 @@ AND takes left-to-right precedence. There is no grouping syntax; use separate fi
 
 These are two independent concepts:
 
-- **Presence** — whether the property name appears in the note's YAML frontmatter at all. A property that is absent is matched only by **does not exist**; a property that appears (with any value, including an empty one) is considered to *exist*.
+- **Presence** — whether the property name appears in the note's YAML frontmatter at all. A property that is absent is matched only by **does not exist**; a property that appears (with any value, including an empty one) is matched by **exists**.
 - **Emptiness** — for a property that exists, whether it carries a value. A value counts as **empty** when it is `null` (or `~`), a blank string `""`, or an empty array `[]`. Anything else counts as **not empty**.
 
 This same emptiness definition is shared by the bulk operations: for example, *Add value* will only populate a single-value property when it is empty.

@@ -40,6 +40,7 @@ export const propertyRuleSchema = z.object({
     'not-contains',
     'exists-and-empty',
     'exists-and-not-empty',
+    'exists',
     'does-not-exist',
   ]),
   value: z.string().optional(),

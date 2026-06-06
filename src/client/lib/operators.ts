@@ -78,6 +78,7 @@ export const SIMPLE_PROPERTY_OPERATORS: PropertyOperatorOption[] = [
   { value: 'not-contains', label: 'exists and does not contain' },
   { value: 'exists-and-empty', label: 'exists and is empty' },
   { value: 'exists-and-not-empty', label: 'exists and is not empty' },
+  { value: 'exists', label: 'exists' },
   { value: 'does-not-exist', label: 'does not exist' },
 ]
 
@@ -85,6 +86,7 @@ export const SIMPLE_PROPERTY_OPERATORS: PropertyOperatorOption[] = [
 export const VALUELESS_PROPERTY_OPERATORS: PropertyOperator[] = [
   'exists-and-empty',
   'exists-and-not-empty',
+  'exists',
   'does-not-exist',
 ]
 

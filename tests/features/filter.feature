@@ -30,6 +30,11 @@ Feature: Filtering notes
     When I filter notes where "parent" "does not exist"
     Then 6 notes match
 
+  Scenario: Filter for notes where a property exists
+    Given a fresh copy of the test vault
+    When I filter notes where "related" "exists"
+    Then 4 notes match
+
   Scenario: Combine a directory and a property rule
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 2"

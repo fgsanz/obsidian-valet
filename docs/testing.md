@@ -125,6 +125,7 @@ Feature: Your feature description
 | `When I filter notes where "prop" "exists and does not contain" "value"` | Exclusion rule |
 | `When I filter notes where "prop" "exists and is empty"` | Property exists but has no value |
 | `When I filter notes where "prop" "exists and is not empty"` | Property exists and has a value |
+| `When I filter notes where "prop" "exists"` | Property is defined, with or without a value |
 | `When I filter notes where "prop" "does not exist"` | Property is absent entirely |
 | `When I filter notes in directory "Dir 1"` | Location rule (shorthand for *directory is*) |
 | `When I filter notes where directory "is" "Dir 1"` | First location rule (the *Where* row — no combinator) |

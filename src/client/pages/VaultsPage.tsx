@@ -318,7 +318,7 @@ export default function VaultsPage() {
                           onClick={() => discoverMutation.mutate(vault.id)}
                           disabled={discoverMutation.isPending && discoverMutation.variables === vault.id}
                         >
-                          <RefreshCw size={14} style={{ marginRight: '4px' }} />
+                          <RefreshCw size={14} />
                           {discoverMutation.isPending && discoverMutation.variables === vault.id
                             ? 'Scanning…'
                             : 'Refresh properties'}

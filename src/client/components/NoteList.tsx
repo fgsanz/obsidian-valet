@@ -23,6 +23,9 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
   const [sortColumn, setSortColumn] = useState<SortColumn>(result ? 'result' : 'location')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
+  // The same property can appear in several filter rules; show it only once per note.
+  const uniqueProperties = [...new Set(highlightProperties)]
+
   if (notes.length === 0) {
     return <p className={styles.empty}>No notes matched the filter.</p>
   }
@@ -71,14 +74,14 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
       bVal = bDirname.toLowerCase()
     } else {
       // Sort by property info: concatenate all highlighted properties
-      const aPropStr = highlightProperties
+      const aPropStr = uniqueProperties
         .map((prop) => {
           const val = a.frontmatter[prop]
           return val == null ? '' : String(val)
         })
         .join(' ')
         .toLowerCase()
-      const bPropStr = highlightProperties
+      const bPropStr = uniqueProperties
         .map((prop) => {
           const val = b.frontmatter[prop]
           return val == null ? '' : String(val)
@@ -156,9 +159,9 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
                 <td className={styles.colName}>{note.title}</td>
                 <td className={styles.colLocation}>{dirname}</td>
                 <td className={styles.colProps}>
-                  {highlightProperties.length > 0 ? (
+                  {uniqueProperties.length > 0 ? (
                     <div className={styles.propsList}>
-                      {highlightProperties.map((prop) => {
+                      {uniqueProperties.map((prop) => {
                         const val = note.frontmatter[prop]
                         if (val == null && !Object.hasOwn(note.frontmatter, prop)) return null
                         return (

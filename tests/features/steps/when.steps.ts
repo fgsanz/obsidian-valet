@@ -11,6 +11,7 @@ const PROPERTY_OPERATORS: Record<string, PropertyOperator> = {
   'exists and does not contain': 'not-contains',
   'exists and is empty': 'exists-and-empty',
   'exists and is not empty': 'exists-and-not-empty',
+  exists: 'exists',
   'does not exist': 'does-not-exist',
 }
 

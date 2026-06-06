@@ -232,6 +232,10 @@ function locationRulesList(
 function noteMatchesPropertyRule(note: ParsedNote, rule: PropertyRule, defs: PropertyDef[]): boolean {
   const hasProperty = Object.hasOwn(note.frontmatter, rule.property)
 
+  if (rule.operator === 'exists') {
+    return hasProperty
+  }
+
   if (rule.operator === 'does-not-exist') {
     return !hasProperty
   }
