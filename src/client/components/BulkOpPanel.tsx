@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
+import Selector from './Selector'
+import { getValuePlaceholder } from '../lib/operators'
+import { resolvePropertyType } from '@shared/properties'
 import styles from './BulkOpPanel.module.css'
 
 interface Props {
@@ -34,8 +37,10 @@ export default function BulkOpPanel({
   const [fromProperty, setFromProperty] = useState(suggestedProperty)
   const [toProperty, setToProperty] = useState('')
 
-  const propList = properties.map((p) => p.name)
-  const propListId = 'op-prop-list'
+  const propertyNames = properties.map((p) => p.name).sort((a, b) => a.localeCompare(b))
+
+  const valuePlaceholder = (propName: string) =>
+    getValuePlaceholder(resolvePropertyType(propName, properties))
 
   function getPropertyType(propName: string): PropertyType | undefined {
     return properties.find((p) => p.name === propName)?.type
@@ -79,12 +84,6 @@ export default function BulkOpPanel({
 
   return (
     <div className={styles.panel}>
-      <datalist id={propListId}>
-        {propList.map((p) => (
-          <option key={p} value={p} />
-        ))}
-      </datalist>
-
       <div className={styles.typeRow}>
         {(['delete-value', 'replace', 'move-value', 'add-value'] as OpType[]).map((t) => (
           <button
@@ -103,11 +102,11 @@ export default function BulkOpPanel({
           <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>Property</label>
-              <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
+              <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>Value to delete</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
+              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
             </div>
           </div>
         )}
@@ -116,15 +115,15 @@ export default function BulkOpPanel({
           <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>Property</label>
-              <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
+              <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>Current value</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Old Note]]" />
+              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
             </div>
             <div className={styles.field}>
               <label>New value</label>
-              <input value={newValue} onChange={(e) => setNewValue(e.target.value)} placeholder="[[New Note]]" />
+              <input value={newValue} onChange={(e) => setNewValue(e.target.value)} placeholder={valuePlaceholder(property)} />
             </div>
           </div>
         )}
@@ -133,15 +132,15 @@ export default function BulkOpPanel({
           <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>From property</label>
-              <input list={propListId} value={fromProperty} onChange={(e) => setFromProperty(e.target.value)} placeholder="parent" />
+              <Selector value={fromProperty} onChange={setFromProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>To property</label>
-              <input list={propListId} value={toProperty} onChange={(e) => setToProperty(e.target.value)} placeholder="related" />
+              <Selector value={toProperty} onChange={setToProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>Value to move</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
+              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(fromProperty)} />
             </div>
           </div>
         )}
@@ -151,11 +150,11 @@ export default function BulkOpPanel({
             <div className={styles.fieldRow}>
               <div className={styles.field}>
                 <label>Property</label>
-                <input list={propListId} value={property} onChange={(e) => setProperty(e.target.value)} placeholder="parent" />
+                <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
               </div>
               <div className={styles.field}>
                 <label>Value to add</label>
-                <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="[[Note Name]]" />
+                <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
               </div>
             </div>
             {property && !allowsMultipleValues(getPropertyType(property) || 'text') && matchedNotes.some((n) => n.frontmatter[property] != null) && (
