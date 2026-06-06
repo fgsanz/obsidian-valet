@@ -112,7 +112,8 @@ export default function Selector({
               e.preventDefault()
               onChange('')
               setClearHover(false)
-              inputRef.current?.focus()
+              setOpen(false)
+              inputRef.current?.blur()
             }}
           >
             <X size={14} />

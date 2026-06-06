@@ -98,7 +98,7 @@ export default function FilterBuilder({
     onChange(next)
   }
 
-  const propertyNames = properties.map((p) => p.name)
+  const propertyNames = properties.map((p) => p.name).sort((a, b) => a.localeCompare(b))
 
   return (
     <div className={styles.builder}>

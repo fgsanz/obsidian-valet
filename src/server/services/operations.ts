@@ -21,6 +21,8 @@ function isMultiValueType(type: PropertyType): boolean {
 
 /** Resolve a property's type from the declared schema, falling back to inference. */
 function resolveType(property: string, defs: PropertyDef[], currentValue: unknown): PropertyType {
+  // `tags` is always a tag-array (built-in Obsidian property) regardless of stored config.
+  if (property === 'tags') return 'tag-array'
   const def = defs.find((d) => d.name === property)
   return def ? def.type : inferType(property, currentValue)
 }
