@@ -10,11 +10,44 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-6) var(--space-1) var(--space-2);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
   outline: none;
-  transition: border-color 0.12s;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.inputClearHover {
+  border-color: var(--color-error);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* Tooltip trigger wrapper — positions the clear button over the input's right edge so the
+   tooltip is measured from (and centered under) the icon. */
+.clearBtn {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearBtnButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-subtle);
+  transition: color 0.12s;
+}
+
+.clearBtnButton:hover {
+  color: var(--color-error);
 }
 
 .input::placeholder {

@@ -12,7 +12,8 @@
       "Bash(npx vite *)",
       "Bash(node -e ' *)",
       "Bash(node --import tsx -e ' *)",
-      "Bash(grep -A 8 \"where a property exists$\")"
+      "Bash(grep -A 8 \"where a property exists$\")",
+      "Bash(git mv *)"
     ],
     "additionalDirectories": [
       "/Users/fgs/.config/obsidian-valet"

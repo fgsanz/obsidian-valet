@@ -97,3 +97,22 @@ export function operatorNeedsValue(operator: PropertyOperator): boolean {
 export function getPropertyType(property: string, defs: { name: string; type: PropertyType }[]): PropertyType {
   return defs.find((d) => d.name === property)?.type ?? 'text'
 }
+
+const LINK_PLACEHOLDER = 'e.g., [[note name]]'
+
+/** Example placeholder text for a property rule's value field, by property type. */
+const VALUE_PLACEHOLDERS: Record<PropertyType, string> = {
+  text: 'e.g., value',
+  'text-array': 'e.g., value',
+  number: 'e.g., 42',
+  boolean: 'e.g., true',
+  date: 'e.g., 2026-01-01',
+  'week-link': 'e.g., [[2026-W08]]',
+  'tag-array': 'e.g., tag/subtag',
+  link: LINK_PLACEHOLDER,
+  'link-array': LINK_PLACEHOLDER,
+}
+
+export function getValuePlaceholder(type: PropertyType): string {
+  return VALUE_PLACEHOLDERS[type]
+}

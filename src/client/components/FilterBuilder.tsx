@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import type { LocationRule, PropertyRule, FilterCriteria, PropertyDef } from '@shared/types'
-import { SIMPLE_PROPERTY_OPERATORS, operatorNeedsValue } from '../lib/operators'
-import DirSelect from './DirSelect'
+import { SIMPLE_PROPERTY_OPERATORS, operatorNeedsValue, getValuePlaceholder } from '../lib/operators'
+import Selector from './Selector'
 import Tooltip from './Tooltip'
 import styles from './FilterBuilder.module.css'
 
@@ -15,7 +15,6 @@ interface Props {
   dirs: string[]
 }
 
-const propListId = 'prop-autocomplete'
 
 function isValidPropertyRule(rule: PropertyRule, defs: PropertyDef[]): boolean {
   if (!rule.property) return false
@@ -99,14 +98,10 @@ export default function FilterBuilder({
     onChange(next)
   }
 
+  const propertyNames = properties.map((p) => p.name)
+
   return (
     <div className={styles.builder}>
-      <datalist id={propListId}>
-        {properties.map((p) => (
-          <option key={p.name} value={p.name} />
-        ))}
-      </datalist>
-
       {/* ── Location Section ─────────────────────────────────────────── */}
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Location</div>
@@ -129,7 +124,7 @@ export default function FilterBuilder({
               )}
 
               <select
-                className={styles.operatorSelect}
+                className={`${styles.operatorSelect} ${styles.locationOperatorSelect}`}
                 value={rule.operator}
                 onChange={(e) =>
                   updateLocationRule(idx, {
@@ -143,11 +138,12 @@ export default function FilterBuilder({
               </select>
 
               {rule.operator !== 'all-directories' && (
-                <DirSelect
+                <Selector
                   value={rule.directory ?? ''}
                   onChange={(v) => updateLocationRule(idx, { directory: v })}
-                  dirs={dirs}
+                  options={dirs}
                   placeholder="select directory"
+                  emptyMessage="No matching directory"
                 />
               )}
 
@@ -200,12 +196,13 @@ export default function FilterBuilder({
                   </select>
                 )}
 
-                <input
-                  className={styles.propInput}
-                  list={propListId}
+                <Selector
                   value={rule.property}
-                  onChange={(e) => updatePropertyRule(idx, { property: e.target.value })}
-                  placeholder="property"
+                  onChange={(v) => updatePropertyRule(idx, { property: v })}
+                  options={propertyNames}
+                  placeholder="select property"
+                  emptyMessage="No matching property"
+                  width="var(--rule-control-width)"
                 />
 
                 <select
@@ -241,7 +238,7 @@ export default function FilterBuilder({
                         setInvalidRuleIdx(null)
                       }
                     }}
-                    placeholder={isLink ? '[[Note Name]]' : 'value'}
+                    placeholder={getValuePlaceholder(type)}
                   />
                 )}
 

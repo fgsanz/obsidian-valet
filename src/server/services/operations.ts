@@ -36,8 +36,10 @@ function isValidValueForType(value: string, type: PropertyType): boolean {
   switch (type) {
     case 'text':
     case 'text-array':
-    case 'tag-array':
       return true
+    case 'tag-array':
+      // A tag is an alphanumeric string, or several joined by "/" (e.g. tag or tag/subtag).
+      return /^[A-Za-z0-9]+(\/[A-Za-z0-9]+)*$/.test(v)
     case 'number':
       return !Number.isNaN(Number(v))
     case 'boolean':

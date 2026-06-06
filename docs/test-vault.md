@@ -16,7 +16,7 @@ The notes are designed to exercise as many property types, value formats, and ed
 
 | Name            | Type       |
 | --------------- | ---------- |
-| tags            | text-array |
+| tags            | tag-array  |
 | aliases         | text-array |
 | date            | date       |
 | week            | week-link  |
@@ -25,6 +25,8 @@ The notes are designed to exercise as many property types, value formats, and ed
 | number headings | text       |
 | parent          | link-array |
 | related         | link-array |
+
+`tags` is a built-in Obsidian property and is always treated as a **tag-array**, even though its values are stored in frontmatter without a leading `#`. Each tag is an alphanumeric string, optionally with `/`-separated segments (e.g. `tag` or `tag/subtag`).
 
 
 
@@ -35,12 +37,12 @@ The notes are designed to exercise as many property types, value formats, and ed
 - In notes {A,B,C} the YAML format is collapsed
 - In notes {D,E,F} the YAML format is expanded
 - Two notes with extreme corner cases: {no frontmatter,empty frontmatter}
-- Different property types are exercised: {text, text-array, link-array, date, boolean, week-link}
+- Different property types are exercised: {text, text-array, tag-array, link-array, date, boolean, week-link}
 - Different property scenarios are exercised: {define with value, define and empty, undefined}
 - Within the values, different link values are exercised: {name with spaces, name + alias, name + chapter + alias}
 - Within the values, different boolean values are exercised: {true, false, undefined}
 
-| Path                          | Filename             | YAML        | YAML format | tags (text-array)                      | aliases (text-array) | date (date) | week (week-link) | time (text) | read (boolean) | number headings (text)                         | parent (link-array)                                                                    | related (link-array)                            |
+| Path                          | Filename             | YAML        | YAML format | tags (tag-array)                       | aliases (text-array) | date (date) | week (week-link) | time (text) | read (boolean) | number headings (text)                         | parent (link-array)                                                                    | related (link-array)                            |
 | ----------------------------- | -------------------- | ----------- | ----------- | -------------------------------------- | -------------------- | ----------- | ---------------- | ----------- | -------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | Dir 1                         | Note A               | yes         | Collapsed   | `#tag1`<br>`#tag2`<br>`#tag3/subtag3a` | `alias 1`, `alias 2` | 2025-12-31  | `"[[2025-W52]]"` | 13:40       | true           | auto, first-level 1, max 3, contents ^toc, 1.1 | `["[[Note X]]", "[[Note Y\|Y notes]]", "[[Note Z#H1 title\|Read more about Note Z]]"]` | `["[[Topic A]]", "[[Topic B]]", "[[Topic C]]"]` |
 | Dir 1/Subdir 1.1              | Note B               | yes         | Collapsed   | `#tag1`<br>`#tag3/subtag3b`            | `alias 1`, `alias 3` | 2026-01-01  | `"[[2026-W01]]"` | (empty)     | false          | (empty)                                        | (undefined)                                                                            | (empty)                                         |

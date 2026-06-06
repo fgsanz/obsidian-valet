@@ -26,6 +26,10 @@ export function extractFrontmatter(content: string): {
 }
 
 export function inferType(key: string, value: unknown): PropertyType {
+  // `tags` is a built-in Obsidian property and is always an array of tags, regardless of how
+  // the values happen to be written (Obsidian stores them in frontmatter without a leading #).
+  if (key === 'tags') return 'tag-array'
+
   if (Array.isArray(value)) {
     const first = value[0]
     if (typeof first === 'string') {

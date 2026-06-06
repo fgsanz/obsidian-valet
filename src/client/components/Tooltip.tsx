@@ -4,9 +4,11 @@ import styles from './Tooltip.module.css'
 interface Props {
   content: string
   children: React.ReactNode
+  /** Optional class for the trigger wrapper (e.g. to position it). */
+  className?: string
 }
 
-export default function Tooltip({ content, children }: Props) {
+export default function Tooltip({ content, children, className }: Props) {
   const [show, setShow] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -39,7 +41,7 @@ export default function Tooltip({ content, children }: Props) {
 
   return (
     <>
-      <div ref={triggerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div ref={triggerRef} className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {children}
       </div>
       {show && (

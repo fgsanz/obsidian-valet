@@ -1,23 +1,39 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
-import styles from './DirSelect.module.css'
+import { X } from 'lucide-react'
+import Tooltip from './Tooltip'
+import styles from './Selector.module.css'
 
 interface Props {
   value: string
   onChange: (value: string) => void
-  dirs: string[]
+  /** The suggestions shown in the dropdown. The user may still type a value not in this list. */
+  options: string[]
   placeholder?: string
   disabled?: boolean
+  /** Message shown when nothing in `options` matches the typed text. */
+  emptyMessage?: string
+  /** Optional fixed width (e.g. a CSS length). When omitted the field grows to fill its row. */
+  width?: string
 }
 
-export default function DirSelect({ value, onChange, dirs, placeholder = 'directory', disabled }: Props) {
+export default function Selector({
+  value,
+  onChange,
+  options,
+  placeholder = '',
+  disabled,
+  emptyMessage = 'No matches',
+  width,
+}: Props) {
   const [open, setOpen] = useState(false)
   const [focusedIdx, setFocusedIdx] = useState(-1)
+  const [clearHover, setClearHover] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const filtered = value.trim()
-    ? dirs.filter((d) => d.toLowerCase().includes(value.trim().toLowerCase()))
-    : dirs
+    ? options.filter((d) => d.toLowerCase().includes(value.trim().toLowerCase()))
+    : options
 
   function handleChange(v: string) {
     onChange(v)
@@ -25,8 +41,8 @@ export default function DirSelect({ value, onChange, dirs, placeholder = 'direct
     setFocusedIdx(-1)
   }
 
-  function select(dir: string) {
-    onChange(dir)
+  function select(option: string) {
+    onChange(option)
     setOpen(false)
     setFocusedIdx(-1)
   }
@@ -72,10 +88,10 @@ export default function DirSelect({ value, onChange, dirs, placeholder = 'direct
   }, [])
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={width ? { flex: 'none', width } : undefined}>
       <input
         ref={inputRef}
-        className={styles.input}
+        className={`${styles.input} ${clearHover ? styles.inputClearHover : ''}`}
         value={value}
         placeholder={placeholder}
         disabled={disabled}
@@ -84,20 +100,39 @@ export default function DirSelect({ value, onChange, dirs, placeholder = 'direct
         onFocus={() => setOpen(true)}
         onKeyDown={handleKey}
       />
+      {value && !disabled && (
+        <Tooltip content="Clear" className={styles.clearBtn}>
+          <button
+            type="button"
+            className={styles.clearBtnButton}
+            aria-label="Clear selection"
+            onMouseEnter={() => setClearHover(true)}
+            onMouseLeave={() => setClearHover(false)}
+            onPointerDown={(e) => {
+              e.preventDefault()
+              onChange('')
+              setClearHover(false)
+              inputRef.current?.focus()
+            }}
+          >
+            <X size={14} />
+          </button>
+        </Tooltip>
+      )}
       {open && !disabled && (
         <div className={styles.dropdown} ref={dropdownRef}>
           {filtered.length > 0 ? (
-            filtered.map((dir, idx) => (
+            filtered.map((option, idx) => (
               <div
-                key={dir}
+                key={option}
                 className={`${styles.option} ${idx === focusedIdx ? styles.focused : ''}`}
-                onPointerDown={(e) => { e.preventDefault(); select(dir) }}
+                onPointerDown={(e) => { e.preventDefault(); select(option) }}
               >
-                {dir}
+                {option}
               </div>
             ))
           ) : (
-            <div className={styles.empty}>No matching directory</div>
+            <div className={styles.empty}>{emptyMessage}</div>
           )}
         </div>
       )}

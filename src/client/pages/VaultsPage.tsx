@@ -4,7 +4,7 @@ import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus } fro
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
 import Tooltip from '../components/Tooltip'
-import DirSelect from '../components/DirSelect'
+import Selector from '../components/Selector'
 import styles from './VaultsPage.module.css'
 
 export default function VaultsPage() {
@@ -270,7 +270,7 @@ export default function VaultsPage() {
                         ))}
                       </div>
                       <div className={styles.dirSelectWrapper}>
-                        <DirSelect
+                        <Selector
                           value={dirInputs[vault.id] ?? ''}
                           onChange={(value) => {
                             const availableDirs = (vaultDirs[vault.id] ?? []).filter(
@@ -282,10 +282,11 @@ export default function VaultsPage() {
                               setDirInputs((prev) => ({ ...prev, [vault.id]: value }))
                             }
                           }}
-                          dirs={(vaultDirs[vault.id] ?? []).filter(
+                          options={(vaultDirs[vault.id] ?? []).filter(
                             (d) => !isForbiddenOrChild(d, vault.forbiddenDirs),
                           )}
                           placeholder="Add directory..."
+                          emptyMessage="No matching directory"
                         />
                       </div>
                     </div>
