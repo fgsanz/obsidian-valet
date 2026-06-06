@@ -27,3 +27,10 @@ Feature: Delete value operation
     Then 2 notes are changed
     And note "Note A" has "number headings" empty
     And note "Note D" has "number headings" empty
+
+  Scenario: Deleting a value that does not exist
+    Given a fresh copy of the test vault
+    And I filter notes where "aliases" "exists and contains" "alias 1"
+    And 6 notes match
+    And I apply delete value on property "aliases" with value to delete "alias X"
+    Then 0 notes are changed

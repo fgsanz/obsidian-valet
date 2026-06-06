@@ -85,21 +85,35 @@ Then(
   },
 )
 
+function assertPropertyEmpty(value: unknown, title: string, property: string) {
+  const isEmpty =
+    value === null ||
+    value === undefined ||
+    value === '' ||
+    (Array.isArray(value) && value.length === 0)
+  assert.ok(
+    isEmpty,
+    `Expected note "${title}" property "${property}" to be empty, but was: ${JSON.stringify(value)}`,
+  )
+}
+
 Then(
   'note {string} has {string} empty',
   async function (this: ValetWorld, title: string, property: string) {
     const note = await this.reread(title)
     const value = note.frontmatter[property]
     this.log(`→ ${title}.${property} = ${JSON.stringify(value)}`)
-    const isEmpty =
-      value === null ||
-      value === undefined ||
-      value === '' ||
-      (Array.isArray(value) && value.length === 0)
-    assert.ok(
-      isEmpty,
-      `Expected note "${title}" property "${property}" to be empty, but was: ${JSON.stringify(value)}`,
-    )
+    assertPropertyEmpty(value, title, property)
+  },
+)
+
+Then(
+  'note {string} has property {string} and it is empty',
+  async function (this: ValetWorld, title: string, property: string) {
+    const note = await this.reread(title)
+    const value = note.frontmatter[property]
+    this.log(`→ ${title}.${property} = ${JSON.stringify(value)}`)
+    assertPropertyEmpty(value, title, property)
   },
 )
 
