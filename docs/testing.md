@@ -24,9 +24,9 @@ npm test
 Output is a compact progress bar (`.` per passing step, `F` per failure) followed by a summary. On failure the full assertion diff is printed:
 
 ```
-AssertionError: Expected 2 matching notes but got 3: Alpha, Beta, Gamma
+AssertionError: Expected 2 matching notes but got 3: Note A, Note B, Note D
   at Then(2 notes match) in then.steps.ts:36
-  in Scenario: Filter by a link property  (filter.feature:5)
+  in Scenario: Filter by a tag value  (filter.feature:5)
 ```
 
 ## `npm run test:verbose` — step-by-step evidence
@@ -42,9 +42,9 @@ Example output for one scenario:
 ```
   Scenario: Remove a parent link from all matching notes
     ✔ Given a fresh copy of the test vault
-    ✔ When I filter notes where "parent" "contains" "[[Note X]]"
+    ✔ When I filter notes where "parent" "exists and contains" "[[Note X]]"
           → 2 matched: Note A, Note D
-    ✔ And I apply delete-value on property "parent" with value "[[Note X]]"
+    ✔ And I apply delete value on property "parent" with value to delete "[[Note X]]"
           → 2 changed, 0 skipped
     ✔ And note "Note A" no longer has "[[Note X]]" in "parent"
           → Note A.parent = ["[[Note Y|Y notes]]","[[Note Z#H1 title|Read more about Note Z]]"]
@@ -102,11 +102,11 @@ Feature: Your feature description
 
   Scenario: A clear sentence describing the behaviour
     Given a fresh copy of the test vault
-    When I filter notes where "parent" "contains" "[[ProjectX]]"
-    And I apply add-value on property "related" with value "[[ProjectZ]]"
+    When I filter notes where "parent" "exists and contains" "[[Note X]]"
+    And I apply add value on property "related" with value to add "[[New Topic]]"
     Then 2 notes are changed
-    And note "Alpha" has "[[ProjectZ]]" in "related"
-    And the YAML of "Alpha" is still valid
+    And note "Note A" has "[[New Topic]]" in "related"
+    And the YAML of "Note A" is still valid
 ```
 
 ## Step vocabulary
@@ -126,9 +126,17 @@ Feature: Your feature description
 | `When I filter notes where "prop" "exists and is empty"` | Property exists but has no value |
 | `When I filter notes where "prop" "exists and is not empty"` | Property exists and has a value |
 | `When I filter notes where "prop" "does not exist"` | Property is absent entirely |
-| `When I filter notes in directory "Projects"` | Location rule |
+| `When I filter notes in directory "Dir 1"` | Location rule (shorthand for *directory is*) |
+| `When I filter notes where directory "is" "Dir 1"` | First location rule (the *Where* row — no combinator) |
+| `When I filter notes where directory "is not" "Dir 1"` | First location rule, negated |
+| `And combining with "and" where directory "is" "Dir 3"` | A chained location rule with an explicit combinator |
+| `And combining with "or" where directory "is not" "Dir 1/Sub"` | A chained location rule with an explicit combinator |
 
-Multiple `When`/`And` filter steps combine with AND logic.
+Rules combine **left-to-right**, and each chained rule states its own combinator (`and` / `or`)
+— exactly like the AND/OR dropdown on each rule in the GUI. The first rule is the seed, so it
+takes no combinator. Because the combinator is explicit, the scenario reads the way it behaves:
+for example, two `directory is` rules joined with `and` match nothing (a note cannot be in two
+sibling directories at once), whereas joining the second with `or` unions them.
 
 #### When — operations (applied to whatever is currently matched)
 
@@ -151,12 +159,14 @@ Multiple `When`/`And` filter steps combine with AND logic.
 
 | Step | Purpose |
 |---|---|
-| `Then note "Alpha" has "[[ProjectZ]]" in "related"` | Value is present |
-| `Then note "Alpha" no longer has "[[ProjectX]]" in "parent"` | Value is absent |
-| `Then note "Health" has property "date" equal to "2026-03-01"` | Exact scalar match |
-| `Then the YAML of "Alpha" is still valid` | Frontmatter still parses without error |
+| `Then note "Note A" has "[[New Topic]]" in "related"` | Value is present |
+| `Then note "Note A" no longer has "[[Note X]]" in "parent"` | Value is absent |
+| `Then note "Note A" has property "time" equal to "13:40"` | Exact scalar match |
+| `Then note "Note A" has "number headings" empty` | Property has no value |
+| `Then note "Note B" has property "related" and it is empty` | Property has no value (alternate phrasing) |
+| `Then the YAML of "Note A" is still valid` | Frontmatter still parses without error |
 
-Property values are compared loosely: `[[ProjectX]]` and `ProjectX` are treated as equal, and `#active` and `active` are treated as equal.
+Property values are compared loosely: `[[Topic A]]` and `Topic A` are treated as equal, and `#tag1` and `tag1` are treated as equal.
 
 
 

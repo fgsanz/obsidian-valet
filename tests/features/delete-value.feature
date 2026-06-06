@@ -2,7 +2,7 @@ Feature: Delete value operation
   Removing a specific value from a property across all matching notes,
   without corrupting the YAML frontmatter.
 
-  Scenario: Remove a note link from a link-array proeprty in all matching notes
+  Scenario: Remove a note link from a link-array property in all matching notes
     Given a fresh copy of the test vault
     When I filter notes where "parent" "exists and contains" "[[Note X]]"
     And I apply delete value on property "parent" with value to delete "[[Note X]]"
@@ -12,7 +12,7 @@ Feature: Delete value operation
     And note "Note A" has "[[Note Y|Y notes]]" in "parent"
     And the YAML of "Note A" is still valid
 
-  Scenario: A note outside the filter keeps is not changed
+  Scenario: A note outside the filter remains unchanged
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "parent" "exists and contains" "[[Note X]]"
@@ -21,7 +21,7 @@ Feature: Delete value operation
     And note "Note D" has "[[Note X]]" in "parent"
     And the YAML of "Note D" is still valid
 
-  Scenario: Deleting a value in a proerty with a single value leaves the parameter empty
+  Scenario: Deleting a value in a property with a single value leaves the property empty
     Given a fresh copy of the test vault
     When I filter notes where "number headings" "exists and contains" "auto, first-level 1, max 3, contents ^toc, 1.1"
     And I apply delete value on property "number headings" with value to delete "auto, first-level 1, max 3, contents ^toc, 1.1"

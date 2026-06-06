@@ -7,10 +7,23 @@ Feature: Filtering notes
     When I filter notes where "tags" "exists and contains" "tag1"
     Then 4 notes match
 
-  Scenario: Filter by directory
+  Scenario: Filter by directory using "is"
     Given a fresh copy of the test vault
-    When I filter notes in directory "Dir 1"
+    When I filter notes where directory "is" "Dir 1"
     Then 3 notes match
+
+  Scenario: Combine directory rules with explicit AND / OR
+    Given a fresh copy of the test vault
+    When I filter notes where directory "is" "Dir 1"
+    And combining with "and" where directory "is not" "Dir 1/Subdir 1.1"
+    And combining with "or" where directory "is" "Dir 3"
+    Then 3 notes match
+
+  Scenario: Two sibling directories combined with AND match nothing
+    Given a fresh copy of the test vault
+    When I filter notes where directory "is" "Dir 1"
+    And combining with "and" where directory "is" "Dir 3"
+    Then 0 notes match
 
   Scenario: Filter for notes missing a property
     Given a fresh copy of the test vault

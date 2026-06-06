@@ -1,8 +1,8 @@
 Feature: Add value operation
   Adding a new value to a property, respecting whether the property allows
-  multiple values, and never producing duplicates.
+  multiple values, its property type, and never producing duplicates.
 
-  Scenario: Append a link note to a link-array property that exists and is not empty, adds the link note
+  Scenario: Appending a link note to a link-array property that exists and is not empty, adds the link note
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "related" "exists and is not empty"
@@ -15,7 +15,7 @@ Feature: Add value operation
     And note "Note A" has "[[New note]]" in "related"
     And the YAML of "Note A" is still valid
 
-  Scenario: Append a link note to a link-array property that exists and is empty, adds the link note
+  Scenario: Appending a link note to a link-array property that exists and is empty, adds the link note
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "related" "exists and is empty"
@@ -25,7 +25,7 @@ Feature: Add value operation
     And note "Note B" has "[[New note]]" in "related"
     And the YAML of "Note B" is still valid
 
-  Scenario: Append a link note to a link-array property that is undefined, adds the property and the link note
+  Scenario: Appending a link note to a link-array property that is undefined, adds the property and the link note
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "related" "does not exist"
@@ -42,7 +42,7 @@ Feature: Add value operation
     Then 2 notes match
     And 0 notes are changed
 
-  Scenario: Trying add a value to an existing single-value property which is not empty, does not add the value
+  Scenario: Trying add a value to a single-value property that exists and is not empty, does not add the value
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "time" "exists and contains" "13:40"
@@ -60,7 +60,7 @@ Feature: Add value operation
     And 1 notes are changed
     And note "Note B" has property "time" equal to "23:59"
 
-Scenario: Adding a value to a single-value property that does not exist, adds the value
+Scenario: Adding a value to a single-value property that does not exist, adds the property and the value
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "time" "does not exist"
@@ -69,7 +69,7 @@ Scenario: Adding a value to a single-value property that does not exist, adds th
     And 1 notes are changed
     And note "Note C" has property "time" equal to "23:59"
 
-Scenario: Trying add a link note to a boolean property, does not add the value
+Scenario: Trying add a link note to a boolean property, does not add the link note
     Given a fresh copy of the test vault
     When I filter notes in directory "Dir 1"
     And I filter notes where "read" "exists and contains" "true"
