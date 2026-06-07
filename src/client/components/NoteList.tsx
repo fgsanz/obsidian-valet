@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { ArrowUp, ArrowDown, Check, XCircle } from 'lucide-react'
+import { ArrowUp, ArrowDown, Check, XCircle, Copy } from 'lucide-react'
 import type { ParsedNote, OperationResult } from '@shared/types'
 import { RESULT_ORDER, type ResultStatus, getResultStatus } from '../lib/resultOrder'
+import Tooltip from './Tooltip'
 import styles from './NoteList.module.css'
 
 interface Props {
@@ -156,7 +157,19 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
 
             return (
               <tr key={note.filePath}>
-                <td className={styles.colName}>{note.title}</td>
+                <td className={styles.colName}>
+                  <span>{note.title}</span>
+                  <Tooltip content="Copy" className={styles.copyTooltip}>
+                    <button
+                      type="button"
+                      className={styles.copyBtn}
+                      aria-label="Copy note name"
+                      onClick={() => navigator.clipboard?.writeText(note.title)}
+                    >
+                      <Copy size={15} />
+                    </button>
+                  </Tooltip>
+                </td>
                 <td className={styles.colLocation}>{dirname}</td>
                 <td className={styles.colProps}>
                   {uniqueProperties.length > 0 ? (

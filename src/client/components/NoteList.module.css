@@ -63,9 +63,41 @@
 
 .colName {
   font-weight: 500;
-  width: 30%;
-  word-break: break-word;
-  white-space: normal;
+  width: 40%;
+  white-space: nowrap;
+}
+
+.copyTooltip {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: var(--space-2);
+}
+
+.copyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s, color 0.12s, background 0.12s;
+  flex-shrink: 0;
+}
+
+.table tbody tr:hover .copyBtn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.copyBtn:hover {
+  color: var(--color-text);
+  background: var(--color-active);
 }
 
 .colLocation {
