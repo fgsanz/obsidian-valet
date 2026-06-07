@@ -31,10 +31,10 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
       return
     }
 
-    let notes = getCachedNotes(vaultId)
-    if (!notes) {
-      notes = await scanVault(vault)
-    }
+    // Always re-scan from disk so results reflect the real current state of the vault, including
+    // changes made externally (e.g. in Obsidian) since the last scan. This also refreshes the
+    // cache used by the subsequent preview/apply calls.
+    const notes = await scanVault(vault)
 
     const matched = filterByCriteria(notes, criteria, vault.properties)
     return { data: matched }
