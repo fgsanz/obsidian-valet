@@ -44,7 +44,7 @@ export const api = {
       operation: Operation,
       commitMessage?: string,
     ) =>
-      request<OperationResult>('POST', '/notes/apply-operation', {
+      request<{ result: OperationResult; notes: ParsedNote[] }>('POST', '/notes/apply-operation', {
         vaultId,
         criteria,
         operation,

@@ -64,6 +64,7 @@ export default function OperationsPage() {
     setCriteria(next)
     setMatchedNotes(null)
     setResult(null)
+    setPendingOperation(null)
     setFilterError(null)
   }
 
@@ -73,6 +74,7 @@ export default function OperationsPage() {
     setFilterError(null)
     setMatchedNotes(null)
     setResult(null)
+    setPendingOperation(null)
     try {
       const notes = await api.notes.filter(activeVault.id, criteria)
       setMatchedNotes(notes)
@@ -85,6 +87,7 @@ export default function OperationsPage() {
 
   async function handlePreview(op: Operation) {
     if (!activeVault || !matchedNotes) return
+    setPendingOperation(op)
     setIsPreviewing(true)
     try {
       const previewed = await api.notes.previewOperation(activeVault.id, criteria, op)
@@ -112,7 +115,8 @@ export default function OperationsPage() {
     setIsApplying(true)
     try {
       const res = await api.notes.applyOperation(activeVault.id, criteria, op)
-      setResult(res)
+      setResult(res.result)
+      setMatchedNotes(res.notes)
     } catch (err) {
       setFilterError(err instanceof Error ? err.message : String(err))
     } finally {
@@ -149,7 +153,19 @@ export default function OperationsPage() {
     )
   }
 
-  const highlightedProperties = criteria.properties.filter((r) => r.property).map((r) => r.property)
+  // Columns to show in PROPERTY INFO: the filtered properties plus the property(ies) touched by
+  // the active operation — for a move that means both the source and the target property.
+  const operationProps = pendingOperation
+    ? pendingOperation.type === 'move-value'
+      ? [pendingOperation.fromProperty, pendingOperation.toProperty]
+      : [pendingOperation.property]
+    : []
+  const highlightedProperties = [
+    ...new Set([
+      ...criteria.properties.filter((r) => r.property).map((r) => r.property),
+      ...operationProps,
+    ]),
+  ]
   const hasMatches = matchedNotes !== null && matchedNotes.length > 0
 
   return (

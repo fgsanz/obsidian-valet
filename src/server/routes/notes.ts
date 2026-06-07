@@ -84,9 +84,14 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
     if (!notes) notes = await scanVault(vault)
 
     const matched = filterByCriteria(notes, criteria, vault.properties)
+    // Compute the post-operation state of the matched notes (the changed ones get their new
+    // values; unchanged ones stay as-is) so the results table can show values AFTER the edit.
+    const previews = previewOperation(matched, operation, vault.properties)
+    const previewByPath = new Map(previews.map((n) => [n.filePath, n]))
     const result = await applyOperation(matched, operation, vault.properties)
+    const notesAfter = matched.map((n) => previewByPath.get(n.filePath) ?? n)
 
     invalidateCache(vaultId)
-    return { data: result }
+    return { data: { result, notes: notesAfter } }
   })
 }
