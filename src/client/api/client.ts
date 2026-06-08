@@ -56,6 +56,7 @@ export const api = {
     status: (vaultId: string) => request<GitStatus>('GET', `/git/${vaultId}/status`),
     commit: (vaultId: string, message: string) =>
       request<{ sha: string }>('POST', `/git/${vaultId}/commit`, { message }),
+    revert: (vaultId: string) => request<{ ok: boolean }>('POST', `/git/${vaultId}/revert`),
     suggestMessage: (vaultId: string, context: string) =>
       request<{ message: string }>('GET', `/git/${vaultId}/suggest-message?context=${encodeURIComponent(context)}`),
   },

@@ -4,8 +4,12 @@ import styles from './GitCommitModal.module.css'
 interface Props {
   title: string
   description: string
-  defaultMessage: string
+  defaultMessage?: string
   commitLabel?: string
+  /** Show the editable commit-message textarea (default true). */
+  showMessage?: boolean
+  /** Show the Cancel button (default true). */
+  showCancel?: boolean
   onCommit: (message: string) => Promise<void>
   onSkip?: () => void
   onCancel: () => void
@@ -14,8 +18,10 @@ interface Props {
 export default function GitCommitModal({
   title,
   description,
-  defaultMessage,
+  defaultMessage = '',
   commitLabel = 'Commit',
+  showMessage = true,
+  showCancel = true,
   onCommit,
   onSkip,
   onCancel,
@@ -46,20 +52,24 @@ export default function GitCommitModal({
         <div className={styles.title}>{title}</div>
         <p className={styles.desc}>{description}</p>
 
-        <textarea
-          className={styles.textarea}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={3}
-          autoFocus
-        />
+        {showMessage && (
+          <textarea
+            className={styles.textarea}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            autoFocus
+          />
+        )}
 
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          <button type="button" className={styles.cancelBtn} onClick={onCancel}>
-            Cancel
-          </button>
+          {showCancel && (
+            <button type="button" className={styles.cancelBtn} onClick={onCancel}>
+              Cancel
+            </button>
+          )}
           <div className={styles.actionsRight}>
             {onSkip && (
               <button type="button" className={styles.cancelBtn} onClick={onSkip}>
@@ -70,9 +80,9 @@ export default function GitCommitModal({
               type="button"
               className={styles.commitBtn}
               onClick={handleCommit}
-              disabled={!message.trim() || isCommitting}
+              disabled={(showMessage && !message.trim()) || isCommitting}
             >
-              {isCommitting ? 'Committing…' : commitLabel}
+              {isCommitting ? 'Working…' : commitLabel}
             </button>
           </div>
         </div>

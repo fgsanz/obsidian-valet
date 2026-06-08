@@ -17,6 +17,12 @@ interface Props {
   disableApply?: boolean
   /** The current operation has already been applied; disable Preview/Apply until it changes. */
   applied?: boolean
+  /** Offer the optional "Commit changes" action (applied with no errors). */
+  canCommit?: boolean
+  /** Offer the optional "Revert changes" action (applied with errors). */
+  canRevert?: boolean
+  onCommitChanges?: () => void
+  onRevertChanges?: () => void
   /** Called whenever the configured operation changes, so a stale preview can be cleared. */
   onOperationChange?: () => void
 }
@@ -37,6 +43,10 @@ export default function BulkOpPanel({
   matchedNotes = [],
   disableApply = false,
   applied = false,
+  canCommit = false,
+  canRevert = false,
+  onCommitChanges,
+  onRevertChanges,
   onOperationChange,
 }: Props) {
   const [opType, setOpType] = useState<OpType>('delete-value')
@@ -200,6 +210,22 @@ export default function BulkOpPanel({
         >
           {isApplying ? 'Applying…' : 'Apply changes'}
         </button>
+
+        {(canCommit || canRevert) && (
+          <div className={styles.optional}>
+            <span className={styles.optionalLabel}>Optional →</span>
+            {canCommit && (
+              <button type="button" className={styles.optionalBtn} onClick={onCommitChanges}>
+                Commit changes
+              </button>
+            )}
+            {canRevert && (
+              <button type="button" className={styles.optionalBtn} onClick={onRevertChanges}>
+                Revert changes
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

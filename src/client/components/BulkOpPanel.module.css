@@ -135,3 +135,32 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.optional {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.optionalLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.optionalBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.optionalBtn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}

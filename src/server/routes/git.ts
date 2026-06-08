@@ -1,7 +1,8 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { z } from 'zod'
 import { getConfig } from '../config/config'
-import { getGitStatus, commitAll, suggestCommitMessage } from '../services/git'
+import { getGitStatus, commitAll, suggestCommitMessage, revertToHead } from '../services/git'
+import { invalidateCache } from '../services/scanner'
 
 export const gitPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/git/:vaultId/status', async (request, reply) => {
@@ -50,5 +51,18 @@ export const gitPlugin: FastifyPluginAsync = async (fastify) => {
       }
       throw err
     }
+  })
+
+  fastify.post('/git/:vaultId/revert', async (request, reply) => {
+    const { vaultId } = request.params as { vaultId: string }
+    const config = await getConfig()
+    const vault = config.vaults.find((v) => v.id === vaultId)
+    if (!vault) {
+      reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Vault not found' } })
+      return
+    }
+    await revertToHead(vault.path)
+    invalidateCache(vaultId)
+    return { data: { ok: true } }
   })
 }

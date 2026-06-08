@@ -12,7 +12,12 @@ import { APP_NAME } from '@shared/constants'
 import styles from './OperationsPage.module.css'
 
 type Tab = 'filter' | 'ops'
-type GitModalState = { purpose: 'pre' | 'post'; defaultMsg: string } | null
+type GitModalState =
+  | { kind: 'snapshot'; message: string } // safety snapshot before applying
+  | { kind: 'commit'; message: string } // commit the applied changes
+  | { kind: 'revert' } // confirm reverting the applied changes
+  | { kind: 'reverted' } // revert finished — info only
+  | null
 
 export default function OperationsPage() {
   const { data: activeVault, isLoading } = useQuery({
@@ -94,11 +99,22 @@ export default function OperationsPage() {
     }
   }
 
+  /** Reset the whole operation flow back to a clean filter view. */
+  function resetOperation() {
+    setMatchedNotes(null)
+    setResult(null)
+    setPreviewNotes(null)
+    setPendingOperation(null)
+    setGitCommitted(false)
+    setFilterError(null)
+    setActiveTab('filter')
+  }
+
   async function handleApply(op: Operation) {
     if (!activeVault) return
     setPendingOperation(op)
     if (gitStatus?.hasGit) {
-      setGitModal({ purpose: 'pre', defaultMsg: buildSnapshotMessage(op) })
+      setGitModal({ kind: 'snapshot', message: buildOperationMessage(op, 'Before') })
     } else {
       await doApply(op)
     }
@@ -119,22 +135,27 @@ export default function OperationsPage() {
     }
   }
 
-  async function commitGit(message: string) {
+  /** Commit the safety snapshot, then apply the pending operation. */
+  async function commitSnapshotAndApply(message: string) {
     if (!activeVault) return
     await api.git.commit(activeVault.id, message)
-    if (gitModal?.purpose === 'pre' && pendingOperation) {
-      setGitModal(null)
-      await doApply(pendingOperation)
-    } else {
-      setGitModal(null)
-      setGitCommitted(true)
-    }
+    setGitModal(null)
+    if (pendingOperation) await doApply(pendingOperation)
   }
 
-  function handlePostCommit() {
-    if (!activeVault || !result) return
-    const msg = `chore: apply operation — ${result.succeeded} note${result.succeeded === 1 ? '' : 's'} changed`
-    setGitModal({ purpose: 'post', defaultMsg: msg })
+  /** Commit the changes produced by the operation. */
+  async function commitAppliedChanges(message: string) {
+    if (!activeVault) return
+    await api.git.commit(activeVault.id, message)
+    setGitModal(null)
+    setGitCommitted(true)
+  }
+
+  /** Revert the vault to the safety snapshot, discarding the operation's changes. */
+  async function revertAppliedChanges() {
+    if (!activeVault) return
+    await api.git.revert(activeVault.id)
+    setGitModal({ kind: 'reverted' })
   }
 
   if (isLoading) return null
@@ -165,27 +186,52 @@ export default function OperationsPage() {
 
   return (
     <div className={styles.page}>
-      {gitModal && (
+      {gitModal?.kind === 'snapshot' && (
         <GitCommitModal
-          title={gitModal.purpose === 'pre' ? 'Git snapshot before operation' : 'Commit changes'}
-          description={
-            gitModal.purpose === 'pre'
-              ? 'Create a safety checkpoint before applying changes. You can roll back to it if anything goes wrong.'
-              : "Commit the changes made by the operation to your vault's git history."
-          }
-          commitLabel={gitModal.purpose === 'pre' ? 'Commit & apply changes' : 'Commit'}
-          defaultMessage={gitModal.defaultMsg}
-          onCommit={commitGit}
+          title="Git snapshot before operation"
+          description="Create a safety checkpoint before applying changes. You can roll back to it if anything goes wrong."
+          commitLabel="Commit & apply changes"
+          defaultMessage={gitModal.message}
+          onCommit={commitSnapshotAndApply}
           onSkip={() => {
-            if (gitModal.purpose === 'pre' && pendingOperation) {
-              setGitModal(null)
-              doApply(pendingOperation)
-            } else {
-              setGitModal(null)
-              setGitCommitted(true)
-            }
+            setGitModal(null)
+            if (pendingOperation) doApply(pendingOperation)
           }}
           onCancel={() => setGitModal(null)}
+        />
+      )}
+
+      {gitModal?.kind === 'commit' && (
+        <GitCommitModal
+          title="Commit changes"
+          description="If you are happy with the changes, create a new commit containing those changes."
+          commitLabel="Commit changes to git"
+          defaultMessage={gitModal.message}
+          onCommit={commitAppliedChanges}
+          onCancel={() => setGitModal(null)}
+        />
+      )}
+
+      {gitModal?.kind === 'revert' && (
+        <GitCommitModal
+          title="Revert changes"
+          description="If you are not satisfied with the changes, revert the vault to a state just before the changes."
+          commitLabel="Revert to safety git snapshot"
+          showMessage={false}
+          onCommit={revertAppliedChanges}
+          onCancel={() => setGitModal(null)}
+        />
+      )}
+
+      {gitModal?.kind === 'reverted' && (
+        <GitCommitModal
+          title="Changes reverted"
+          description="The vault has been reverted to the safety git snapshot, the state just before the operation."
+          commitLabel="Got it"
+          showMessage={false}
+          showCancel={false}
+          onCommit={async () => resetOperation()}
+          onCancel={resetOperation}
         />
       )}
 
@@ -269,6 +315,15 @@ export default function OperationsPage() {
                   matchedNotes={matchedNotes}
                   disableApply={previewNotes !== null && previewNotes.length === 0}
                   applied={result !== null}
+                  canCommit={
+                    !!gitStatus?.hasGit && result !== null && result.failed === 0 && !gitCommitted
+                  }
+                  canRevert={!!gitStatus?.hasGit && result !== null && result.failed > 0}
+                  onCommitChanges={() => {
+                    if (pendingOperation)
+                      setGitModal({ kind: 'commit', message: buildOperationMessage(pendingOperation, 'After') })
+                  }}
+                  onRevertChanges={() => setGitModal({ kind: 'revert' })}
                   onOperationChange={() => {
                     setPreviewNotes(null)
                     setResult(null)
@@ -299,16 +354,11 @@ export default function OperationsPage() {
               <div className={styles.sectionTitle}>Results</div>
               <StatsBar matched={result.matched} result={result} />
               <NoteList notes={matchedNotes ?? []} highlightProperties={highlightedProperties} result={result} />
-              <div className={styles.postApplyActions}>
-                {gitStatus?.hasGit && !gitCommitted && (
-                  <button type="button" className={styles.confirmBtn} onClick={handlePostCommit}>
-                    Commit changes to git
-                  </button>
-                )}
-                {gitCommitted && (
+              {gitCommitted && (
+                <div className={styles.postApplyActions}>
                   <span className={styles.resultSuccess}>Changes committed to git.</span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </>
@@ -317,9 +367,9 @@ export default function OperationsPage() {
   )
 }
 
-/** Default git snapshot message describing the operation about to be applied. */
-function buildSnapshotMessage(op: Operation): string {
-  const prefix = `[${APP_NAME}] Before operation: `
+/** Git commit message describing the operation, either Before (snapshot) or After it ran. */
+function buildOperationMessage(op: Operation, phase: 'Before' | 'After'): string {
+  const prefix = `[${APP_NAME}] ${phase} operation: `
   switch (op.type) {
     case 'add-value':
       return `${prefix}add, property: ${op.property}, value: ${op.value}`

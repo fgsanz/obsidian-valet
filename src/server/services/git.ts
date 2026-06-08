@@ -27,3 +27,12 @@ export async function commitAll(vaultPath: string, message: string): Promise<str
 export function suggestCommitMessage(context: string): string {
   return `chore: snapshot before ${context} [${APP_NAME}]`
 }
+
+/**
+ * Discard all uncommitted working-tree changes, returning tracked files to the last commit
+ * (the safety snapshot taken before the operation). Used to revert an applied operation.
+ */
+export async function revertToHead(vaultPath: string): Promise<void> {
+  const git = simpleGit(vaultPath)
+  await git.reset(['--hard', 'HEAD'])
+}
