@@ -5,6 +5,7 @@ interface Props {
   title: string
   description: string
   defaultMessage: string
+  commitLabel?: string
   onCommit: (message: string) => Promise<void>
   onSkip?: () => void
   onCancel: () => void
@@ -14,6 +15,7 @@ export default function GitCommitModal({
   title,
   description,
   defaultMessage,
+  commitLabel = 'Commit',
   onCommit,
   onSkip,
   onCancel,
@@ -55,22 +57,24 @@ export default function GitCommitModal({
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.actions}>
-          {onSkip && (
-            <button type="button" className={styles.cancelBtn} onClick={onSkip}>
-              Skip git commit
-            </button>
-          )}
           <button type="button" className={styles.cancelBtn} onClick={onCancel}>
             Cancel
           </button>
-          <button
-            type="button"
-            className={styles.commitBtn}
-            onClick={handleCommit}
-            disabled={!message.trim() || isCommitting}
-          >
-            {isCommitting ? 'Committing…' : 'Commit'}
-          </button>
+          <div className={styles.actionsRight}>
+            {onSkip && (
+              <button type="button" className={styles.cancelBtn} onClick={onSkip}>
+                Skip git commit
+              </button>
+            )}
+            <button
+              type="button"
+              className={styles.commitBtn}
+              onClick={handleCommit}
+              disabled={!message.trim() || isCommitting}
+            >
+              {isCommitting ? 'Committing…' : commitLabel}
+            </button>
+          </div>
         </div>
       </div>
     </div>

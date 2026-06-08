@@ -8,6 +8,7 @@ import NoteList from '../components/NoteList'
 import StatsBar from '../components/StatsBar'
 import BulkOpPanel from '../components/BulkOpPanel'
 import GitCommitModal from '../components/GitCommitModal'
+import { APP_NAME } from '@shared/constants'
 import styles from './OperationsPage.module.css'
 
 type Tab = 'filter' | 'ops'
@@ -107,8 +108,7 @@ export default function OperationsPage() {
     if (!activeVault) return
     setPendingOperation(op)
     if (gitStatus?.hasGit) {
-      const suggest = await api.git.suggestMessage(activeVault.id, describeOperation(op))
-      setGitModal({ purpose: 'pre', defaultMsg: suggest?.message ?? 'chore: snapshot' })
+      setGitModal({ purpose: 'pre', defaultMsg: buildSnapshotMessage(op) })
     } else {
       await doApply(op)
     }
@@ -177,12 +177,13 @@ export default function OperationsPage() {
     <div className={styles.page}>
       {gitModal && (
         <GitCommitModal
-          title={gitModal.purpose === 'pre' ? 'Snapshot before operation' : 'Commit changes'}
+          title={gitModal.purpose === 'pre' ? 'Git snapshot before operation' : 'Commit changes'}
           description={
             gitModal.purpose === 'pre'
-              ? 'Create a safety checkpoint before applying changes. You can roll back to this if anything goes wrong.'
+              ? 'Create a safety checkpoint before applying changes. You can roll back to it if anything goes wrong.'
               : "Commit the changes made by the operation to your vault's git history."
           }
+          commitLabel={gitModal.purpose === 'pre' ? 'Commit & apply changes' : 'Commit'}
           defaultMessage={gitModal.defaultMsg}
           onCommit={commitGit}
           onSkip={() => {
@@ -324,10 +325,17 @@ export default function OperationsPage() {
   )
 }
 
-function describeOperation(op: Operation): string {
-  if (op.type === 'delete-value') return `delete "${op.value}" from ${op.property}`
-  if (op.type === 'replace') return `replace "${op.oldValue}" with "${op.newValue}" in ${op.property}`
-  if (op.type === 'move-value') return `move "${op.value}" from ${op.fromProperty} to ${op.toProperty}`
-  if (op.type === 'add-value') return `add "${op.value}" to ${op.property}`
-  return 'operation'
+/** Default git snapshot message describing the operation about to be applied. */
+function buildSnapshotMessage(op: Operation): string {
+  const prefix = `[${APP_NAME}] Before operation: `
+  switch (op.type) {
+    case 'add-value':
+      return `${prefix}add, property: ${op.property}, value: ${op.value}`
+    case 'delete-value':
+      return `${prefix}delete, property: ${op.property}, value: ${op.value}`
+    case 'replace':
+      return `${prefix}replace, property: ${op.property}, current_value: ${op.oldValue}, new_value: ${op.newValue}`
+    case 'move-value':
+      return `${prefix}move, from_property: ${op.fromProperty}, to_property: ${op.toProperty}, value: ${op.value}`
+  }
 }
