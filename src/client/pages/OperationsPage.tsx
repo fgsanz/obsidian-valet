@@ -286,9 +286,9 @@ export default function OperationsPage() {
                     className={styles.sectionTitle}
                     style={previewNotes.length === 0 ? { color: 'var(--color-error)' } : undefined}
                   >
-                    Preview — change will be applied to {previewNotes.length} out of{' '}
-                    {matchedNotes.length} note{matchedNotes.length === 1 ? '' : 's'}
-                    {previewNotes.length === 0 && '. Rethink the bulk operation you want to apply.'}
+                    {previewNotes.length === 0
+                      ? 'Preview — Change cannot be applied. Rethink the bulk operation.'
+                      : `Preview — change will be applied to ${previewNotes.length} out of ${matchedNotes.length} note${matchedNotes.length === 1 ? '' : 's'}`}
                   </div>
                   {previewNotes.length > 0 && (
                     <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
