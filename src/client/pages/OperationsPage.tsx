@@ -276,14 +276,23 @@ export default function OperationsPage() {
                   isPreviewing={isPreviewing}
                   isApplying={isApplying}
                   matchedNotes={matchedNotes}
+                  disableApply={previewNotes !== null && previewNotes.length === 0}
+                  onOperationChange={() => setPreviewNotes(null)}
                 />
               </div>
               {previewNotes && !result && (
                 <div className={styles.section}>
-                  <div className={styles.sectionTitle}>
-                    Preview — {previewNotes.length} note{previewNotes.length === 1 ? '' : 's'} will change
+                  <div
+                    className={styles.sectionTitle}
+                    style={previewNotes.length === 0 ? { color: 'var(--color-error)' } : undefined}
+                  >
+                    Preview — change will be applied to {previewNotes.length} out of{' '}
+                    {matchedNotes.length} note{matchedNotes.length === 1 ? '' : 's'}
+                    {previewNotes.length === 0 && '. Rethink the bulk operation you want to apply.'}
                   </div>
-                  <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
+                  {previewNotes.length > 0 && (
+                    <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
+                  )}
                 </div>
               )}
             </>

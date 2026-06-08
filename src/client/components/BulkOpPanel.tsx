@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
 import { getValuePlaceholder } from '../lib/operators'
@@ -13,6 +13,10 @@ interface Props {
   isPreviewing: boolean
   isApplying: boolean
   matchedNotes?: Array<{ frontmatter: Record<string, unknown> }>
+  /** Disable the Apply button (e.g. a preview showed that no notes would change). */
+  disableApply?: boolean
+  /** Called whenever the configured operation changes, so a stale preview can be cleared. */
+  onOperationChange?: () => void
 }
 
 type OpType = 'delete-value' | 'replace' | 'move-value' | 'add-value'
@@ -29,6 +33,8 @@ export default function BulkOpPanel({
   isPreviewing,
   isApplying,
   matchedNotes = [],
+  disableApply = false,
+  onOperationChange,
 }: Props) {
   const [opType, setOpType] = useState<OpType>('delete-value')
   const [property, setProperty] = useState(suggestedProperty)
@@ -81,6 +87,14 @@ export default function BulkOpPanel({
   }
 
   const op = buildOperation()
+
+  // Notify the parent whenever the operation being configured changes, so a stale preview/result
+  // (and the disabled state derived from it) can be cleared.
+  const opSignature = JSON.stringify({ opType, property, value, newValue, fromProperty, toProperty })
+  useEffect(() => {
+    onOperationChange?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opSignature])
 
   return (
     <div className={styles.panel}>
@@ -179,7 +193,7 @@ export default function BulkOpPanel({
           type="button"
           className={styles.applyBtn}
           onClick={() => op && onApply(op)}
-          disabled={!op || isPreviewing || isApplying}
+          disabled={!op || isPreviewing || isApplying || disableApply}
         >
           {isApplying ? 'Applying…' : 'Apply changes'}
         </button>
