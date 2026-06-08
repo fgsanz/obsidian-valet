@@ -15,6 +15,8 @@ interface Props {
   matchedNotes?: Array<{ frontmatter: Record<string, unknown> }>
   /** Disable the Apply button (e.g. a preview showed that no notes would change). */
   disableApply?: boolean
+  /** The current operation has already been applied; disable Preview/Apply until it changes. */
+  applied?: boolean
   /** Called whenever the configured operation changes, so a stale preview can be cleared. */
   onOperationChange?: () => void
 }
@@ -34,6 +36,7 @@ export default function BulkOpPanel({
   isApplying,
   matchedNotes = [],
   disableApply = false,
+  applied = false,
   onOperationChange,
 }: Props) {
   const [opType, setOpType] = useState<OpType>('delete-value')
@@ -185,7 +188,7 @@ export default function BulkOpPanel({
           type="button"
           className={styles.previewBtn}
           onClick={() => op && onPreview(op)}
-          disabled={!op || isPreviewing || isApplying}
+          disabled={!op || isPreviewing || isApplying || applied}
         >
           {isPreviewing ? 'Previewing…' : 'Preview'}
         </button>
@@ -193,7 +196,7 @@ export default function BulkOpPanel({
           type="button"
           className={styles.applyBtn}
           onClick={() => op && onApply(op)}
-          disabled={!op || isPreviewing || isApplying || disableApply}
+          disabled={!op || isPreviewing || isApplying || disableApply || applied}
         >
           {isApplying ? 'Applying…' : 'Apply changes'}
         </button>

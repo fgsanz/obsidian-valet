@@ -50,16 +50,6 @@ export default function OperationsPage() {
   const [pendingOperation, setPendingOperation] = useState<Operation | null>(null)
   const [gitCommitted, setGitCommitted] = useState(false)
 
-  function reset() {
-    setMatchedNotes(null)
-    setResult(null)
-    setPreviewNotes(null)
-    setPendingOperation(null)
-    setGitCommitted(false)
-    setFilterError(null)
-    setActiveTab('filter')
-  }
-
   // Editing the filter invalidates any results shown from a previous run, so clear them — the
   // table and the match count should never display notes that don't correspond to the current
   // criteria.
@@ -278,7 +268,12 @@ export default function OperationsPage() {
                   isApplying={isApplying}
                   matchedNotes={matchedNotes}
                   disableApply={previewNotes !== null && previewNotes.length === 0}
-                  onOperationChange={() => setPreviewNotes(null)}
+                  applied={result !== null}
+                  onOperationChange={() => {
+                    setPreviewNotes(null)
+                    setResult(null)
+                    setGitCommitted(false)
+                  }}
                 />
               </div>
               {previewNotes && !result && (
@@ -313,9 +308,6 @@ export default function OperationsPage() {
                 {gitCommitted && (
                   <span className={styles.resultSuccess}>Changes committed to git.</span>
                 )}
-                <button type="button" className={styles.resetBtn} onClick={reset}>
-                  New operation
-                </button>
               </div>
             </div>
           )}
