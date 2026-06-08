@@ -42,6 +42,7 @@ export default function OperationsPage() {
   const [matchedNotes, setMatchedNotes] = useState<ParsedNote[] | null>(null)
 
   const [isPreviewing, setIsPreviewing] = useState(false)
+  const [previewNotes, setPreviewNotes] = useState<ParsedNote[] | null>(null)
   const [isApplying, setIsApplying] = useState(false)
   const [result, setResult] = useState<OperationResult | null>(null)
   const [gitModal, setGitModal] = useState<GitModalState>(null)
@@ -51,6 +52,7 @@ export default function OperationsPage() {
   function reset() {
     setMatchedNotes(null)
     setResult(null)
+    setPreviewNotes(null)
     setPendingOperation(null)
     setGitCommitted(false)
     setFilterError(null)
@@ -64,6 +66,7 @@ export default function OperationsPage() {
     setCriteria(next)
     setMatchedNotes(null)
     setResult(null)
+    setPreviewNotes(null)
     setPendingOperation(null)
     setFilterError(null)
   }
@@ -74,6 +77,7 @@ export default function OperationsPage() {
     setFilterError(null)
     setMatchedNotes(null)
     setResult(null)
+    setPreviewNotes(null)
     setPendingOperation(null)
     try {
       const notes = await api.notes.filter(activeVault.id, criteria)
@@ -91,7 +95,7 @@ export default function OperationsPage() {
     setIsPreviewing(true)
     try {
       const previewed = await api.notes.previewOperation(activeVault.id, criteria, op)
-      setMatchedNotes(previewed)
+      setPreviewNotes(previewed)
     } catch {
       // ignore preview errors
     } finally {
@@ -117,6 +121,7 @@ export default function OperationsPage() {
       const res = await api.notes.applyOperation(activeVault.id, criteria, op)
       setResult(res.result)
       setMatchedNotes(res.notes)
+      setPreviewNotes(null)
     } catch (err) {
       setFilterError(err instanceof Error ? err.message : String(err))
     } finally {
@@ -273,10 +278,12 @@ export default function OperationsPage() {
                   matchedNotes={matchedNotes}
                 />
               </div>
-              {isPreviewing && (
+              {previewNotes && !result && (
                 <div className={styles.section}>
-                  <div className={styles.sectionTitle}>Preview</div>
-                  <NoteList notes={matchedNotes} highlightProperties={highlightedProperties} />
+                  <div className={styles.sectionTitle}>
+                    Preview — {previewNotes.length} note{previewNotes.length === 1 ? '' : 's'} will change
+                  </div>
+                  <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
                 </div>
               )}
             </>
