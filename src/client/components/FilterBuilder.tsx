@@ -14,6 +14,10 @@ interface Props {
   isRunning: boolean
   properties: PropertyDef[]
   dirs: string[]
+  /** Whether a bulk operation can be applied (a filter has returned matches). */
+  canApplyBulk: boolean
+  /** Move to the bulk operation step. */
+  onApplyBulk: () => void
 }
 
 
@@ -40,6 +44,8 @@ export default function FilterBuilder({
   isRunning,
   properties,
   dirs,
+  canApplyBulk,
+  onApplyBulk,
 }: Props) {
   const [invalidRuleIdx, setInvalidRuleIdx] = useState<number | null>(null)
   const [hoveredLocationIdx, setHoveredLocationIdx] = useState<number | null>(null)
@@ -282,12 +288,17 @@ export default function FilterBuilder({
       <div className={styles.footer}>
         <button
           type="button"
-          className={styles.runBtn}
+          className={canApplyBulk ? styles.secondaryBtn : styles.runBtn}
           onClick={onRun}
           disabled={isRunning || !criteriaIsValid(criteria, properties)}
         >
           {isRunning ? 'Searching…' : 'Find notes'}
         </button>
+        {canApplyBulk && (
+          <button type="button" className={styles.runBtn} onClick={onApplyBulk}>
+            Apply bulk operation
+          </button>
+        )}
       </div>
     </div>
   )

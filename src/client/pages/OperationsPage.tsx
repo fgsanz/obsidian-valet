@@ -234,6 +234,8 @@ export default function OperationsPage() {
               isRunning={isFiltering}
               properties={activeVault.properties}
               dirs={dirs}
+              canApplyBulk={hasMatches}
+              onApplyBulk={() => setActiveTab('ops')}
             />
             {filterError && (
               <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>
@@ -246,26 +248,6 @@ export default function OperationsPage() {
             <div className={styles.section}>
               <StatsBar matched={matchedNotes.length} />
               <NoteList notes={matchedNotes} highlightProperties={highlightedProperties} />
-              {hasMatches && (
-                <div style={{ marginTop: 'var(--space-4)' }}>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('ops')}
-                    style={{
-                      background: 'var(--color-accent)',
-                      border: 'none',
-                      borderRadius: 'var(--radius-sm)',
-                      color: '#fff',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 600,
-                      padding: 'var(--space-2) var(--space-5)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Choose bulk operation →
-                  </button>
-                </div>
-              )}
             </div>
           )}
         </>
@@ -274,7 +256,7 @@ export default function OperationsPage() {
       {/* ── Tab: Bulk operation ───────────────────────────────────────────── */}
       {activeTab === 'ops' && (
         <>
-          {!result && matchedNotes !== null && (
+          {matchedNotes !== null && (
             <>
               <div className={styles.section}>
                 <div className={styles.operationHeader}>
