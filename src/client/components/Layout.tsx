@@ -1,10 +1,16 @@
+import { useState } from 'react'
 import { Outlet, NavLink, Link } from 'react-router-dom'
+import { Settings } from 'lucide-react'
 import { APP_NAME } from '@shared/constants'
 import VaultPicker from './VaultPicker'
 import ErrorBoundary from './ErrorBoundary'
+import Tooltip from './Tooltip'
+import SettingsPanel from './SettingsPanel'
 import styles from './Layout.module.css'
 
 export default function Layout() {
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
   return (
     <div className={styles.shell}>
       <nav className={styles.nav}>
@@ -31,6 +37,16 @@ export default function Layout() {
         </div>
         <div className={styles.right}>
           <VaultPicker />
+          <Tooltip content="Settings">
+            <button
+              type="button"
+              className={styles.settingsBtn}
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Settings"
+            >
+              <Settings size={18} />
+            </button>
+          </Tooltip>
         </div>
       </nav>
       <main className={styles.main}>
@@ -38,6 +54,7 @@ export default function Layout() {
           <Outlet />
         </ErrorBoundary>
       </main>
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   )
 }

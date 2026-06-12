@@ -16,6 +16,7 @@ export default function VaultsPage() {
   const [dirInputs, setDirInputs] = useState<Record<string, string>>({})
   const [deleteHoverVaultId, setDeleteHoverVaultId] = useState<string | null>(null)
   const [vaultDirs, setVaultDirs] = useState<Record<string, string[]>>({})
+  const [propsSort, setPropsSort] = useState<Record<string, 'name' | 'type'>>({})
 
   const { data: vaults = [], isError } = useQuery({
     queryKey: ['vaults'],
@@ -313,6 +314,25 @@ export default function VaultsPage() {
                   {isAccordionOpen(vault.id, 'properties') && (
                     <div className={styles.accordionContent}>
                       <div className={styles.propsSectionHeader}>
+                        {vault.properties.length > 0 && (
+                          <div className={styles.sortToggle}>
+                            <span className={styles.sortLabel}>Sort by</span>
+                            <button
+                              type="button"
+                              className={`${styles.sortBtn} ${(propsSort[vault.id] ?? 'name') === 'name' ? styles.sortBtnActive : ''}`}
+                              onClick={() => setPropsSort((s) => ({ ...s, [vault.id]: 'name' }))}
+                            >
+                              Property name
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.sortBtn} ${propsSort[vault.id] === 'type' ? styles.sortBtnActive : ''}`}
+                              onClick={() => setPropsSort((s) => ({ ...s, [vault.id]: 'type' }))}
+                            >
+                              Property type
+                            </button>
+                          </div>
+                        )}
                         <button
                           type="button"
                           className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`}
@@ -328,7 +348,11 @@ export default function VaultsPage() {
                       {vault.properties.length > 0 ? (
                         <div className={styles.propsGrid}>
                           {[...vault.properties]
-                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .sort((a, b) =>
+                              (propsSort[vault.id] ?? 'name') === 'type'
+                                ? a.type.localeCompare(b.type) || a.name.localeCompare(b.name)
+                                : a.name.localeCompare(b.name),
+                            )
                             .map((p) => (
                               <div key={p.name} className={styles.propRow}>
                                 <span className={styles.propName}>{p.name}</span>
