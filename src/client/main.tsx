@@ -2,7 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
+import { initColorScheme } from './lib/theme'
 import './styles/global.css'
+
+initColorScheme()
 
 const queryClient = new QueryClient({
   defaultOptions: {

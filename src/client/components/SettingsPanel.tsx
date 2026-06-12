@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
+import { type ColorScheme, getColorScheme, setColorScheme as applyColorScheme } from '../lib/theme'
 import styles from './SettingsPanel.module.css'
 
 interface Props {
@@ -7,11 +8,13 @@ interface Props {
   onClose: () => void
 }
 
-type ColorScheme = 'light' | 'dark' | 'system'
-
 export default function SettingsPanel({ open, onClose }: Props) {
-  // Selection only for now — actually applying the color scheme will come later.
-  const [colorScheme, setColorScheme] = useState<ColorScheme>('system')
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(getColorScheme)
+
+  function changeColorScheme(scheme: ColorScheme) {
+    setColorScheme(scheme)
+    applyColorScheme(scheme)
+  }
 
   useEffect(() => {
     if (!open) return
@@ -52,11 +55,11 @@ export default function SettingsPanel({ open, onClose }: Props) {
             <select
               className={styles.select}
               value={colorScheme}
-              onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
+              onChange={(e) => changeColorScheme(e.target.value as ColorScheme)}
             >
               <option value="light">Light</option>
               <option value="dark">Dark</option>
-              <option value="system">Adapt to system</option>
+              <option value="system">Follow system</option>
             </select>
           </div>
         </div>
