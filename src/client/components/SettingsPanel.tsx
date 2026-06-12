@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import styles from './SettingsPanel.module.css'
 
@@ -7,7 +7,12 @@ interface Props {
   onClose: () => void
 }
 
+type ColorScheme = 'light' | 'dark' | 'system'
+
 export default function SettingsPanel({ open, onClose }: Props) {
+  // Selection only for now — actually applying the color scheme will come later.
+  const [colorScheme, setColorScheme] = useState<ColorScheme>('system')
+
   useEffect(() => {
     if (!open) return
     function onKey(e: KeyboardEvent) {
@@ -39,7 +44,21 @@ export default function SettingsPanel({ open, onClose }: Props) {
           </button>
         </div>
         <div className={styles.body}>
-          {/* Settings will be added here. */}
+          <div className={styles.setting}>
+            <div className={styles.settingInfo}>
+              <div className={styles.settingTitle}>Color scheme</div>
+              <div className={styles.settingDesc}>Choose the application's color scheme.</div>
+            </div>
+            <select
+              className={styles.select}
+              value={colorScheme}
+              onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">Adapt to system</option>
+            </select>
+          </div>
         </div>
       </aside>
     </>
