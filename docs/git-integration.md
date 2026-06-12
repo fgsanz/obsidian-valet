@@ -1,48 +1,78 @@
 ---
 title: Git integration
 slug: git-integration
-description: Safety checkpoints before and after operations
+description: Safety snapshots, commits, and one-click revert around bulk operations
 ---
 
 # Git integration
 
-If an Obsidian vault contains a git repository, Obsidian Valet integrates with it to provide safety checkpoints around bulk operations.
+If an Obsidian vault contains a git repository, Obsidian Valet integrates with it to give you a safety net around every bulk operation: a **snapshot before**, and an optional **commit or revert after**. See [Git setup](git-setup) for how to add Git to a vault (it works fully offline — no GitHub or GitLab needed).
 
-## Pre-operation commit
+All of the steps below are skipped automatically if the vault is not a git repository.
 
-Before applying any bulk operation, Obsidian Valet checks whether the vault has a git repo. If it does, a commit dialog appears with a pre-filled message such as:
+---
 
-```
-chore: snapshot before delete "[[OldNote]]" from parent [Obsidian Valet]
-```
+## Snapshot before the operation
 
-You can edit the message or accept it as-is. Clicking **Commit** stages all current changes (`git add -A`) and commits them. This gives you a rollback point.
-
-If you click **Skip git commit**, the operation proceeds without a checkpoint. Use this when you know the vault state is already clean.
-
-## Post-operation commit
-
-After a successful operation, a **Commit changes to git** button appears. Use it to commit the result state with a message such as:
+When you click **Apply changes** on a vault that has git, a **Git snapshot before operation** dialog appears first. It pre-fills a commit message describing what you are about to do, for example:
 
 ```
-chore: apply operation — 12 notes changed
+[Obsidian Valet] Before operation: delete, property: parent, value: [[OldNote]]
 ```
 
-This is separate from the pre-operation commit so you have a clean "before" and "after" in your history.
+The message format mirrors the operation:
+
+| Operation | Message |
+|---|---|
+| add / delete | `[Obsidian Valet] Before operation: add, property: {property}, value: {value}` |
+| replace | `[Obsidian Valet] Before operation: replace, property: {property}, current_value: {old}, new_value: {new}` |
+| move | `[Obsidian Valet] Before operation: move, from_property: {from}, to_property: {to}, value: {value}` |
+
+You can edit the message or accept it. The dialog has three choices:
+
+- **Commit & apply changes** — stages everything (`git add -A`), commits it as your rollback point, then applies the operation.
+- **Skip git commit** — applies the operation without taking a snapshot. Use this when the vault is already in a clean, known state.
+- **Cancel** — closes the dialog and does nothing.
+
+---
+
+## After the operation: commit or revert
+
+Once the operation has run, the results table appears and an **Optional →** action shows next to the operation buttons. Which one you get depends on the outcome:
+
+### No errors → Commit changes
+
+If every targeted note changed cleanly, an **Optional → Commit changes** button appears. Clicking it opens a **Commit changes** dialog with an editable message describing the result:
+
+```
+[Obsidian Valet] After operation: delete, property: parent, value: [[OldNote]]
+```
+
+(Same field layout as the snapshot message, but it reads **After** instead of **Before**.) Click **Commit changes to git** to record the post-operation state. This gives you a clean *before* (the snapshot) and *after* (this commit) in your history. Once committed, the panel shows **Changes committed to git.**
+
+### Errors → Revert changes
+
+If the operation reported any errors, an **Optional → Revert changes** button appears instead. Clicking it opens a **Revert changes** dialog (no message to write) with a single action, **Revert to safety git snapshot**, which restores the vault to the state captured by the pre-operation snapshot.
+
+Under the hood this runs `git reset --hard HEAD`, discarding the operation's uncommitted edits and returning your tracked files to the last commit. When it finishes, a **Changes reverted** confirmation appears with a **Got it** button.
+
+> The revert restores tracked files to the most recent commit. It works as a true "undo the operation" when you took the snapshot first; if you skipped the snapshot, it reverts to whatever the previous commit was.
+
+---
 
 ## No git repo
 
-If the vault is not a git repository, both commit steps are silently skipped. No error is shown. The operation proceeds directly.
+If the vault is not a git repository, the snapshot dialog never appears and the Commit / Revert actions are not shown. The operation simply runs directly — no error, no prompt.
 
-## Rollback
+---
 
-To undo an operation, use standard git commands in the vault directory:
+## Manual rollback
+
+You can always fall back to standard git commands in the vault directory for anything the UI doesn't cover:
 
 ```sh
 git log --oneline          # find the commit before the operation
-git revert HEAD            # revert the last commit
+git revert HEAD            # create a new commit that undoes the last one
 # or
-git reset --hard <sha>     # hard reset to a specific state
+git reset --hard <sha>     # hard-reset the working tree to a specific snapshot
 ```
-
-Obsidian Valet does not provide a rollback UI — use your git client of choice.

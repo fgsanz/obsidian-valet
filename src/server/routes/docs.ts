@@ -122,7 +122,7 @@ async function listDocs(): Promise<DocPage[]> {
       pages.push({ title: parsed.meta.title, slug: parsed.meta.slug, description: parsed.meta.description })
   }
   pages.push({ title: 'Test cases', slug: 'test-cases', description: 'All defined BDD scenarios, generated from the feature files' })
-  const KNOWN_ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-integration', 'npm-scripts', 'testing', 'test-vault', 'test-cases']
+  const KNOWN_ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-integration', 'git-setup', 'npm-scripts', 'testing', 'test-vault', 'test-cases']
   return pages.sort((a, b) => {
     const ai = KNOWN_ORDER.indexOf(a.slug)
     const bi = KNOWN_ORDER.indexOf(b.slug)

@@ -1,6 +1,18 @@
 import type { ParsedNote, FilterRule, PropertyDef, PropertyType, LocationRule, PropertyRule, FilterCriteria } from '@shared/types'
-import { normalizeLinkTarget, isEmptyPropertyValue } from './frontmatter'
+import { isEmptyPropertyValue } from './frontmatter'
 import { resolvePropertyType } from '@shared/properties'
+
+/**
+ * Split a wiki-link into its target (the note name, possibly with a `#heading`) and optional
+ * alias. Accepts values with or without the surrounding `[[ ]]`. Example:
+ * `[[Lorenzo Massessi|Lori]]` → `{ target: 'Lorenzo Massessi', alias: 'Lori' }`.
+ */
+function parseLink(value: string): { target: string; alias: string | null } {
+  const inner = value.replace(/^\[\[/, '').replace(/\]\]$/, '').trim()
+  const pipe = inner.indexOf('|')
+  if (pipe === -1) return { target: inner, alias: null }
+  return { target: inner.slice(0, pipe).trim(), alias: inner.slice(pipe + 1).trim() }
+}
 
 function getPropertyType(property: string, defs: PropertyDef[]): PropertyType {
   return resolvePropertyType(property, defs)
@@ -36,28 +48,20 @@ function matchesOperator(
       const links: string[] = Array.isArray(rawValue)
         ? rawValue.map(String)
         : [String(rawValue)]
-      const qNorm = caseSensitive
-        ? normalizeLinkTarget(q)
-        : normalizeLinkTarget(q).toLowerCase()
+      const cmp = (s: string) => (caseSensitive ? s : s.toLowerCase())
+      const ql = parseLink(q)
       const anyMatch = links.some((link) => {
-        const norm = caseSensitive
-          ? normalizeLinkTarget(link)
-          : normalizeLinkTarget(link).toLowerCase()
-        const aliasMatch = link.includes('|')
-          ? caseSensitive
-            ? link
-                .replace(/^\[\[/, '')
-                .replace(/\]\]$/, '')
-                .split('|')[1]
-                ?.trim() === qNorm
-            : link
-                .replace(/^\[\[/, '')
-                .replace(/\]\]$/, '')
-                .split('|')[1]
-                ?.trim()
-                .toLowerCase() === qNorm
-          : false
-        return norm === qNorm || aliasMatch
+        const vl = parseLink(link)
+        if (ql.alias != null) {
+          // The query specifies an alias, so match the full note + alias combination exactly.
+          return (
+            cmp(vl.target) === cmp(ql.target) &&
+            vl.alias != null &&
+            cmp(vl.alias) === cmp(ql.alias)
+          )
+        }
+        // No alias in the query: match by note name, or match the query against the link's alias.
+        return cmp(vl.target) === cmp(ql.target) || (vl.alias != null && cmp(vl.alias) === cmp(ql.target))
       })
       if (operator === 'contains') return anyMatch
       if (operator === 'not-contains') return !anyMatch

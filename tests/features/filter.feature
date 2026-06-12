@@ -41,6 +41,21 @@ Feature: Filtering notes
     And I filter notes where "tags" "exists and contains" "tag3/subtag3b"
     Then 1 notes match
 
+  Scenario: Filter a link property by the exact note name and alias
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note Y|Y notes]]"
+    Then 2 notes match
+
+  Scenario: A link query with a different alias does not match the same note
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note Y|Wrong alias]]"
+    Then 0 notes match
+
+  Scenario: A link query with no alias matches the note regardless of its alias
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note Y]]"
+    Then 2 notes match
+
   Scenario: Filter for notes where a property exists and is not empty
     Given a fresh copy of the test vault
     When I filter notes where "time" "exists and is not empty"
