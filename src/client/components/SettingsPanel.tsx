@@ -1,19 +1,37 @@
 import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { X, ChevronRight } from 'lucide-react'
 import { type ColorScheme, getColorScheme, setColorScheme as applyColorScheme } from '../lib/theme'
 import styles from './SettingsPanel.module.css'
 
 interface Props {
   open: boolean
   onClose: () => void
+  updateAvailable?: boolean
+  latestVersion?: string | null
+  checkForUpdates?: boolean
+  onCheckForUpdatesChange?: (enabled: boolean) => void
 }
 
-export default function SettingsPanel({ open, onClose }: Props) {
+export default function SettingsPanel({
+  open,
+  onClose,
+  updateAvailable = false,
+  latestVersion = null,
+  checkForUpdates = true,
+  onCheckForUpdatesChange,
+}: Props) {
+  const navigate = useNavigate()
   const [colorScheme, setColorScheme] = useState<ColorScheme>(getColorScheme)
 
   function changeColorScheme(scheme: ColorScheme) {
     setColorScheme(scheme)
     applyColorScheme(scheme)
+  }
+
+  function openChangelog() {
+    onClose()
+    navigate('/docs/changelog')
   }
 
   useEffect(() => {
@@ -47,6 +65,50 @@ export default function SettingsPanel({ open, onClose }: Props) {
           </button>
         </div>
         <div className={styles.body}>
+          {/* Notifications */}
+          <div className={styles.sectionLabel}>Notifications</div>
+          {updateAvailable && latestVersion ? (
+            <button type="button" className={styles.notification} onClick={openChangelog}>
+              <span className={styles.notificationDot} />
+              <span className={styles.notificationText}>
+                Version <strong>v{latestVersion}</strong> is available
+              </span>
+            </button>
+          ) : (
+            <div className={styles.emptyNote}>You're up to date — no notifications.</div>
+          )}
+
+          {/* Check for new version */}
+          <div className={styles.setting}>
+            <div className={styles.settingInfo}>
+              <div className={styles.settingTitle}>Check for new version</div>
+              <div className={styles.settingDesc}>Checks for a newer version at tool launch.</div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={checkForUpdates}
+              aria-label="Check for new version"
+              className={`${styles.toggle} ${checkForUpdates ? styles.toggleOn : ''}`}
+              onClick={() => onCheckForUpdatesChange?.(!checkForUpdates)}
+            >
+              <span className={styles.toggleKnob} />
+            </button>
+          </div>
+
+          {/* Changelog link */}
+          <button type="button" className={styles.setting} onClick={openChangelog}>
+            <div className={styles.settingInfo}>
+              <div className={styles.settingTitle}>
+                Changelog
+                {updateAvailable && <span className={styles.newBadge}>New version available</span>}
+              </div>
+              <div className={styles.settingDesc}>What's new in each version.</div>
+            </div>
+            <ChevronRight size={18} className={styles.chevron} />
+          </button>
+
+          {/* Appearance */}
           <div className={styles.setting}>
             <div className={styles.settingInfo}>
               <div className={styles.settingTitle}>Color scheme</div>

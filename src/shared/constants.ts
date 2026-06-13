@@ -1,6 +1,7 @@
 export const APP_NAME = 'Obsidian Valet'
 export const APP_NAME_SLUG = 'obsidian-valet'
 export const APP_VERSION = '0.1.0'
+export const GITHUB_REPO = 'fgsanz/obsidian-valet'
 
 export const PROPERTY_TYPES = [
   { value: 'text', label: 'Text' },

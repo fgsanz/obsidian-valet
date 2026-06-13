@@ -46,7 +46,7 @@
   gap: var(--space-3);
 }
 
-.settingsBtn {
+.iconBtn {
   background: none;
   border: none;
   color: var(--color-text-muted);
@@ -59,9 +59,17 @@
   transition: color 0.12s, background 0.12s;
 }
 
-.settingsBtn:hover {
+.iconBtn:hover {
   color: var(--color-text);
   background: var(--color-hover);
+}
+
+.iconBtnAlert {
+  color: var(--color-accent);
+}
+
+.iconBtnAlert:hover {
+  color: var(--color-accent);
 }
 
 .links a {
