@@ -151,7 +151,7 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
             return (
               <tr key={note.filePath}>
                 <td className={styles.colName}>
-                  <span>{note.title}</span>
+                  <span className={styles.noteName}>{note.title}</span>
                   <Tooltip content="Copy" className={styles.copyTooltip}>
                     <button
                       type="button"

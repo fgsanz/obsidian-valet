@@ -67,6 +67,17 @@
   white-space: nowrap;
 }
 
+/* Cap the name so it never overflows the copy icon; truncate with an ellipsis instead,
+   leaving room for the icon to stay visible. */
+.noteName {
+  display: inline-block;
+  max-width: calc(100% - 2.25rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 .copyTooltip {
   display: inline-flex;
   align-items: center;
