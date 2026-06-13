@@ -52,13 +52,15 @@ npm install
 
 #### Optional – Configure Git in your Obsidian vault for safe rollback
 
-Obsidian Valet is safe. And in if you care enough, you can find in the tool documentation about the text cases and how to run them yourself. Now, having said that, if you want to be extra careful, it is highly recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub or Gilab in the cloud.
+Obsidian Valet is **safe**. If you care enough about safety, you can find in the tool detailed documentation about the text cases and you can run them yourself.
+
+Regardless and to be extra careful, it is highly recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub or Gilab in the cloud.
 
 If you setup Git in your local vault, Obsidian Valet can use Git to safely (and optionally) push local commits before and after performing bulk operations, in case you decide to roll them back.
 
 > Safe rollbacks, locally.
 
-Open a terminal/console window, go inside the extracted folder and execute the following command:
+Open a terminal/console window, go inside your Obsidian vault and execute the following command:
 
 ```sh
 cd {path to your Obsidian vault}
@@ -119,4 +121,16 @@ tests/         # Test cases, written BDD style
 
 ### Configuration
 
-Vault definitions are stored at `~/.config/obsidian-valet/config.json`.
+Your configuration — the vaults you've added, their forbidden directories and discovered properties, and which vault is active — is saved in a `config.json` file. **Obsidian Valet runs on Linux, macOS, and Windows**, and on each it stores this file in that platform's standard per-user application config directory:
+
+| OS | Location |
+|----|----------|
+| **Linux** | `$XDG_CONFIG_HOME/obsidian-valet/config.json` (defaults to `~/.config/obsidian-valet/config.json`) |
+| **macOS** | `~/Library/Application Support/obsidian-valet/config.json` |
+| **Windows** | `%APPDATA%\obsidian-valet\config.json` (e.g. `C:\Users\<you>\AppData\Roaming\obsidian-valet\config.json`) |
+
+The location is detected automatically at runtime, so no setup is needed. A few things worth knowing:
+
+- It lives in your **home/user profile**, not inside the cloned repository — so updating the tool (`git pull` or downloading a new release) never touches your configuration.
+- The folder and file are created automatically the first time you add a vault; you normally never edit them by hand.
+- It only ever references your own machine — nothing is sent anywhere.
