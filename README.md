@@ -4,10 +4,10 @@ A local web tool for bulk manipulation of Obsidian vault notes based on YAML fro
 
 ## What it does
 
-- Filter notes by property values — links, tags, dates, text, and more
+- Filter notes by directory and property values — links, tags, dates, text, and more
 - Apply bulk operations across matched notes: delete a value, change a value, or move a value between properties
-- Git safety checkpoints before and after every operation
-- Works entirely offline — no external services or AI tokens
+- Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
+- Works entirely offline — no external services, no information is shared outside the computer, no AI tokens are spent
 
 ## Requirements
 
@@ -51,6 +51,7 @@ src/
   client/      # React frontend — pages, components, API client
 docs/          # Documentation served by the app at /docs
 scripts/       # check-docs.ts — validates docs coverage
+tests/         # Test cases, written BDD style
 ```
 
 ## Renaming the tool
