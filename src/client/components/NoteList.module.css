@@ -110,12 +110,12 @@
 
 .colProps {
   color: var(--color-text-muted);
-  width: 43%;
+  width: 40%;
   white-space: normal;
 }
 
 .colResult {
-  width: 10%;
+  width: 13%;
   text-align: center;
 }
 

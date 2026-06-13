@@ -88,6 +88,8 @@ export interface OperationResult {
   succeeded: number
   failed: number
   errors: OperationError[]
+  /** File paths of the notes that actually changed (a subset of the matched notes). */
+  changedPaths: string[]
   commitSha?: string
 }
 

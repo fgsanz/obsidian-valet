@@ -156,6 +156,7 @@ export async function applyOperation(
     succeeded: 0,
     failed: 0,
     errors: [],
+    changedPaths: [],
   }
 
   for (const note of notes) {
@@ -164,6 +165,7 @@ export async function applyOperation(
     try {
       await writeNote(mutated, defs)
       result.succeeded++
+      result.changedPaths.push(note.filePath)
     } catch (err) {
       result.failed++
       result.errors.push({ filePath: note.filePath, error: String(err) })

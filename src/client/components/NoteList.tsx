@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { ArrowUp, ArrowDown, Check, XCircle, Copy } from 'lucide-react'
+import { ArrowUp, ArrowDown, Check, XCircle, Minus, Copy } from 'lucide-react'
 import type { ParsedNote, OperationResult } from '@shared/types'
-import { RESULT_ORDER, type ResultStatus, getResultStatus } from '../lib/resultOrder'
+import { RESULT_ORDER, type ResultStatus } from '../lib/resultOrder'
 import Tooltip from './Tooltip'
 import styles from './NoteList.module.css'
 
@@ -21,7 +21,19 @@ function renderPropValue(value: unknown): string {
 }
 
 export default function NoteList({ notes, highlightProperties = [], result }: Props) {
-  const [sortColumn, setSortColumn] = useState<SortColumn>(result ? 'result' : 'location')
+  // Per-note result status, derived from which notes actually changed / errored.
+  const changedSet = new Set(result?.changedPaths ?? [])
+  const errorSet = new Set(result?.errors.map((e) => e.filePath) ?? [])
+  function statusOf(filePath: string): ResultStatus {
+    if (errorSet.has(filePath)) return 'failed'
+    if (changedSet.has(filePath)) return 'success'
+    return 'not-applied'
+  }
+  const hasNonSuccess = !!result && notes.some((n) => statusOf(n.filePath) !== 'success')
+
+  // Default to sorting by result only when there is something other than a plain success to
+  // surface (errors or unchanged notes); otherwise sort by location.
+  const [sortColumn, setSortColumn] = useState<SortColumn>(hasNonSuccess ? 'result' : 'location')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // The same property can appear in several filter rules; show it only once per note.
@@ -42,19 +54,8 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
 
   const sortedNotes = [...notes].sort((a, b) => {
     if (sortColumn === 'result' && result) {
-      // Custom sort order for result column
-      const aFailed = result.errors.some((e) => e.filePath === a.filePath)
-      const bFailed = result.errors.some((e) => e.filePath === b.filePath)
-      const aSucceeded = result.errors.length === 0 || !aFailed
-      const bSucceeded = result.errors.length === 0 || !bFailed
-
-      const aStatus = getResultStatus(a.filePath, aSucceeded, aFailed)
-      const bStatus = getResultStatus(b.filePath, bSucceeded, bFailed)
-
-      const aOrder = RESULT_ORDER[aStatus]
-      const bOrder = RESULT_ORDER[bStatus]
-
-      const cmp = aOrder - bOrder
+      // Custom sort order for result column: errors, then unchanged, then success.
+      const cmp = RESULT_ORDER[statusOf(a.filePath)] - RESULT_ORDER[statusOf(b.filePath)]
       return sortDirection === 'asc' ? cmp : -cmp
     }
 
@@ -145,15 +146,7 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
               ? note.relativePath.substring(0, note.relativePath.lastIndexOf('/'))
               : '(root)'
 
-            const hasFailed = result?.errors.some((e) => e.filePath === note.filePath) ?? false
-            const hasSucceeded = result && !hasFailed ? true : false
-            const resultStatus = result
-              ? hasFailed
-                ? 'failed'
-                : hasSucceeded
-                  ? 'success'
-                  : 'not-applied'
-              : null
+            const resultStatus = result ? statusOf(note.filePath) : null
 
             return (
               <tr key={note.filePath}>
@@ -194,7 +187,11 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
                   <td className={styles.colResult}>
                     {resultStatus === 'failed' && <XCircle size={18} color="var(--color-error)" />}
                     {resultStatus === 'success' && <Check size={18} color="var(--color-success)" />}
-                    {resultStatus === 'not-applied' && <span className={styles.resultNA}>N/A</span>}
+                    {resultStatus === 'not-applied' && (
+                      <Tooltip content="Unchanged">
+                        <Minus size={18} color="var(--color-text-subtle)" />
+                      </Tooltip>
+                    )}
                   </td>
                 )}
               </tr>

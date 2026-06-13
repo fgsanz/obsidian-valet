@@ -14,18 +14,12 @@
 }
 
 .statValue {
-  font-weight: 700;
   font-size: var(--text-base);
-  color: #fff;
 }
 
 .statLabel {
   color: var(--color-text-muted);
 }
-
-.matched .statValue { color: var(--color-text); }
-.succeeded .statValue { color: var(--color-success); }
-.failed .statValue { color: var(--color-error); }
 
 .divider {
   color: var(--color-border);
