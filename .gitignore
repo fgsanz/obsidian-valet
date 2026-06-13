@@ -2,3 +2,6 @@ node_modules/
 dist/
 .env
 *.local
+
+# Local Claude Code / editor agent config (machine-specific)
+.claude/
