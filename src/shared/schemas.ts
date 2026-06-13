@@ -1,5 +1,20 @@
 import { z } from 'zod'
 
+/**
+ * Persisted user settings. Every field uses `.catch(default)` so a missing key falls back to its
+ * default and an invalid value is replaced rather than throwing — and unknown keys are stripped.
+ * This makes the stored file forward/backward compatible: a newer version adding a field "just
+ * works" against an older file, and a hand-edited file can't break startup.
+ */
+export const userSettingsSchema = z.object({
+  schemaVersion: z.number().catch(1),
+  colorScheme: z.enum(['light', 'dark', 'system']).catch('system'),
+  checkForUpdates: z.boolean().catch(true),
+  dismissedVersion: z.string().nullable().catch(null),
+})
+
+export type UserSettings = z.infer<typeof userSettingsSchema>
+
 export const propertyTypeSchema = z.enum([
   'text',
   'text-array',

@@ -12,6 +12,7 @@ import { vaultsPlugin } from './routes/vaults'
 import { notesPlugin } from './routes/notes'
 import { gitPlugin } from './routes/git'
 import { docsPlugin } from './routes/docs'
+import { settingsPlugin } from './routes/settings'
 import { loadConfig } from './config/config'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -71,6 +72,7 @@ async function main() {
   await fastify.register(notesPlugin, { prefix: '/api' })
   await fastify.register(gitPlugin, { prefix: '/api' })
   await fastify.register(docsPlugin, { prefix: '/api' })
+  await fastify.register(settingsPlugin, { prefix: '/api' })
 
   await loadConfig()
 

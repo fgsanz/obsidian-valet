@@ -1,4 +1,5 @@
 import type { Vault, ParsedNote, FilterCriteria, Operation, OperationResult, GitStatus, DocPage, ApiResponse, PropertyDef } from '@shared/types'
+import type { UserSettings } from '@shared/schemas'
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
@@ -64,5 +65,10 @@ export const api = {
   docs: {
     list: () => request<DocPage[]>('GET', '/docs'),
     get: (slug: string) => request<{ title: string; content: string }>('GET', `/docs/${slug}`),
+  },
+
+  settings: {
+    get: () => request<UserSettings>('GET', '/settings'),
+    update: (patch: Partial<UserSettings>) => request<UserSettings>('PATCH', '/settings', patch),
   },
 }

@@ -2,10 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
-import { initColorScheme } from './lib/theme'
 import './styles/global.css'
 
-initColorScheme()
+// The initial theme is applied pre-paint by the inline script in index.html (from the localStorage
+// mirror); the app then applies the authoritative server setting once it loads.
 
 const queryClient = new QueryClient({
   defaultOptions: {

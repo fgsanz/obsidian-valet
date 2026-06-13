@@ -20,3 +20,4 @@ function configDir(appName: string): string {
 
 export const CONFIG_DIR = configDir('obsidian-valet')
 export const CONFIG_FILE = join(CONFIG_DIR, 'config.json')
+export const SETTINGS_FILE = join(CONFIG_DIR, 'settings.json')

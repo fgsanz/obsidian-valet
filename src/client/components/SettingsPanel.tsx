@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, ChevronRight } from 'lucide-react'
-import { type ColorScheme, getColorScheme, setColorScheme as applyColorScheme } from '../lib/theme'
+import { type ColorScheme } from '../lib/theme'
 import styles from './SettingsPanel.module.css'
 
 interface Props {
@@ -9,6 +9,8 @@ interface Props {
   onClose: () => void
   updateAvailable?: boolean
   latestVersion?: string | null
+  colorScheme?: ColorScheme
+  onColorSchemeChange?: (scheme: ColorScheme) => void
   checkForUpdates?: boolean
   onCheckForUpdatesChange?: (enabled: boolean) => void
 }
@@ -18,16 +20,12 @@ export default function SettingsPanel({
   onClose,
   updateAvailable = false,
   latestVersion = null,
+  colorScheme = 'system',
+  onColorSchemeChange,
   checkForUpdates = true,
   onCheckForUpdatesChange,
 }: Props) {
   const navigate = useNavigate()
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(getColorScheme)
-
-  function changeColorScheme(scheme: ColorScheme) {
-    setColorScheme(scheme)
-    applyColorScheme(scheme)
-  }
 
   function openChangelog() {
     onClose()
@@ -117,7 +115,7 @@ export default function SettingsPanel({
             <select
               className={styles.select}
               value={colorScheme}
-              onChange={(e) => changeColorScheme(e.target.value as ColorScheme)}
+              onChange={(e) => onColorSchemeChange?.(e.target.value as ColorScheme)}
             >
               <option value="light">Light</option>
               <option value="dark">Dark</option>
