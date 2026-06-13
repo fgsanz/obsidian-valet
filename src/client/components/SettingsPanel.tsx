@@ -50,7 +50,7 @@ export default function SettingsPanel({ open, onClose }: Props) {
           <div className={styles.setting}>
             <div className={styles.settingInfo}>
               <div className={styles.settingTitle}>Color scheme</div>
-              <div className={styles.settingDesc}>Choose the application's color scheme.</div>
+              <div className={styles.settingDesc}>Choose the tool's color scheme.</div>
             </div>
             <select
               className={styles.select}
