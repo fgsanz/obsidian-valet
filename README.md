@@ -14,7 +14,7 @@ Obsidian Valet...
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
 - Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
 
-## Getting started
+## Installation
 
 You do not need to be a developer to use **Obsidian Valet**.
 
@@ -28,7 +28,7 @@ For the tool to run, you need the following:
 - npm [Official instructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
 - Git [Official instructions](https://git-scm.com/install/) (Optional, see below)
 
-### Installation
+### Get the tool
 
 There are two options...
 
@@ -79,12 +79,12 @@ The server starts typically on port 3741 (or the next available port) and opens 
 
 ### Add your vault and get busy
 
-From your browser, on the tool tab:
+On your browser:
 
 - On the **Vaults** page:
   - Add the location of your Obsidian vault
   - Optionally, add one or several forbidden directories so the tool ignores them
-- You are now ready to perform bulk operations on your notes
+- You are now ready to perform bulk **Operations** on your notes
 
 ## New releases
 
