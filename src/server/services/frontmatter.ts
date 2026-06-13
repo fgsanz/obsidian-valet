@@ -108,7 +108,8 @@ export function parseNote(
   return {
     filePath,
     relativePath,
-    title: String(frontmatter['title'] ?? basename(filePath, '.md')),
+    // The note's name is its filename (as in Obsidian), never the `title` frontmatter property.
+    title: basename(filePath, '.md'),
     frontmatter,
     rawFrontmatter: parsed.raw,
     body: parsed.body,
