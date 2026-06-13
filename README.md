@@ -3,27 +3,31 @@
 [![Latest release](https://img.shields.io/github/v/release/fgsanz/obsidian-valet?sort=semver)](https://github.com/fgsanz/obsidian-valet/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-A local web tool for bulk manipulation of Obsidian vault notes based on YAML frontmatter properties.
+**Obsidian Valet** is a local web tool (any browser) for bulk manipulation of Obsidian vault notes based on YAML frontmatter properties.
 
 ## What it does
 
-- Filter notes by directory and property values — links, tags, dates, text, and more
-- Apply bulk operations across matched notes: delete a value, change a value, or move a value between properties
+Obsidian Valet...
+
+- Filters notes by directory and property values (e.g., links, tags, dates, text)
+- Applies bulk operations across matched notes: delete a value, change a value, or move a value between properties
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
-- Works entirely offline — no external services, no information is shared outside the computer, no AI tokens are spent
+- Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
 
 ## Getting started
 
-You do not need to be a developer to use **Obsidian Valet**. You just need to download the tool (and decompress the file) or clone the repo (if you are more comfortable with Git commands) and run the tool from the command line. All steps are explain bellow.
+You do not need to be a developer to use **Obsidian Valet**. You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you are prefer to use Git commands) and run the tool from the command line. All steps are explain bellow.
 
 ### Requirements
 
-In order to run the tool, you need the following in your computer. Installation guidelines depend on your system, refer to the official guidelines:
+For the tool to run, you need the following in your computer. Installation guidelines depend on your system; refer to the official guidelines:
 
-- Node.js 20+
-- npm
+- Node.js 20+ [Official isntructions](https://nodejs.org/en/download)
+- npm [Official isntructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
 
 ### Installation
+
+There are two options...
 
 #### Option 1 – Clone the repository
 
@@ -33,17 +37,32 @@ cd obsidian-valet
 npm install
 ```
 
-#### Option 2 – Download and decompress a tool release
+#### Option 2 – Download a release and decompress it
 
 - Download a release archive from the [latest release](https://github.com/fgsanz/obsidian-valet/releases/latest)
-- Unzip it anywhere you want
+- Unzip it locally, anywhere you want, the tool is self-contained
 - Open a terminal/console window, go inside the extracted folder and execute the following command:
 
 ```sh
 npm install
 ```
 
-### Run the tool and use it from your browser
+#### Optional – Configure Git in your Obsidian vault for safe rollback
+
+Obsidian Valet is safe. And in if you care enough, you can find in the tool documentation about the text cases and how to run them yourself. Now, having said that, if you want to be extra careful, it is highly recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub or Gilab in the cloud.
+
+If you setup Git in your local vault, Obsidian Valet can use Git to safely (and optionally) push local commits before and after performing bulk operations, in case you decide to roll them back.
+
+> Safe rollbacks, locally.
+
+Open a terminal/console window, go inside the extracted folder and execute the following command:
+
+```sh
+cd {path to your Obsidian vault}
+git init 
+```
+
+### Run the tool from a terminal/console and use it from any browser
 
 Open a terminal/console window, go inside the extracted folder and execute the following command:
 
@@ -52,6 +71,15 @@ npm start
 ```
 
 The server starts typically on port 3741 (or the next available port) and opens the app in your browser. The app prints the URL to the console.
+
+## Getting started
+
+From your browser, on the tool tab:
+
+- On the **Vaults** page:
+  - Add the location of your Obsidian vault
+  - Optionally, add one or several forbidden directories so the tool ignores them
+- You are now ready to perform bulk operations on your notes
 
 ## New releases
 
@@ -63,6 +91,8 @@ Each release includes downloadable archives — a named source `.zip` (`obsidian
 
 
 ## For developers
+
+Running the tool this way automatically takes on the changes you made to the source code:
 
 ```sh
 npm run dev
@@ -84,4 +114,4 @@ tests/         # Test cases, written BDD style
 
 ### Configuration
 
-Vault definitions are stored at `~/.config/obsidian-valet/config.json`. Go to the **Vaults** page in the app to add vaults.
+Vault definitions are stored at `~/.config/obsidian-valet/config.json`.
