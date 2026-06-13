@@ -16,14 +16,17 @@ Obsidian Valet...
 
 ## Getting started
 
-You do not need to be a developer to use **Obsidian Valet**. You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you are prefer to use Git commands) and run the tool from the command line. All steps are explain bellow.
+You do not need to be a developer to use **Obsidian Valet**.
+
+You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
 
 ### Requirements
 
-For the tool to run, you need the following in your computer. Installation guidelines depend on your system; refer to the official guidelines:
+For the tool to run, you need the following:
 
-- Node.js 20+ [Official isntructions](https://nodejs.org/en/download)
-- npm [Official isntructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
+- Node.js 20+ [Official instructions](https://nodejs.org/en/download)
+- npm [Official instructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
+- Git [Official instructions](https://git-scm.com/install/) (Optional, see below)
 
 ### Installation
 
@@ -62,7 +65,9 @@ cd {path to your Obsidian vault}
 git init 
 ```
 
-### Run the tool from a terminal/console and use it from any browser
+## Getting started
+
+### Run the tool
 
 Open a terminal/console window, go inside the extracted folder and execute the following command:
 
@@ -72,7 +77,7 @@ npm start
 
 The server starts typically on port 3741 (or the next available port) and opens the app in your browser. The app prints the URL to the console.
 
-## Getting started
+### Add your vault and get busy
 
 From your browser, on the tool tab:
 
