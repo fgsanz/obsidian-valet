@@ -1,5 +1,8 @@
 # Obsidian Valet
 
+[![Latest release](https://img.shields.io/github/v/release/fgsanz/obsidian-valet?sort=semver)](https://github.com/fgsanz/obsidian-valet/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 A local web tool for bulk manipulation of Obsidian vault notes based on YAML frontmatter properties.
 
 ## What it does
@@ -14,13 +17,25 @@ A local web tool for bulk manipulation of Obsidian vault notes based on YAML fro
 - Node.js 20+
 - npm
 
+## Releases
+
+Released versions are published on the [Releases page](https://github.com/fgsanz/obsidian-valet/releases). The newest one is always at:
+
+- **Latest release:** https://github.com/fgsanz/obsidian-valet/releases/latest
+
+Each release includes downloadable archives — a named source `.zip` (`obsidian-valet-<version>.zip`) plus GitHub's automatic "Source code" `.zip`/`.tar.gz`. See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
+
 ## Install
+
+Either clone the repository:
 
 ```sh
 git clone https://github.com/fgsanz/obsidian-valet.git
 cd obsidian-valet
 npm install
 ```
+
+…or download a release archive from the [latest release](https://github.com/fgsanz/obsidian-valet/releases/latest), unzip it, and run `npm install` inside the extracted folder.
 
 ## Run
 
