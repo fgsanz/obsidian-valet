@@ -13,7 +13,7 @@ For anything the UI doesn't cover — or to roll back to an older state — you 
 List the latest commits in your vault:
 
 ```sh
-git log --oneline          # find the commit before the operation
+git log --oneline
 ```
 
 This is an example of the outcome...
@@ -26,16 +26,16 @@ ea41465 [Obsidian Valet] Before: delete, property: tags, value: book
 ...
 ```
 
-Create a new commit that undoes the last commit:
+Create a new commit that undoes the last commit, called HEAD:
 
 ```sh
-git revert HEAD            # undoes the last one, called HEAD
+git revert HEAD
 ```
 
 Or you can hard-reset the vault (the working tree) to a specific snapshot. In the example above, to revert to `Before: delete, property: tags, value: book` issue the command below replacing `<sha>` with `ea41465`:
 
 ```sh
-git reset --hard <sha>     # hard-reset the working tree to a specific snapshot
+git reset --hard <sha>
 ```
 
 If the vault is not a git repository (see [Without Git integration](without-git-integration)), there is no automatic history to roll back to — consider [adding Git to your vault](git-setup) so this safety net is available.

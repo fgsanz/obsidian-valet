@@ -369,7 +369,7 @@ export default function OperationsPage() {
 
 /** Git commit message describing the operation, either Before (snapshot) or After it ran. */
 function buildOperationMessage(op: Operation, phase: 'Before' | 'After'): string {
-  const prefix = `[${APP_NAME}] ${phase} operation: `
+  const prefix = `[${APP_NAME}] ${phase}: `
   switch (op.type) {
     case 'add-value':
       return `${prefix}add, property: ${op.property}, value: ${op.value}`

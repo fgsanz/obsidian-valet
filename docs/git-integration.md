@@ -17,16 +17,16 @@ All of the steps below are skipped automatically if the vault is not a git repos
 When you click **Apply changes** on a vault that has git, a **Git snapshot before operation** dialog appears first. It pre-fills a commit message describing what you are about to do, for example:
 
 ```
-[Obsidian Valet] Before operation: delete, property: parent, value: [[OldNote]]
+[Obsidian Valet] Before: delete, property: parent, value: [[OldNote]]
 ```
 
 The message format mirrors the operation:
 
 | Operation | Message |
 |---|---|
-| add / delete | `[Obsidian Valet] Before operation: add, property: {property}, value: {value}` |
-| replace | `[Obsidian Valet] Before operation: replace, property: {property}, current_value: {old}, new_value: {new}` |
-| move | `[Obsidian Valet] Before operation: move, from_property: {from}, to_property: {to}, value: {value}` |
+| add / delete | `[Obsidian Valet] Before: add, property: {property}, value: {value}` |
+| replace | `[Obsidian Valet] Before: replace, property: {property}, current_value: {old}, new_value: {new}` |
+| move | `[Obsidian Valet] Before: move, from_property: {from}, to_property: {to}, value: {value}` |
 
 You can edit the message or accept it. The dialog has three choices:
 
@@ -45,7 +45,7 @@ Once the operation has run, the results table appears and an **Optional →** ac
 If every targeted note changed cleanly, an **Optional → Commit changes** button appears. Clicking it opens a **Commit changes** dialog with an editable message describing the result:
 
 ```
-[Obsidian Valet] After operation: delete, property: parent, value: [[OldNote]]
+[Obsidian Valet] After: delete, property: parent, value: [[OldNote]]
 ```
 
 (Same field layout as the snapshot message, but it reads **After** instead of **Before**.) Click **Commit changes to git** to record the post-operation state. This gives you a clean *before* (the snapshot) and *after* (this commit) in your history. Once committed, the panel shows **Changes committed to git.**
