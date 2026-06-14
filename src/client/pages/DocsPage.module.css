@@ -121,27 +121,55 @@
 .index h2 {
   font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
-.index ul {
-  list-style: disc;
-  padding-left: var(--space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+/* Use-case example cards, two per row. */
+.examplesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
 }
 
-.index li {
-  font-size: var(--text-sm);
+@media (max-width: 800px) {
+  .examplesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.exampleCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: var(--space-4) var(--space-5);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.65;
   color: var(--color-text-muted);
 }
 
-.index a {
-  color: var(--color-accent);
-  text-decoration: none;
+/* On the light theme the page is already white, so use pure-white cards lifted with a shadow. */
+:global([data-theme='light']) .exampleCard {
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.index a:hover {
-  text-decoration: underline;
+/* Dark mode: the glow blooms from a tone midway between #1A1A30 and the card (#1E1E34) at the edge
+   and blurs to transparent, which over the dark page reads as a #1E1E34 → #0F0F17 gradient. */
+:global([data-theme='dark']) .exampleCard {
+  background: var(--color-surface-2);
+  border-color: transparent;
+  box-shadow:
+    0 8px 24px #1e1e34,
+    0 2px 8px #1e1e34;
+}
+
+.exampleCard strong {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.exampleAuthor {
+  color: var(--color-text-subtle);
 }

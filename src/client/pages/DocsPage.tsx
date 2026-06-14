@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, NavLink, Link } from 'react-router-dom'
+import { useParams, NavLink } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, ChevronDown, ChevronsDownUp, ChevronsUpDown } from 'lucide-react'
 import type { DocPage } from '@shared/types'
@@ -39,20 +39,58 @@ function groupIntoSections(pages: DocPage[]): { title: string; docs: DocPage[] }
   return others.length ? [...sections, { title: 'Other', docs: others }] : sections
 }
 
-function DocsIndex({ pages }: { pages: DocPage[] }) {
+const USE_CASES: { text: React.ReactNode; author: string }[] = [
+  {
+    author: 'Björn',
+    text: (
+      <>Find notes <strong>in directory</strong> ‘Notes/Raw’ and <strong>add</strong> ‘review’ to ‘tags´ property</>
+    ),
+  },
+  {
+    author: 'Aiko',
+    text: (
+      <>Find notes where ‘tags’ contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ <strong>from</strong> ‘related’ to ‘parent’</>
+    ),
+  },
+  {
+    author: 'Tomás',
+    text: (
+      <>Find notes where ´[[Woodworking]]´ <strong>is in either</strong> ‘parent’ or ‘related’ properties, and add the tag ‘diy’ to ‘tags’ property</>
+    ),
+  },
+  {
+    author: 'Aless',
+    text: (
+      <>Find notes where ‘tags’ contains ‘physics’ and ‘parent’ <strong>exists and does not contain</strong> ‘[[STEM]]’, and add ‘[[STEM]]’ to ‘parent’ property</>
+    ),
+  },
+  {
+    author: 'Yuki',
+    text: (
+      <>Find all notes <strong>not in directory</strong> ‘Work’ where property ‘parent’ contains ´[[sw dev]]´, and <strong>replace</strong> ‘[[sw dev]]’ <strong>with</strong> ‘[[Coding]]’</>
+    ),
+  },
+  {
+    author: 'Priya',
+    text: (
+      <>Find notes in directory ‘Books’ where property ‘date’ <strong>exist and is empty</strong>, and <strong>delete</strong> ´true´ from ´read´ property</>
+    ),
+  },
+]
+
+function DocsIndex() {
   return (
     <div className={styles.index}>
       <h1>Obsidian Valet</h1>
       <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level. It runs only when launched from the CLI and is not connected to any external service.</p>
-      <h2>Sections</h2>
-      <ul>
-        {pages.map((p) => (
-          <li key={p.slug}>
-            <Link to={`/docs/${p.slug}`}>{p.title}</Link>
-            {p.description && <> — {p.description}</>}
-          </li>
+      <h2>Use cases – Examples</h2>
+      <div className={styles.examplesGrid}>
+        {USE_CASES.map((u, i) => (
+          <div key={i} className={styles.exampleCard}>
+            {u.text} <span className={styles.exampleAuthor}>— {u.author}</span>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }
@@ -142,7 +180,7 @@ export default function DocsPage() {
       </nav>
 
       <main className={styles.main}>
-        {slug === 'index' && <DocsIndex pages={nonIndexPages} />}
+        {slug === 'index' && <DocsIndex />}
         {slug !== 'index' && isLoading && <p style={{ color: 'var(--color-text-muted)' }}>Loading…</p>}
         {slug !== 'index' && isError && <p style={{ color: 'var(--color-error)' }}>Failed to load page.</p>}
         {slug !== 'index' && page && <DocViewer content={page.content} />}
