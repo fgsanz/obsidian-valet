@@ -6,7 +6,7 @@ description: How each property type is stored and matched
 
 # Frontmatter types
 
-Each property definition has a type that determines how values are parsed, compared, and written back.
+**Frontmatter** is the top section of a note and it contains properties. Each property definition has a type that determines how values are parsed, compared, and written back.
 
 ## text
 

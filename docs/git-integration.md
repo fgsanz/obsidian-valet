@@ -1,14 +1,14 @@
 ---
-title: Git integration
+title: With Git integration
 slug: git-integration
 description: Safety snapshots, commits, and one-click revert around bulk operations
 ---
 
-# Git integration
+# With Git integration
 
-If an Obsidian vault contains a git repository, Obsidian Valet integrates with it to give you a safety net around every bulk operation: a **snapshot before**, and an optional **commit or revert after**. See [Git setup](git-setup) for how to add Git to a vault (it works fully offline — no GitHub or GitLab needed).
+If an Obsidian vault contains a git repository, Obsidian Valet integrates with it to give you a safety net around every bulk operation: a **snapshot before**, and an optional **commit or revert after**. See [Add Git to your vault](git-setup) for how to add Git to a vault (it works fully offline — no GitHub or GitLab needed).
 
-All of the steps below are skipped automatically if the vault is not a git repository.
+All of the steps below are skipped automatically if the vault is not a git repository — see [Without Git integration](without-git-integration) for what happens then. To undo an operation by hand, see [Operation rollback](operation-rollback).
 
 ---
 
@@ -57,22 +57,3 @@ If the operation reported any errors, an **Optional → Revert changes** button 
 Under the hood this runs `git reset --hard HEAD`, discarding the operation's uncommitted edits and returning your tracked files to the last commit. When it finishes, a **Changes reverted** confirmation appears with a **Got it** button.
 
 > The revert restores tracked files to the most recent commit. It works as a true "undo the operation" when you took the snapshot first; if you skipped the snapshot, it reverts to whatever the previous commit was.
-
----
-
-## No git repo
-
-If the vault is not a git repository, the snapshot dialog never appears and the Commit / Revert actions are not shown. The operation simply runs directly — no error, no prompt.
-
----
-
-## Manual rollback
-
-You can always fall back to standard git commands in the vault directory for anything the UI doesn't cover:
-
-```sh
-git log --oneline          # find the commit before the operation
-git revert HEAD            # create a new commit that undoes the last one
-# or
-git reset --hard <sha>     # hard-reset the working tree to a specific snapshot
-```

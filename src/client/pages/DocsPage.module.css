@@ -12,19 +12,78 @@
   overflow: auto;
 }
 
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
 .sidebarTitle {
   font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-subtle);
-  margin-bottom: var(--space-3);
 }
 
-.nav {
+.toolBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: color 0.12s, background 0.12s;
+}
+
+.toolBtn:hover {
+  color: var(--color-text);
+  background: var(--color-hover);
+}
+
+.section {
+  margin-bottom: var(--space-1);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background 0.12s;
+}
+
+.sectionHeader:hover {
+  background: var(--color-hover);
+}
+
+.sectionHeader svg {
+  flex-shrink: 0;
+  color: var(--color-text-subtle);
+}
+
+/* Indented doc list with a subtle vertical guide line. */
+.sectionDocs {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 1px;
+  margin: 2px 0 var(--space-2) calc(var(--space-2) + 7px);
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
 }
 
 .navLink {

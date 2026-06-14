@@ -1,16 +1,16 @@
 ---
-title: Git setup
+title: Add Git to your vault
 slug: git-setup
 description: Add local Git to a vault, keep it offline, and combine it with Obsidian Sync
 ---
 
-# Git setup
+# Add Git to your vault
 
-Obsidian Valet uses [Git](https://git-scm.com/) to take a safety snapshot before a bulk operation and to let you commit or revert the changes afterwards (see [Git integration](git-integration)). This page explains how to add Git to a vault, why it works **entirely on your computer** without any cloud account, and how it lives happily alongside Obsidian Sync — even across several devices.
+Obsidian Valet uses [Git](https://git-scm.com/) to take a safety snapshot before a bulk operation and to let you commit or revert the changes afterwards (see [With Git integration](git-integration)). This page explains how to add Git to a vault, why it works **entirely on your computer** without any cloud account, and how it lives happily alongside Obsidian Sync — even across several devices.
 
 ---
 
-## Adding Git to a vault
+## Add Git to your vault
 
 A vault is just a folder of Markdown files, so turning it into a Git repository takes one command. Open a terminal in the vault folder and run:
 
@@ -25,7 +25,7 @@ That's it. The vault is now version-controlled. From this point on, Obsidian Val
 
 ### Recommended `.gitignore`
 
-Obsidian stores per-device UI state inside the `.obsidian` folder. You usually do **not** want that churn in your history. Create a `.gitignore` file in the vault root:
+Likely, you consume the same Obsidian vault in different devices (e.g., laptop, phone). Obsidian stores per-device UI state info inside the `.obsidian` folder. You usually do **not** want that churn in your history. Create a `.gitignore` file in the vault root:
 
 ```gitignore
 # Obsidian local/workspace state
@@ -34,11 +34,11 @@ Obsidian stores per-device UI state inside the `.obsidian` folder. You usually d
 .obsidian/cache
 .trash/
 
-# OS noise
+# OSX noise (if you are in a Mac)
 .DS_Store
 ```
 
-Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content.
+Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
 
 ---
 
