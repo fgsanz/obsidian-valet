@@ -266,8 +266,9 @@ export default function OperationsPage() {
       </div>
 
       {/* ── Tab: Filter notes ─────────────────────────────────────────────── */}
-      {activeTab === 'filter' && (
-        <>
+      {/* Both tabs stay mounted (hidden via display) so switching back and forth
+          preserves the filter, results, and the operation being configured. */}
+      <div style={{ display: activeTab === 'filter' ? 'contents' : 'none' }}>
           <div className={styles.section}>
             <FilterBuilder
               criteria={criteria}
@@ -292,12 +293,10 @@ export default function OperationsPage() {
               <NoteList notes={matchedNotes} highlightProperties={highlightedProperties} />
             </div>
           )}
-        </>
-      )}
+      </div>
 
       {/* ── Tab: Bulk operation ───────────────────────────────────────────── */}
-      {activeTab === 'ops' && (
-        <>
+      <div style={{ display: activeTab === 'ops' ? 'contents' : 'none' }}>
           {matchedNotes !== null && (
             <>
               <div className={styles.section}>
@@ -361,8 +360,7 @@ export default function OperationsPage() {
               )}
             </div>
           )}
-        </>
-      )}
+      </div>
     </div>
   )
 }
