@@ -12,33 +12,44 @@ Obsidian Valet uses [Git](https://git-scm.com/) to take a safety snapshot before
 
 ## Add Git to your vault
 
-A vault is just a folder of Markdown files, so turning it into a Git repository takes one command. Open a terminal in the vault folder and run:
+A vault is just a folder of Markdown files, so turning it into a Git repository is easy.
+
+Initialize Git in your vault:
 
 ```sh
 cd "/path/to/your/vault"
 git init
-git add -A
-git commit -m "Initial snapshot of the vault"
 ```
-
-That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot / commit / revert steps automatically.
 
 ### Recommended `.gitignore`
 
-Likely, you consume the same Obsidian vault in different devices (e.g., laptop, phone). Obsidian stores per-device UI state info inside the `.obsidian` folder. You usually do **not** want that churn in your history. Create a `.gitignore` file in the vault root:
+Likely, you consume the same Obsidian vault in different devices (e.g., laptop, phone). Obsidian stores per-device UI state info inside the `.obsidian` folder. You usually do **not** want that churn in your history.
 
-```gitignore
+Create a `.gitignore` file in the root of the vault and add the following content:
+
+```
 # Obsidian local/workspace state
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 .obsidian/cache
 .trash/
 
-# OSX noise (if you are in a Mac)
+# OSX noise (in case you use MacOS)
 .DS_Store
 ```
 
 Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
+
+### Keep track of changes to your notes
+
+Enable tracking of your note files:
+
+```sh
+git add -A
+git commit -m "Initial snapshot of the vault"
+```
+
+That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot / commit / revert steps automatically.
 
 ---
 
