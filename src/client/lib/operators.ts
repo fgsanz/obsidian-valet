@@ -117,3 +117,19 @@ const VALUE_PLACEHOLDERS: Record<PropertyType, string> = {
 export function getValuePlaceholder(type: PropertyType): string {
   return VALUE_PLACEHOLDERS[type]
 }
+
+/**
+ * Property names available as the "move from" source, excluding the property already chosen as the
+ * "move to" target — moving a value from a property into itself is meaningless.
+ */
+export function movableFromOptions(allProperties: string[], toProperty: string): string[] {
+  return allProperties.filter((name) => name !== toProperty)
+}
+
+/**
+ * Whether a move-value operation is valid: both properties and a value are set, and the source and
+ * target are different (moving a value into the same property is meaningless).
+ */
+export function isMoveValid(fromProperty: string, toProperty: string, value: string): boolean {
+  return !!fromProperty && !!toProperty && !!value && fromProperty !== toProperty
+}

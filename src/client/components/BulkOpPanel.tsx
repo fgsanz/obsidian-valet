@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
-import { getValuePlaceholder } from '../lib/operators'
+import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
 import { resolvePropertyType } from '@shared/properties'
 import styles from './BulkOpPanel.module.css'
 
@@ -88,7 +88,7 @@ export default function BulkOpPanel({
       return { type: 'replace', property, oldValue: value, newValue }
     }
     if (opType === 'move-value') {
-      if (!fromProperty || !toProperty || !value) return null
+      if (!isMoveValid(fromProperty, toProperty, value)) return null
       return { type: 'move-value', fromProperty, toProperty, value }
     }
     if (opType === 'add-value') {
@@ -159,11 +159,11 @@ export default function BulkOpPanel({
           <div className={styles.fieldRow}>
             <div className={styles.field}>
               <label>From property</label>
-              <Selector value={fromProperty} onChange={setFromProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+              <Selector value={fromProperty} onChange={setFromProperty} options={movableFromOptions(propertyNames, toProperty)} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>To property</label>
-              <Selector value={toProperty} onChange={setToProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+              <Selector value={toProperty} onChange={setToProperty} options={movableFromOptions(propertyNames, fromProperty)} placeholder="select property" emptyMessage="No matching property" />
             </div>
             <div className={styles.field}>
               <label>Value to move</label>
