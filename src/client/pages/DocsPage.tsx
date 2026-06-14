@@ -43,37 +43,37 @@ const USE_CASES: { text: React.ReactNode; author: string }[] = [
   {
     author: 'Björn',
     text: (
-      <>Find notes <strong>in directory</strong> ‘Notes/Raw’ and <strong>add</strong> ‘review’ to ‘tags´ property</>
+      <>Find notes <strong>in directory</strong> ‘Notes/Raw’ and <strong>add</strong> ‘review’ to <code>tags</code> property</>
     ),
   },
   {
     author: 'Aiko',
     text: (
-      <>Find notes where ‘tags’ contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ <strong>from</strong> ‘related’ to ‘parent’</>
+      <>Find notes where <code>tags</code> contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ <strong>from</strong> <code>related</code> to <code>parent</code></>
     ),
   },
   {
     author: 'Tomás',
     text: (
-      <>Find notes where ´[[Woodworking]]´ <strong>is in either</strong> ‘parent’ or ‘related’ properties, and add the tag ‘diy’ to ‘tags’ property</>
+      <>Find notes where ´[[Woodworking]]´ <strong>is in either</strong> <code>parent</code> or <code>related</code> properties, and add the tag ‘diy’ to <code>tags</code> property</>
     ),
   },
   {
     author: 'Aless',
     text: (
-      <>Find notes where ‘tags’ contains ‘physics’ and ‘parent’ <strong>exists and does not contain</strong> ‘[[STEM]]’, and add ‘[[STEM]]’ to ‘parent’ property</>
+      <>Find notes where <code>tags</code> contains ‘physics’ and <code>parent</code> <strong>exists and does not contain</strong> ‘[[STEM]]’, and add ‘[[STEM]]’ to <code>parent</code> property</>
     ),
   },
   {
     author: 'Yuki',
     text: (
-      <>Find all notes <strong>not in directory</strong> ‘Work’ where property ‘parent’ contains ´[[sw dev]]´, and <strong>replace</strong> ‘[[sw dev]]’ <strong>with</strong> ‘[[Coding]]’</>
+      <>Find all notes <strong>not in directory</strong> ‘Work’ where property <code>parent</code> contains ´[[sw dev]]´, and <strong>replace</strong> ‘[[sw dev]]’ <strong>with</strong> ‘[[Coding]]’</>
     ),
   },
   {
     author: 'Priya',
     text: (
-      <>Find notes in directory ‘Books’ where property ‘date’ <strong>exist and is empty</strong>, and <strong>delete</strong> ´true´ from ´read´ property</>
+      <>Find notes in directory ‘Books’ where <code>date</code> property <strong>exist and is empty</strong>, and <strong>delete</strong> ´true´ from <code>read</code> property</>
     ),
   },
 ]
@@ -82,7 +82,8 @@ function DocsIndex() {
   return (
     <div className={styles.index}>
       <h1>Obsidian Valet</h1>
-      <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level. It runs only when launched from the CLI and is not connected to any external service.</p>
+      <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level.</p>
+      <p>The tool filters notes by paths and/or properties, and performs operations such as <code>delete</code>, <code>replace</code>, <code>move</code> and <code>add</code> value. It runs completely offline and does not connect to any external service.</p>
       <h2>Use cases – Examples</h2>
       <div className={styles.examplesGrid}>
         {USE_CASES.map((u, i) => (
