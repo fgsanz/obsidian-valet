@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, ArrowDown, Check, XCircle, Minus, Copy } from 'lucide-react'
 import type { ParsedNote, OperationResult } from '@shared/types'
 import { RESULT_ORDER, type ResultStatus } from '../lib/resultOrder'
@@ -36,12 +36,74 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
   const [sortColumn, setSortColumn] = useState<SortColumn>(hasNonSuccess ? 'result' : 'location')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
+  // Column definitions in render order, with default widths (as % of the table) that sum to 100.
+  const columns: { key: SortColumn; label: string; className: string }[] = [
+    { key: 'name', label: 'Note name', className: styles.colName },
+    { key: 'location', label: 'Location', className: styles.colLocation },
+    { key: 'props', label: 'Property info', className: styles.colProps },
+    ...(result ? [{ key: 'result' as const, label: 'Result', className: styles.colResult }] : []),
+  ]
+  const defaultWidths = result ? [36, 16, 36, 12] : [42, 18, 40]
+
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [activeHandle, setActiveHandle] = useState<number | null>(null)
+  // Column widths (in %). Reset to defaults if the column set changes (Result column toggles).
+  const [widths, setWidths] = useState<number[]>(defaultWidths)
+  useEffect(() => {
+    setWidths(result ? [36, 16, 36, 12] : [42, 18, 40])
+  }, [result ? 4 : 3]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Drag a divider: move width between column `index` and its right neighbour so their sum — and
+  // therefore the whole table's width — stays constant. Each column keeps a small minimum.
+  function startResize(e: React.MouseEvent, index: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    const startX = e.clientX
+    const tableWidth = tableRef.current?.offsetWidth ?? 1
+    const start = [...widths]
+    const MIN = 8
+    setActiveHandle(index)
+
+    function onMove(ev: MouseEvent) {
+      const deltaPct = ((ev.clientX - startX) / tableWidth) * 100
+      let left = start[index] + deltaPct
+      let right = start[index + 1] - deltaPct
+      if (left < MIN) {
+        right -= MIN - left
+        left = MIN
+      }
+      if (right < MIN) {
+        left -= MIN - right
+        right = MIN
+      }
+      setWidths((prev) => {
+        const next = [...prev]
+        next[index] = left
+        next[index + 1] = right
+        return next
+      })
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      setActiveHandle(null)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
+
   // The same property can appear in several filter rules; show it only once per note.
   const uniqueProperties = [...new Set(highlightProperties)]
 
   if (notes.length === 0) {
     return <p className={styles.empty}>No notes matched the filter.</p>
   }
+
+  const colWidths = widths.length === columns.length ? widths : defaultWidths
 
   function handleHeaderClick(column: SortColumn) {
     if (sortColumn === column) {
@@ -105,39 +167,35 @@ export default function NoteList({ notes, highlightProperties = [], result }: Pr
 
   return (
     <div className={styles.container}>
-      <table className={styles.table}>
+      <table className={styles.table} ref={tableRef}>
+        <colgroup>
+          {columns.map((c, i) => (
+            <col key={c.key} style={{ width: `${colWidths[i]}%` }} />
+          ))}
+        </colgroup>
         <thead>
           <tr>
-            <th
-              className={`${styles.colName} ${sortColumn === 'name' ? styles.sortActive : ''}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleHeaderClick('name')}
-            >
-              Note name{getSortIndicator('name')}
-            </th>
-            <th
-              className={`${styles.colLocation} ${sortColumn === 'location' ? styles.sortActive : ''}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleHeaderClick('location')}
-            >
-              Location{getSortIndicator('location')}
-            </th>
-            <th
-              className={`${styles.colProps} ${sortColumn === 'props' ? styles.sortActive : ''}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleHeaderClick('props')}
-            >
-              Property info{getSortIndicator('props')}
-            </th>
-            {result && (
+            {columns.map((c, i) => (
               <th
-                className={`${styles.colResult} ${sortColumn === 'result' ? styles.sortActive : ''}`}
+                key={c.key}
+                className={`${c.className} ${sortColumn === c.key ? styles.sortActive : ''}`}
                 style={{ cursor: 'pointer' }}
-                onClick={() => handleHeaderClick('result')}
+                onClick={() => handleHeaderClick(c.key)}
               >
-                Result{getSortIndicator('result')}
+                {c.label}
+                {getSortIndicator(c.key)}
+                {i < columns.length - 1 && (
+                  <span
+                    className={`${styles.resizeHandle} ${activeHandle === i ? styles.resizeHandleActive : ''}`}
+                    onMouseDown={(e) => startResize(e, i)}
+                    onClick={(e) => e.stopPropagation()}
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label={`Resize ${c.label} column`}
+                  />
+                )}
               </th>
-            )}
+            ))}
           </tr>
         </thead>
         <tbody>

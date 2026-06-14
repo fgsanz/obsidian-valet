@@ -26,6 +26,7 @@
 }
 
 .table th {
+  position: relative;
   padding: var(--space-2) var(--space-3);
   text-align: left;
   font-size: var(--text-sm);
@@ -37,6 +38,35 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Drag handle on a column's right edge to resize it against its neighbour. */
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 9px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  z-index: 1;
+}
+
+.resizeHandle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  right: 3px;
+  width: 2px;
+  height: 50%;
+  background: var(--color-border);
+  border-radius: 1px;
+  transition: background 0.12s;
+}
+
+.resizeHandle:hover::after,
+.resizeHandleActive::after {
+  background: var(--color-accent);
 }
 
 .table tbody tr {
@@ -63,7 +93,6 @@
 
 .colName {
   font-weight: 500;
-  width: 40%;
   white-space: nowrap;
 }
 
@@ -114,19 +143,16 @@
 .colLocation {
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  width: 17%;
   word-break: break-word;
   white-space: normal;
 }
 
 .colProps {
   color: var(--color-text-muted);
-  width: 40%;
   white-space: normal;
 }
 
 .colResult {
-  width: 13%;
   text-align: center;
 }
 
