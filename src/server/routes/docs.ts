@@ -9,6 +9,7 @@ import type { DocPage } from '@shared/types'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DOCS_DIR = join(__dirname, '../../../docs')
 const FEATURES_DIR = join(__dirname, '../../../tests/features')
+const UNIT_DIR = join(__dirname, '../../../tests/unit')
 const CHANGELOG_FILE = join(__dirname, '../../../CHANGELOG.md')
 
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/
@@ -107,7 +108,23 @@ async function generateTestCasesContent(): Promise<string> {
     `All BDD scenarios defined in \`tests/features/\`. ` +
     `See [Testing](testing) for how to run the suite and write new scenarios.\n\n` +
     `**${totalScenarios.count} scenarios** across ${files.length} feature files.\n\n---\n\n`
-  return header + sections.join('---\n\n')
+
+  // Count the unit-test files (without listing the individual tests).
+  let unitCount = 0
+  try {
+    unitCount = (await readdir(UNIT_DIR)).filter((f) => f.endsWith('.test.ts')).length
+  } catch {
+    unitCount = 0
+  }
+  const unitSection =
+    `\n\n---\n\n## Unit tests\n\n` +
+    `Beyond the BDD scenarios above, the suite also includes lower-level **unit tests** ` +
+    `(${unitCount} file${unitCount === 1 ? '' : 's'} in \`tests/unit/\`) covering pure logic that is ` +
+    `awkward to reach through behaviour scenarios — such as property type inference, emptiness ` +
+    `checks, wiki-link parsing, the settings schema, and version comparison. ` +
+    `Run them with \`npm run test:unit\`.\n`
+
+  return header + sections.join('---\n\n') + unitSection
 }
 
 // ── Doc listing ───────────────────────────────────────────────────────────────

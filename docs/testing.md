@@ -1,32 +1,42 @@
 ---
 title: Testing
 slug: testing
-description: BDD test suite — running tests, writing scenarios, step vocabulary
+description: Test suite — running tests, coverage, writing scenarios, step vocabulary
 ---
 
 # Testing
 
-Obsidian Valet has a BDD test suite driven by [Cucumber.js](https://cucumber.io/docs/cucumber/) and written in Gherkin. Tests run in-process against the real filter/operation services — no HTTP server is needed.
+Obsidian Valet's test suite has two layers:
+
+- **BDD scenarios** driven by [Cucumber.js](https://cucumber.io/docs/cucumber/) and written in Gherkin, run in-process against the real filter/operation services (no HTTP server needed). See the generated [Test cases](test-cases) list.
+- **Unit tests** (Node's built-in `node:test`) for pure logic that's awkward to reach through scenarios — type inference, emptiness checks, wiki-link parsing, the settings schema, and version comparison.
 
 
 # Running the suite
 
-Cucumber picks up [`cucumber.mjs`](../cucumber.mjs) automatically and runs every `.feature` file under `tests/features/`.
+## `npm test` — everything
 
-## `npm test` — fast mode
-
-The default. Use this during normal development to get a quick pass/fail signal.
+The default. Runs the **unit tests first, then the BDD scenarios**, giving a single pass/fail signal for the whole suite.
 
 ```bash
 npm test
 ```
 
-Output is a compact progress bar (`.` per passing step, `F` per failure) followed by a summary. On failure the full assertion diff is printed:
+The BDD part prints a compact progress bar (`.` per passing step, `F` per failure) and a summary. On failure the full assertion diff is shown:
 
 ```
 AssertionError: Expected 2 matching notes but got 3: Note A, Note B, Note D
   at Then(2 notes match) in then.steps.ts:36
   in Scenario: Filter by a tag value  (filter.feature:5)
+```
+
+## `npm run test:unit` / `npm run test:bdd` — one layer
+
+Run just one layer when iterating:
+
+```bash
+npm run test:unit   # only the node:test unit tests
+npm run test:bdd    # only the Cucumber BDD scenarios
 ```
 
 ## `npm run test:verbose` — step-by-step evidence
@@ -69,24 +79,50 @@ Same as verbose mode, but instead of deleting the temporary vault copy after eac
 The temporary directories are not cleaned up automatically when using this mode. Delete them manually when done.
 
 
+# Coverage
+
+Measuring how much of the code the tests exercise is optional — the suite verifies behaviour with or without it.
+
+## `npm run coverage` — full report
+
+```bash
+npm run coverage
+```
+
+Runs the whole suite (unit + BDD) under [c8](https://github.com/bcoe/c8) and prints a per-file table plus an HTML report in `coverage/`. Because it includes the BDD run, it measures the heavily-exercised service layer (`filter.ts`, `operations.ts`, …) and lists untested files (routes, UI) at 0% — i.e. a true whole-project picture.
+
+> c8 needs a Node.js **LTS** (20/22). On very new Node versions it can fail to start due to an upstream dependency (yargs) lag; this affects only the coverage *reporter*, never the app or the tests.
+
+## `npm run coverage:unit` — works on any Node
+
+```bash
+npm run coverage:unit
+```
+
+Uses Node's built-in test-runner coverage. It only measures modules loaded by the unit tests (so it omits the BDD-covered services), but it runs on any supported Node version and needs no extra tooling.
+
+
 # File layout
 
 ```
 tests/
-├── features/                  ← write your scenarios here
+├── features/                  ← BDD scenarios (write your scenarios here)
 │   ├── filter.feature
 │   ├── delete-value.feature
 │   ├── add-value.feature
+│   ├── replace-value.feature
+│   ├── move-value.feature
 │   └── steps/                 ← step implementations (rarely need touching)
 │       ├── given.steps.ts
 │       ├── when.steps.ts
 │       └── then.steps.ts
 ├── fixtures/
 │   └── test-vault/            ← committed vault (never modified at runtime)
-└── support/
-    ├── world.ts               ← per-scenario state
-    ├── hooks.ts               ← Before: copy vault to tmp; After: delete tmp
-    └── vault-schema.ts        ← property type definitions for the test vault
+├── support/
+│   ├── world.ts               ← per-scenario state
+│   ├── hooks.ts               ← Before: copy vault to tmp; After: delete tmp
+│   └── vault-schema.ts        ← property type definitions for the test vault
+└── unit/                      ← node:test unit tests for pure functions
 ```
 
 The vault is copied once **per scenario** — not once per feature file. Every test case gets its own independent directory in the OS temp folder, created just before the scenario runs and deleted immediately after. This means two scenarios in the same feature file can both modify the same note without interfering with each other, because they are each working on a separate copy. The committed fixture in `tests/fixtures/test-vault/` is never modified.
@@ -183,8 +219,8 @@ To add notes to the vault, create `.md` files anywhere under `tests/fixtures/tes
 
 If the built-in vocabulary does not cover a new behaviour, add a step to the appropriate file under `tests/features/steps/`:
 
-- [given.steps.ts](../tests/features/steps/given.steps.ts) — world setup
-- [when.steps.ts](../tests/features/steps/when.steps.ts) — actions (filtering, operations)
-- [then.steps.ts](../tests/features/steps/then.steps.ts) — assertions
+- `given.steps.ts` — world setup
+- `when.steps.ts` — actions (filtering, operations)
+- `then.steps.ts` — assertions
 
 Steps call the same service functions the UI uses: `filterByCriteria`, `applyOperation`, `scanVault`. After an operation is applied the step calls `invalidateCache` and re-scans so all subsequent assertions read fresh on-disk state.
