@@ -20,6 +20,7 @@ export const api = {
       request<Vault>('PATCH', `/vaults/${id}`, data),
     remove: (id: string) => request<null>('DELETE', `/vaults/${id}`),
     getActive: () => request<Vault | null>('GET', '/vaults/active'),
+    pathStatus: () => request<Record<string, boolean>>('GET', '/vaults/path-status'),
     setActive: (vaultId: string) => request<null>('PUT', '/vaults/active', { vaultId }),
     discoverProperties: (id: string) =>
       request<PropertyDef[]>('POST', `/vaults/${id}/discover-properties`),

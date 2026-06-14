@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { homedir } from 'os'
+import { stat } from 'fs/promises'
 import { z } from 'zod'
 import { getConfig, updateConfig } from '../config/config'
 import { createVaultSchema } from '@shared/schemas'
@@ -87,6 +88,25 @@ export const vaultsPlugin: FastifyPluginAsync = async (fastify) => {
       activeVaultId: c.activeVaultId === id ? null : c.activeVaultId,
     }))
     return { data: null }
+  })
+
+  // ── Path validity ───────────────────────────────────────────────────────────
+  // A vault's folder may be moved/renamed/deleted outside this tool. Report which
+  // configured vaults still point at an existing directory so the UI can flag them.
+
+  fastify.get('/vaults/path-status', async () => {
+    const config = await getConfig()
+    const entries = await Promise.all(
+      config.vaults.map(async (v) => {
+        try {
+          const info = await stat(expandPath(v.path))
+          return [v.id, info.isDirectory()] as const
+        } catch {
+          return [v.id, false] as const
+        }
+      }),
+    )
+    return { data: Object.fromEntries(entries) as Record<string, boolean> }
   })
 
   // ── Property discovery ──────────────────────────────────────────────────────

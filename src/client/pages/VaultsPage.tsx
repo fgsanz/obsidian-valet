@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus } from 'lucide-react'
+import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus, AlertOctagon } from 'lucide-react'
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
 import Tooltip from '../components/Tooltip'
 import Selector from '../components/Selector'
+import ConfirmModal from '../components/ConfirmModal'
 import styles from './VaultsPage.module.css'
 
 export default function VaultsPage() {
@@ -15,6 +16,7 @@ export default function VaultsPage() {
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, Set<string>>>({})
   const [dirInputs, setDirInputs] = useState<Record<string, string>>({})
   const [deleteHoverVaultId, setDeleteHoverVaultId] = useState<string | null>(null)
+  const [vaultToDelete, setVaultToDelete] = useState<Vault | null>(null)
   const [vaultDirs, setVaultDirs] = useState<Record<string, string[]>>({})
   const [propsSort, setPropsSort] = useState<Record<string, 'name' | 'type'>>({})
 
@@ -26,6 +28,15 @@ export default function VaultsPage() {
   const { data: activeVault } = useQuery({
     queryKey: ['vaults', 'active'],
     queryFn: api.vaults.getActive,
+  })
+
+  // Re-check on every visit to the page (the folder may have moved/been deleted
+  // externally), so a stale "exists" result is never trusted.
+  const { data: pathStatus = {} } = useQuery({
+    queryKey: ['vaults', 'path-status'],
+    queryFn: api.vaults.pathStatus,
+    staleTime: 0,
+    refetchOnMount: 'always',
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['vaults'] })
@@ -51,6 +62,11 @@ export default function VaultsPage() {
 
   const removeMutation = useMutation({
     mutationFn: api.vaults.remove,
+    onSuccess: invalidate,
+  })
+
+  const setActiveMutation = useMutation({
+    mutationFn: api.vaults.setActive,
     onSuccess: invalidate,
   })
 
@@ -169,7 +185,7 @@ export default function VaultsPage() {
               <input
                 value={newVaultPath}
                 onChange={(e) => setNewVaultPath(e.target.value)}
-                placeholder="~/Obsidian/MyVault"
+                placeholder="e.g., ~/Documents/MyObsidianVault"
                 autoFocus
               />
               <Tooltip content="Browse for folder">
@@ -211,36 +227,55 @@ export default function VaultsPage() {
         <div className={styles.vaultList}>
           {vaults.map((vault) => {
             const isActive = vault.id === activeVault?.id
+            const pathMissing = pathStatus[vault.id] === false
 
             return (
               <div
                 key={vault.id}
-                className={`${styles.vaultCard} ${deleteHoverVaultId === vault.id ? styles.hasDeleteHover : ''}`}
+                className={`${styles.vaultCard} ${isActive ? styles.vaultCardActive : ''} ${deleteHoverVaultId === vault.id ? styles.hasDeleteHover : ''} ${pathMissing ? styles.pathMissing : ''}`}
               >
                 <div className={styles.vaultCardHeader}>
                   <div className={styles.vaultCardTitle}>
                     <span className={styles.vaultName}>{vault.name}</span>
-                    {isActive && <span className={styles.activeBadge}>Active</span>}
                   </div>
-                  <Tooltip content="Delete vault">
-                    <button
-                      type="button"
-                      className={styles.deleteBtn}
-                      onClick={() => {
-                        if (confirm(`Remove vault "${vault.name}"?`)) {
-                          removeMutation.mutate(vault.id)
-                        }
-                      }}
-                      disabled={removeMutation.isPending}
-                      onMouseEnter={() => setDeleteHoverVaultId(vault.id)}
-                      onMouseLeave={() => setDeleteHoverVaultId(null)}
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </Tooltip>
+                  <div className={styles.vaultCardActions}>
+                    {isActive ? (
+                      <span className={styles.activeBadge}>Active</span>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.makeActiveBtn}
+                        onClick={() => setActiveMutation.mutate(vault.id)}
+                        disabled={setActiveMutation.isPending}
+                      >
+                        Make active
+                      </button>
+                    )}
+                    <Tooltip content="Delete vault">
+                      <button
+                        type="button"
+                        className={styles.deleteBtn}
+                        onClick={() => setVaultToDelete(vault)}
+                        disabled={removeMutation.isPending}
+                        onMouseEnter={() => setDeleteHoverVaultId(vault.id)}
+                        onMouseLeave={() => setDeleteHoverVaultId(null)}
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </Tooltip>
+                  </div>
                 </div>
 
-                <div className={styles.vaultPath}>{vault.path}</div>
+                {pathMissing ? (
+                  <div className={`${styles.vaultPath} ${styles.vaultPathMissing}`}>
+                    <Tooltip content="Path not found. It is safe to delete this vault, it does not affect your vault" className={styles.vaultPathAlert}>
+                      <AlertOctagon size={16} />
+                    </Tooltip>
+                    <span>{vault.path}</span>
+                  </div>
+                ) : (
+                  <div className={styles.vaultPath}>{vault.path}</div>
+                )}
 
                 {/* Forbidden Directories Accordion */}
                 <div className={styles.accordion}>
@@ -249,7 +284,12 @@ export default function VaultsPage() {
                     className={styles.accordionHeader}
                     onClick={() => toggleAccordion(vault.id, 'forbidden')}
                   >
-                    <span className={styles.accordionTitle}>Forbidden directories</span>
+                    <span className={styles.accordionTitle}>
+                      Forbidden directories
+                      {vault.forbiddenDirs.length > 0 && (
+                        <span className={styles.propertyCount}>{vault.forbiddenDirs.length}</span>
+                      )}
+                    </span>
                     <span className={styles.accordionIcon}>
                       {isAccordionOpen(vault.id, 'forbidden') ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </span>
@@ -372,6 +412,19 @@ export default function VaultsPage() {
             )
           })}
         </div>
+      )}
+
+      {vaultToDelete && (
+        <ConfirmModal
+          title="Deletion confirmation"
+          message={<>Remove vault "{vaultToDelete.name}"?<br />This does not affect your Obsidian vault.</>}
+          confirmLabel="Delete"
+          onConfirm={() => {
+            removeMutation.mutate(vaultToDelete.id)
+            setVaultToDelete(null)
+          }}
+          onCancel={() => setVaultToDelete(null)}
+        />
       )}
     </div>
   )

@@ -151,7 +151,21 @@
   transition: all 0.2s;
 }
 
-.vaultCard.hasDeleteHover {
+/* Subtle hover cue on the whole card — suppressed while the delete button is
+   hovered, or when the vault path is missing, so it doesn't fight the red state. */
+.vaultCard:hover:not(.hasDeleteHover):not(.pathMissing):not(.vaultCardActive) {
+  background: color-mix(in srgb, var(--color-bg) 60%, var(--color-surface));
+}
+
+/* Active vault — a subtle tint of the app's violet accent, derived from the
+   background so it reads well in both light and dark themes. */
+.vaultCard.vaultCardActive {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg));
+}
+
+.vaultCard.hasDeleteHover,
+.vaultCard.pathMissing {
   border-color: var(--color-error);
   background: rgba(239, 68, 68, 0.05);
 }
@@ -174,13 +188,43 @@
   font-weight: 600;
 }
 
+.vaultCardActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
 .activeBadge {
   background: var(--color-accent);
   color: #fff;
   font-size: var(--text-xs);
   font-weight: 600;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-sm);
+}
+
+/* Hollow button shown on non-active vaults to promote them to active. */
+.makeActiveBtn {
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.makeActiveBtn:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.makeActiveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .deleteBtn {
@@ -208,6 +252,22 @@
   font-family: var(--font-mono);
   margin-bottom: calc(var(--space-4) * 2);
   word-break: break-all;
+}
+
+.vaultPath.vaultPathMissing {
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Tooltip trigger wrapping the alert icon — sized to the icon so the hover
+   target is just the icon, not the whole path row. */
+.vaultPathAlert {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: help;
 }
 
 /* Accordion */
