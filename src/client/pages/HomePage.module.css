@@ -1,4 +1,51 @@
+/* Fill the area below the 56px top nav (minus the main's vertical padding) so the lockup can be
+   centered and the description can sit near the bottom, matching the brand layout. */
 .page {
-  max-width: 560px;
-  padding-top: var(--space-12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: calc(100vh - 56px - 2 * var(--space-8));
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 300px;
+  max-width: 70vw;
+  height: auto;
+}
+
+/* Show the wordmark variant that matches the active theme. */
+.logoDark {
+  display: none;
+}
+
+:global([data-theme='dark']) .logoLight {
+  display: none;
+}
+
+:global([data-theme='dark']) .logoDark {
+  display: block;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  padding-bottom: var(--space-8);
+}
+
+.description a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.description a:hover {
+  text-decoration: underline;
 }
