@@ -39,6 +39,13 @@ export default function VaultsPage() {
     refetchOnMount: 'always',
   })
 
+  const { data: gitStatus = {} } = useQuery({
+    queryKey: ['vaults', 'git-status'],
+    queryFn: api.vaults.gitStatus,
+    staleTime: 0,
+    refetchOnMount: 'always',
+  })
+
   const invalidate = () => qc.invalidateQueries({ queryKey: ['vaults'] })
 
   const createMutation = useMutation({
@@ -237,6 +244,7 @@ export default function VaultsPage() {
                 <div className={styles.vaultCardHeader}>
                   <div className={styles.vaultCardTitle}>
                     <span className={styles.vaultName}>{vault.name}</span>
+                    {gitStatus[vault.id] && <span className={styles.gitReadyPill}>Git ready</span>}
                   </div>
                   <div className={styles.vaultCardActions}>
                     {isActive ? (

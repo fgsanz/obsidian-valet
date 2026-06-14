@@ -6,9 +6,12 @@ import { homedir } from 'os'
 import { stat } from 'fs/promises'
 import { z } from 'zod'
 import { getConfig, updateConfig } from '../config/config'
+import { getSettings, updateSettings } from '../config/settings'
+import { forgetVault } from '@shared/settings'
 import { createVaultSchema } from '@shared/schemas'
 import type { Vault } from '@shared/types'
 import { collectDirectories, discoverProperties } from '../services/scanner'
+import { getGitStatus } from '../services/git'
 
 const execAsync = promisify(exec)
 
@@ -87,6 +90,9 @@ export const vaultsPlugin: FastifyPluginAsync = async (fastify) => {
       vaults: c.vaults.filter((v) => v.id !== id),
       activeVaultId: c.activeVaultId === id ? null : c.activeVaultId,
     }))
+    // Also drop any per-vault settings so the deleted vault leaves nothing orphaned behind.
+    const settings = await getSettings()
+    await updateSettings(forgetVault(settings, id))
     return { data: null }
   })
 
@@ -101,6 +107,24 @@ export const vaultsPlugin: FastifyPluginAsync = async (fastify) => {
         try {
           const info = await stat(expandPath(v.path))
           return [v.id, info.isDirectory()] as const
+        } catch {
+          return [v.id, false] as const
+        }
+      }),
+    )
+    return { data: Object.fromEntries(entries) as Record<string, boolean> }
+  })
+
+  // ── Git availability ──────────────────────────────────────────────────────────
+  // Report which configured vaults contain a git repo, so the UI can show a "Git ready" badge.
+
+  fastify.get('/vaults/git-status', async () => {
+    const config = await getConfig()
+    const entries = await Promise.all(
+      config.vaults.map(async (v) => {
+        try {
+          const status = await getGitStatus(expandPath(v.path))
+          return [v.id, status.hasGit] as const
         } catch {
           return [v.id, false] as const
         }

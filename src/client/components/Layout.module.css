@@ -65,11 +65,13 @@
 }
 
 .iconBtnAlert {
-  color: var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
 }
 
 .iconBtnAlert:hover {
-  color: var(--color-accent);
+  background: var(--color-accent-hover);
+  color: #fff;
 }
 
 .links a {

@@ -11,6 +11,9 @@ export const userSettingsSchema = z.object({
   colorScheme: z.enum(['light', 'dark', 'system']).catch('system'),
   checkForUpdates: z.boolean().catch(true),
   dismissedVersion: z.string().nullable().catch(null),
+  // Ids of vaults for which the user has acknowledged the "no Git rollback" notice — never
+  // warn again for these. Other vaults still get the notice.
+  gitAckVaultIds: z.array(z.string()).catch([]),
 })
 
 export type UserSettings = z.infer<typeof userSettingsSchema>

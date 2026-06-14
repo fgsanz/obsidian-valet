@@ -9,6 +9,10 @@ interface Props {
   onClose: () => void
   updateAvailable?: boolean
   latestVersion?: string | null
+  /** Name of the active vault that has no Git rollback, or null if none to warn about. */
+  gitWarningVaultName?: string | null
+  /** Acknowledge the no-Git notice for the active vault (never warn about it again). */
+  onAckGitWarning?: () => void
   colorScheme?: ColorScheme
   onColorSchemeChange?: (scheme: ColorScheme) => void
   checkForUpdates?: boolean
@@ -20,6 +24,8 @@ export default function SettingsPanel({
   onClose,
   updateAvailable = false,
   latestVersion = null,
+  gitWarningVaultName = null,
+  onAckGitWarning,
   colorScheme = 'system',
   onColorSchemeChange,
   checkForUpdates = true,
@@ -31,6 +37,13 @@ export default function SettingsPanel({
     onClose()
     navigate('/docs/changelog')
   }
+
+  function openGitDoc() {
+    onClose()
+    navigate('/docs/git-integration')
+  }
+
+  const hasNotifications = (updateAvailable && latestVersion) || gitWarningVaultName
 
   useEffect(() => {
     if (!open) return
@@ -65,14 +78,34 @@ export default function SettingsPanel({
         <div className={styles.body}>
           {/* Notifications */}
           <div className={styles.sectionLabel}>Notifications</div>
-          {updateAvailable && latestVersion ? (
+          {updateAvailable && latestVersion && (
             <button type="button" className={styles.notification} onClick={openChangelog}>
               <span className={styles.notificationDot} />
               <span className={styles.notificationText}>
                 Version <strong>v{latestVersion}</strong> is available
               </span>
             </button>
-          ) : (
+          )}
+          {gitWarningVaultName && (
+            <div className={`${styles.notification} ${styles.notificationStatic}`}>
+              <span className={styles.notificationDot} />
+              <div className={styles.notificationBody}>
+                <span className={styles.notificationText}>
+                  <strong>{gitWarningVaultName}</strong> has no Git-enabled rollback. Operations
+                  cannot be easily undone.
+                </span>
+                <div className={styles.notificationActions}>
+                  <button type="button" className={styles.notificationLinkBtn} onClick={openGitDoc}>
+                    Learn more
+                  </button>
+                  <button type="button" className={styles.gotItBtn} onClick={onAckGitWarning}>
+                    Got it
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {!hasNotifications && (
             <div className={styles.emptyNote}>You're up to date — no notifications.</div>
           )}
 
