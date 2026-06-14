@@ -86,3 +86,33 @@ Scenario: Trying add a plain text value to a link-array property, does not add t
     Then I apply add value on property "related" with value to add "Some plain text"
     And 0 notes are changed
     And note "Note B" has property "related" and it is empty
+
+  Scenario: Adding a value to a property on a note that has no frontmatter creates it
+    Given a fresh copy of the test vault
+    When I filter notes in directory "Dir 3"
+    And 2 notes match
+    And I apply add value on property "tags" with value to add "newtag"
+    Then 2 notes are changed
+    And note "Note without YAML" has "newtag" in "tags"
+    And note "Note with empty YAML" has "newtag" in "tags"
+    And the YAML of "Note without YAML" is still valid
+
+  Scenario: Adding a valid tag to a tag-array property
+    Given a fresh copy of the test vault
+    When I filter notes in directory "Dir 1"
+    And I apply add value on property "tags" with value to add "validtag"
+    Then 3 notes are changed
+    And note "Note A" has "validtag" in "tags"
+
+  Scenario: Adding an invalid tag (containing a space) is rejected
+    Given a fresh copy of the test vault
+    When I filter notes in directory "Dir 1"
+    And I apply add value on property "tags" with value to add "bad tag"
+    Then 0 notes are changed
+
+  Scenario: Adding a value to a text-array property
+    Given a fresh copy of the test vault
+    When I filter notes in directory "Dir 1"
+    And I apply add value on property "aliases" with value to add "alias new"
+    Then 3 notes are changed
+    And note "Note A" has "alias new" in "aliases"

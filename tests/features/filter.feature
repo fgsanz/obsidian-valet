@@ -65,3 +65,24 @@ Feature: Filtering notes
     Given a fresh copy of the test vault
     When I filter notes where "time" "exists and is empty"
     Then 2 notes match
+
+  Scenario: Filter with "exists and does not contain"
+    Given a fresh copy of the test vault
+    When I filter notes where "tags" "exists and does not contain" "tag2"
+    Then 2 notes match
+
+  Scenario: Text matching is case-insensitive by default
+    Given a fresh copy of the test vault
+    When I filter notes where "aliases" "exists and contains" "ALIAS 1"
+    Then 6 notes match
+
+  Scenario: Case-sensitive matching distinguishes letter case
+    Given a fresh copy of the test vault
+    When I filter notes where "aliases" "exists and contains" "ALIAS 1" matching case
+    Then 0 notes match
+
+  Scenario: Combine two property rules with OR
+    Given a fresh copy of the test vault
+    When I filter notes where "tags" "exists and contains" "tag2"
+    And combining with "or" where "tags" "exists and contains" "tag3/subtag3b"
+    Then 4 notes match

@@ -58,6 +58,35 @@ When(
   },
 )
 
+/** A property rule with case-sensitive matching (the "Aa" toggle on). */
+When(
+  'I filter notes where {string} {string} {string} matching case',
+  function (this: ValetWorld, property: string, phrase: string, value: string) {
+    this.criteria.properties.push({
+      property,
+      operator: resolveOperator(phrase),
+      value,
+      combinator: 'and',
+      caseSensitive: true,
+    })
+    runFilter(this)
+  },
+)
+
+/** A chained property rule with an explicit AND/OR combinator. */
+When(
+  'combining with {string} where {string} {string} {string}',
+  function (this: ValetWorld, combinator: string, property: string, phrase: string, value: string) {
+    this.criteria.properties.push({
+      property,
+      operator: resolveOperator(phrase),
+      value,
+      combinator: assertCombinator(combinator),
+    })
+    runFilter(this)
+  },
+)
+
 When('I filter notes in directory {string}', function (this: ValetWorld, directory: string) {
   this.criteria.location.push({
     operator: 'directory-is',

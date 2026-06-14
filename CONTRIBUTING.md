@@ -88,20 +88,32 @@ A change that touches behavior should generally come with a test and, where rele
 
 ## Writing tests
 
-Tests are **behaviour-driven** (Gherkin / Cucumber) and run the real filter/operation services in-process against a throwaway copy of a committed test vault. They live under `tests/`:
+There are two layers:
+
+- **Behaviour-driven scenarios** (Gherkin / Cucumber) that run the real filter/operation services in-process against a throwaway copy of a committed test vault.
+- **Unit tests** (`node:test`) for pure logic that's awkward to reach through the BDD layer (type inference, emptiness checks, link parsing, the settings schema, version comparison).
 
 ```
 tests/
   features/        # .feature files (scenarios) + step definitions
   fixtures/        # the committed test-vault (never mutated at runtime)
   support/         # world, hooks, and the vault schema
+  unit/            # node:test unit tests for pure functions
 ```
 
-- Run the suite: `npm test`
-- See each step with the values it observed: `npm run test:verbose`
-- Inspect the modified files afterwards: `npm run test:keep` (preserves the temp vault copy and prints its path)
+Commands:
 
-When you add or change behavior, add a scenario in the matching `.feature` file. The full step vocabulary, the test-vault contents, and how the throwaway-copy isolation works are documented in-app under **Docs → Testing** ([docs/testing.md](docs/testing.md)) and **Docs → Test vault** ([docs/test-vault.md](docs/test-vault.md)). The **Test cases** doc is generated automatically from the feature files.
+- `npm test` — run everything (unit, then BDD)
+- `npm run test:unit` — unit tests only
+- `npm run test:bdd` — BDD scenarios only
+- `npm run test:verbose` — BDD with each step and the values it observed
+- `npm run test:keep` — BDD, preserving the temp vault copy (prints its path) for manual inspection
+- `npm run coverage` — combined coverage report via `c8` (text + HTML in `coverage/`)
+- `npm run coverage:unit` — coverage of the unit-tested modules via Node's built-in runner
+
+> Coverage note: `npm run coverage` (c8) requires a Node.js **LTS** (20/22); on very new Node versions c8 can fail to start due to an upstream dependency (yargs) issue. `npm run coverage:unit` works on any supported Node.
+
+When you add or change behavior, add a scenario in the matching `.feature` file (and a unit test for any new pure helper). The full step vocabulary, the test-vault contents, and how the throwaway-copy isolation works are documented in-app under **Docs → Testing** ([docs/testing.md](docs/testing.md)) and **Docs → Test vault** ([docs/test-vault.md](docs/test-vault.md)). The **Test cases** doc is generated automatically from the feature files.
 
 ---
 

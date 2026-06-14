@@ -43,3 +43,13 @@ Feature: Delete value operation
     And the YAML of "Note D" is still valid
     And the YAML of "Note D" is still valid
     And the YAML of "Note F" is still valid
+
+  Scenario: Deleting a tag from a tag-array property
+    Given a fresh copy of the test vault
+    When I filter notes where "tags" "exists and contains" "tag1"
+    And 4 notes match
+    And I apply delete value on property "tags" with value to delete "tag1"
+    Then 4 notes are changed
+    And note "Note A" no longer has "tag1" in "tags"
+    And note "Note A" has "tag2" in "tags"
+    And the YAML of "Note A" is still valid

@@ -15,7 +15,7 @@ function parseSemver(v: string): number[] {
 }
 
 /** True if `latest` is a strictly higher semantic version than `current`. */
-function isNewer(latest: string, current: string): boolean {
+export function isNewer(latest: string, current: string): boolean {
   const a = parseSemver(latest)
   const b = parseSemver(current)
   for (let i = 0; i < Math.max(a.length, b.length); i++) {
