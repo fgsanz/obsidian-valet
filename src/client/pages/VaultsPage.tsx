@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus, AlertOctagon } from 'lucide-react'
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
+import { sortVaultsActiveFirst } from '@shared/vaults'
 import Tooltip from '../components/Tooltip'
 import Selector from '../components/Selector'
 import ConfirmModal from '../components/ConfirmModal'
@@ -159,6 +160,39 @@ export default function VaultsPage() {
     }
   }
 
+  const orderedVaults = sortVaultsActiveFirst(vaults, activeVault?.id ?? null)
+
+  // FLIP animation: when the order changes (e.g. a vault becomes active and jumps to the top),
+  // slide each card from its previous position to its new one so the swap is easy to follow.
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const prevTops = useRef<Map<string, number>>(new Map())
+  const prevOrder = useRef<string>('')
+  useLayoutEffect(() => {
+    const order = orderedVaults.map((v) => v.id).join(',')
+    const tops = new Map<string, number>()
+    cardRefs.current.forEach((el, id) => tops.set(id, el.getBoundingClientRect().top))
+
+    // Only play when the order actually changed (not on unrelated re-renders like accordion toggles
+    // — those still refresh the stored positions below so a later swap animates accurately).
+    if (prevOrder.current && prevOrder.current !== order) {
+      tops.forEach((newTop, id) => {
+        const oldTop = prevTops.current.get(id)
+        const el = cardRefs.current.get(id)
+        if (oldTop === undefined || !el) return
+        const delta = oldTop - newTop
+        if (!delta) return
+        el.style.transition = 'none'
+        el.style.transform = `translateY(${delta}px)`
+        requestAnimationFrame(() => {
+          el.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+          el.style.transform = ''
+        })
+      })
+    }
+    prevTops.current = tops
+    prevOrder.current = order
+  })
+
   if (isError) {
     return (
       <div className={styles.page}>
@@ -232,13 +266,17 @@ export default function VaultsPage() {
 
       {vaults.length > 0 && (
         <div className={styles.vaultList}>
-          {vaults.map((vault) => {
+          {orderedVaults.map((vault) => {
             const isActive = vault.id === activeVault?.id
             const pathMissing = pathStatus[vault.id] === false
 
             return (
               <div
                 key={vault.id}
+                ref={(el) => {
+                  if (el) cardRefs.current.set(vault.id, el)
+                  else cardRefs.current.delete(vault.id)
+                }}
                 className={`${styles.vaultCard} ${isActive ? styles.vaultCardActive : ''} ${deleteHoverVaultId === vault.id ? styles.hasDeleteHover : ''} ${pathMissing ? styles.pathMissing : ''}`}
               >
                 <div className={styles.vaultCardHeader}>
