@@ -34,8 +34,11 @@ Create a `.gitignore` file in the root of the vault and add the following conten
 .obsidian/cache
 .trash/
 
-# OSX noise (in case you use MacOS)
+# OSX noise (if you use MacOS)
 .DS_Store
+
+# If you use Smart plugins (Connections, Context, Lookup, ...)
+.smart-env
 ```
 
 Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
