@@ -15,9 +15,9 @@ export default function HomePage() {
       </div>
 
       <p className={styles.description}>
-        Manage and manipulate your Obsidian vault notes at the filesystem level.
+        Manipulate the metadata of your Obsidian vault notes.
         <br />
-        Start by adding a vault in <Link to="/vaults">Vaults</Link>, then head to{' '}
+        Add a vault in <Link to="/vaults">Vaults</Link>, then head to{' '}
         <Link to="/ops">Operations</Link> to filter and bulk-edit notes.
       </p>
     </div>
