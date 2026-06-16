@@ -6,12 +6,19 @@ description: Filter notes by property values and apply bulk changes
 
 # Operations
 
-- **Delete value** — removes a specific value from a property (e.g. remove `[[OldNote]]` from `parent`)
-- **Replace value** — replaces a specific value with another (e.g. replace `[[OldNote]]` with `[[NewNote]]` in `parent`)
-- **Move value** — removes a value from one property and adds it to another (e.g. move `[[OldNote]]` from `parent` to `related`)
-- **Add value** — adds a new value to a property:
-  - For **multi-value properties** (text-array, tag-array, link-array): appends the value to the array (skips if it already exists)
-  - For **single-value properties** (text, number, date, week-link, link): only adds to notes where the property is currently empty; notes that already have a value are not affected
+| Operation | Description | Example|
+| --------- | ----------- |--------|
+| **Delete value** | Removes a specific value from a property | Remove `[[OldNote]]` from `parent`|
+| **Delete value** | removes a specific value from a property | Remove `[[OldNote]]` from `parent`|
+| **Replace value** | Replaces a specific value with another | Eeplace `[[OldNote]]` with `[[NewNote]]` in `parent`|
+| **Move value** | Removes a value from one property and adds it to another | Move `[[OldNote]]` from `parent` to `related`|
+| **Add value** | Adds a new value to a property | See details below |
+
+Regarding **Add value** operation:
+- For **multi-value properties** (text-array, tag-array, link-array): appends the value to the array (skips if it already exists)
+- For **single-value properties** (text, number, date, week-link, link): only adds to notes where the property is currently empty; notes that already have a value are not affected
+
+# Preview
 
 Click **Preview** to see which notes would be affected without writing any files.
 

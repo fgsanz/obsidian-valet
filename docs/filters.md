@@ -27,13 +27,14 @@ Logical operators:
 Property filters operates on frontmatter properties.
 
 Logical operators:
-
-- **exists and contains** — the property is defined in frontmatter AND the value is included in the value(s) of the property
-- **exists and does not contain** — the property is defined in frontmatter AND the value is not included in the value(s) of the property
-- **exists and is empty** — property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)
-- **exists and is not empty** — the property is defined in frontmatter AND its value is not empty
-- **exists** — the property is defined in frontmatter, regardless of value
-- **does not exist** — the property is not defined in frontmatter at all
+| Operation | Description |
+| --------- | ----------- |
+| **exists and contains** | the property is defined in frontmatter AND the value is included in the value(s) of the property|
+| **exists and does not contain** | the property is defined in frontmatter AND the value is not included in the value(s) of the property|
+| **exists and is empty** | property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)|
+| **exists and is not empty** | the property is defined in frontmatter AND its value is not empty|
+| **exists** | the property is defined in frontmatter, regardless of value|
+| **does not exist** | the property is not defined in frontmatter at all|
 
 When filtering by a property which is of the types **link** or **link-array**, the expected value syntax is a link, e.g., `[[Note name]]`. The tool validates this syntax and highlights invalid entries in red.
 
@@ -43,7 +44,7 @@ You can toggle case-sensitive matching using the **Aa** button on each rule:
 - Dimmed **Aa** (default) — case-insensitive matching
 - Bold **Aa** — case-sensitive matching
 
-### Matching behavior by type
+### Operators by property type
 
 #### Link and link-array
 
