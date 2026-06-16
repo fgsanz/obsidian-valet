@@ -277,7 +277,7 @@ export default function VaultsPage() {
                   if (el) cardRefs.current.set(vault.id, el)
                   else cardRefs.current.delete(vault.id)
                 }}
-                className={`${styles.vaultCard} ${isActive ? styles.vaultCardActive : ''} ${deleteHoverVaultId === vault.id ? styles.hasDeleteHover : ''} ${pathMissing ? styles.pathMissing : ''}`}
+                className={`${styles.vaultCard} ${isActive && vaults.length > 1 ? styles.vaultCardActive : ''} ${deleteHoverVaultId === vault.id ? styles.hasDeleteHover : ''} ${pathMissing ? styles.pathMissing : ''}`}
               >
                 <div className={styles.vaultCardHeader}>
                   <div className={styles.vaultCardTitle}>

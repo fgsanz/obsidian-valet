@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
+import { loadOperationsSnapshot, saveOperationsSnapshot } from '../lib/operationsSnapshot'
 import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
 import FilterBuilder from '../components/FilterBuilder'
 import NoteList from '../components/NoteList'
@@ -37,23 +38,45 @@ export default function OperationsPage() {
     enabled: !!activeVault?.id,
   })
 
-  const [activeTab, setActiveTab] = useState<Tab>('filter')
+  // Restore the page state captured before we last left it — but only if it belongs to the still-
+  // active vault. This keeps the filter/results/selections intact when bouncing to Vaults and back.
+  const restored = loadOperationsSnapshot(activeVault?.id ?? null)
 
-  const [criteria, setCriteria] = useState<FilterCriteria>({
-    location: [{ operator: 'all-directories', combinator: 'and' }],
-    properties: [{ property: '', operator: 'contains', combinator: 'and' }],
-  })
+  const [activeTab, setActiveTab] = useState<Tab>(restored?.activeTab ?? 'filter')
+
+  const [criteria, setCriteria] = useState<FilterCriteria>(
+    restored?.criteria ?? {
+      location: [{ operator: 'all-directories', combinator: 'and' }],
+      properties: [{ property: '', operator: 'contains', combinator: 'and' }],
+    },
+  )
   const [isFiltering, setIsFiltering] = useState(false)
-  const [filterError, setFilterError] = useState<string | null>(null)
-  const [matchedNotes, setMatchedNotes] = useState<ParsedNote[] | null>(null)
+  const [filterError, setFilterError] = useState<string | null>(restored?.filterError ?? null)
+  const [matchedNotes, setMatchedNotes] = useState<ParsedNote[] | null>(restored?.matchedNotes ?? null)
 
   const [isPreviewing, setIsPreviewing] = useState(false)
-  const [previewNotes, setPreviewNotes] = useState<ParsedNote[] | null>(null)
+  const [previewNotes, setPreviewNotes] = useState<ParsedNote[] | null>(restored?.previewNotes ?? null)
   const [isApplying, setIsApplying] = useState(false)
-  const [result, setResult] = useState<OperationResult | null>(null)
+  const [result, setResult] = useState<OperationResult | null>(restored?.result ?? null)
   const [gitModal, setGitModal] = useState<GitModalState>(null)
-  const [pendingOperation, setPendingOperation] = useState<Operation | null>(null)
-  const [gitCommitted, setGitCommitted] = useState(false)
+  const [pendingOperation, setPendingOperation] = useState<Operation | null>(restored?.pendingOperation ?? null)
+  const [gitCommitted, setGitCommitted] = useState(restored?.gitCommitted ?? false)
+
+  // Persist the page state on every change so it can be restored after navigating away and back.
+  useEffect(() => {
+    if (!activeVault) return
+    saveOperationsSnapshot({
+      vaultId: activeVault.id,
+      activeTab,
+      criteria,
+      matchedNotes,
+      previewNotes,
+      result,
+      pendingOperation,
+      gitCommitted,
+      filterError,
+    })
+  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperation, gitCommitted, filterError])
 
   // Editing the filter invalidates any results shown from a previous run, so clear them — the
   // table and the match count should never display notes that don't correspond to the current
