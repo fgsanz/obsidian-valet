@@ -88,7 +88,7 @@ function DocsIndex() {
       <div className={styles.examplesGrid}>
         {USE_CASES.map((u, i) => (
           <div key={i} className={styles.exampleCard}>
-            {u.text} <span className={styles.exampleAuthor}>— {u.author}</span>
+            {u.text}
           </div>
         ))}
       </div>

@@ -61,7 +61,7 @@
   text-align: left;
   color: var(--color-text);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 400;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   transition: background 0.12s;
