@@ -130,6 +130,7 @@
 .index h2 {
   font-size: var(--text-lg);
   font-weight: 600;
+  margin-top: calc(var(--space-6) * 1.25);
   margin-bottom: var(--space-4);
 }
 

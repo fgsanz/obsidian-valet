@@ -83,7 +83,7 @@ function DocsIndex() {
     <div className={styles.index}>
       <h1>Obsidian Valet</h1>
       <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level.</p>
-      <p>The tool filters notes by paths and/or properties, and performs operations such as <code>delete</code>, <code>replace</code>, <code>move</code> and <code>add</code> value. It runs completely offline and does not connect to any external service.</p>
+      <p>The tool filters notes by paths and/or properties, and performs operations such as <strong>delete</strong>, <strong>replace</strong>, <strong>move</strong> and <strong>add</strong> value. It runs completely offline and does not connect to any external service.</p>
       <h2>Use cases – Examples</h2>
       <div className={styles.examplesGrid}>
         {USE_CASES.map((u, i) => (
