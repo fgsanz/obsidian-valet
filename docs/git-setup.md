@@ -43,7 +43,7 @@ Create a `.gitignore` file in the root of the vault and add the following conten
 
 Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
 
-### Keep track of changes to your notes
+### Enable tracking
 
 Enable tracking of your note files:
 
@@ -52,7 +52,7 @@ git add -A
 git commit -m "Initial snapshot of the vault"
 ```
 
-That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot / commit / revert steps automatically.
+That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot/commit/revert steps automatically.
 
 ---
 
@@ -60,7 +60,7 @@ That's it. The vault is now version-controlled. From this point on, Obsidian Val
 
 A common misconception is that Git requires an online account. It does not. Git is a **local** version-control system: every commit is stored in the hidden `.git` folder inside your vault, on your own disk.
 
-- You **never have to run `git push`**, and you don't need GitHub, GitLab, or any server.
+- You **never have to run** `git push`, and you don't need GitHub, GitLab, or any server.
 - All of your history, snapshots, and the ability to revert live offline, in the vault folder.
 - Pushing to a remote is an *optional* extra (off-site backup or sharing) — it changes nothing about how Valet's snapshot/revert features work.
 
@@ -70,14 +70,13 @@ In other words, Git here is best thought of as a **private, local "time machine"
 
 ## Git and Obsidian Sync coexist safely
 
-Obsidian Sync (and other sync tools like iCloud, Dropbox, or Syncthing) keep your **note files** in step across devices. Git keeps a **history** of those same files. These two jobs do not collide, for a simple reason:
+Obsidian Sync is not affected by the snapshot/commit/revert Git functionality:
 
-- **Git only acts when something triggers a commit.** It never runs in the background. When Obsidian Valet (or you) commits, Git reads the current files and records a snapshot — a one-time, read-only-then-write step. The rest of the time the `.git` folder just sits there.
 - **Sync moves the note content; Git records it.** A bulk operation writes to the `.md` files on disk. Obsidian Sync then propagates those edited files to your other devices exactly as it would for any manual edit. Git's snapshot is independent of that.
 
 A couple of practical tips so the two stay out of each other's way:
 
-- **Don't sync the `.git` folder.** The history only needs to exist on the machine that runs Git. Obsidian Sync ignores `.git` by default; if you use a file-level sync tool (Dropbox/iCloud), exclude `.git` from it to avoid syncing a large, machine-specific folder.
+- **Don't sync the** `.git` **folder.** The history only needs to exist on the machine that runs Git. Obsidian Sync ignores `.git` by default; if you use a file-level sync tool (Dropbox/iCloud), exclude `.git` from it to avoid syncing a large, machine-specific folder.
 - **Let one side own the writes at a time.** Apply a bulk operation when the vault isn't mid-sync, so Sync sees a finished, consistent set of files. In practice this is automatic — operations are fast and Sync simply picks up the result.
 
 Because Git never modifies your notes on its own (it only *reads* them to snapshot, and only *rewrites* them when you explicitly revert), it cannot corrupt or fight with Sync.

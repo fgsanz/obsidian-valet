@@ -6,49 +6,46 @@ description: All filter operators and type-specific behaviour
 
 # Filters
 
-Filters can match notes by **property** (frontmatter value) or by **directory** (file location in vault).
+Filters can match notes by:
+- **directory** (file location in vault)
+- **property** (frontmatter value)
 
-## Filter types
+---
 
-### Property filters
+## Directory filters
 
-Property filters test frontmatter values. Six operators are available:
+Directory filters match notes by their file location in the vault. Forbidden directories are excluded from the directory selector.
 
-- **exists and contains** — match notes where the property IS defined in frontmatter AND the value includes the query (requires a value)
-- **exists and does not contain** — match notes where the property IS defined in frontmatter AND the value does not include the query (requires a value)
-- **exists and is empty** — match notes where the property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)
-- **exists and is not empty** — match notes where the property is defined in frontmatter AND its value is not empty (the logical opposite of *exists and is empty*)
-- **exists** — match notes where the property is defined in frontmatter, regardless of whether it has a value (the logical opposite of *does not exist*). This is the union of *exists and is empty* and *exists and is not empty*.
-- **does not exist** — match notes where the property is not defined in frontmatter at all
-
-Note: For the first two operators, if the property is not defined in frontmatter, the note does NOT match the criteria.
-
-The **exists and is empty**, **exists and is not empty**, and **does not exist** operators do not take a value — the value input and the case-sensitivity toggle are hidden when one of them is selected.
-
-For **link and link-array** properties with `exists and contains` or `exists and does not contain`, provide the link in `[[Note Name]]` syntax. The tool validates this syntax and highlights invalid entries in red. Matching strips brackets and aliases, then compares case-insensitively by default.
-
-For other property types, type-specific placeholders guide entry (e.g., `tag/subtag` for tags, `[[YYYY-Www]]` for week links).
-
-### Case sensitivity
-
-For **text and text-array** properties, you can toggle case-sensitive matching using the **Aa** button on each rule:
-- **Dimmed "Aa"** (default) — case-insensitive matching ("Match case OFF")
-- **Bold white "Aa"** — case-sensitive matching ("Match case ON")
-
-By default, all text matching is case-insensitive. Click the "Aa" button to switch to case-sensitive mode for that specific rule.
-
-### Directory filters
-
-Directory filters match notes by their file location in the vault:
-
+Logical operators:
 - **is** — note is in this directory or a subdirectory
 - **is not** — note is not in this directory (or any subdirectory)
 
-Forbidden directories are excluded from the directory selector.
+---
 
-## Matching behavior by type
+## Property filters
 
-### Link and link-array
+Property filters operates on frontmatter properties.
+
+Logical operators:
+
+- **exists and contains** — the property is defined in frontmatter AND the value is included in the value(s) of the property
+- **exists and does not contain** — the property is defined in frontmatter AND the value is not included in the value(s) of the property
+- **exists and is empty** — property is defined in frontmatter but its value is empty (`null`, an empty/blank string `""`, or an empty array `[]`)
+- **exists and is not empty** — the property is defined in frontmatter AND its value is not empty
+- **exists** — the property is defined in frontmatter, regardless of value
+- **does not exist** — the property is not defined in frontmatter at all
+
+When filtering by a property which is of the types **link** or **link-array**, the expected value syntax is a link, e.g., `[[Note name]]`. The tool validates this syntax and highlights invalid entries in red.
+
+### Case sensitivity
+
+You can toggle case-sensitive matching using the **Aa** button on each rule:
+- Dimmed **Aa** (default) — case-insensitive matching
+- Bold **Aa** — case-sensitive matching
+
+### Matching behavior by type
+
+#### Link and link-array
 
 | Operator | Meaning |
 |----------|---------|
@@ -59,7 +56,7 @@ Forbidden directories are excluded from the directory selector.
 
 Link matching strips `[[` `]]` brackets and the `|alias` suffix, then compares case-insensitively. Querying with or without brackets works the same.
 
-### Tag-array
+#### Tag-array
 
 | Operator | Meaning |
 |----------|---------|
@@ -68,7 +65,7 @@ Link matching strips `[[` `]]` brackets and the `|alias` suffix, then compares c
 
 Querying `tag2` matches both `tag2` and `tag2/subtag`.
 
-### Text and text-array
+#### Text and text-array
 
 | Operator | Meaning |
 |----------|---------|
@@ -77,7 +74,7 @@ Querying `tag2` matches both `tag2` and `tag2/subtag`.
 | contains | Case-insensitive substring match |
 | does not contain | Substring not found |
 
-### Date (YYYY-MM-DD)
+#### Date (YYYY-MM-DD)
 
 | Operator | Meaning |
 |----------|---------|
@@ -88,7 +85,7 @@ Querying `tag2` matches both `tag2` and `tag2/subtag`.
 
 Enter dates in `YYYY-MM-DD` format.
 
-### Week-link ([[YYYY-Www]])
+#### Week-link ([[YYYY-Www]])
 
 | Operator | Meaning |
 |----------|---------|
@@ -99,7 +96,7 @@ Enter dates in `YYYY-MM-DD` format.
 
 Enter values in `[[YYYY-Www]]` format, e.g. `[[2026-W22]]`.
 
-### Number
+#### Number
 
 | Operator | Meaning |
 |----------|---------|
@@ -108,12 +105,14 @@ Enter values in `[[YYYY-Www]]` format, e.g. `[[2026-W22]]`.
 | < | Less than |
 | > | Greater than |
 
-### Boolean
+#### Boolean
 
 | Operator | Meaning |
 |----------|---------|
 | is | Equals true or false |
 | is not | Does not equal |
+
+---
 
 ## Combining rules
 
@@ -123,14 +122,3 @@ Rules after the first have a combinator:
 - **OR** — notes matching this rule are added to the result set (union)
 
 AND takes left-to-right precedence. There is no grouping syntax; use separate filter runs for complex logic.
-
-## Presence vs. emptiness
-
-These are two independent concepts:
-
-- **Presence** — whether the property name appears in the note's YAML frontmatter at all. A property that is absent is matched only by **does not exist**; a property that appears (with any value, including an empty one) is matched by **exists**.
-- **Emptiness** — for a property that exists, whether it carries a value. A value counts as **empty** when it is `null` (or `~`), a blank string `""`, or an empty array `[]`. Anything else counts as **not empty**.
-
-This same emptiness definition is shared by the bulk operations: for example, *Add value* will only populate a single-value property when it is empty.
-
-Because the value-based operators are named **exists and contains** / **exists and does not contain**, they both require the property to exist first. A property that is absent matches *neither* of them. Among properties that exist, an empty value does not match `exists and contains` but does match `exists and does not contain`.

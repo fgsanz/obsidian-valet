@@ -10,7 +10,7 @@ The test vault is a small, hand-crafted collection of notes used by the BDD test
 
 The notes are designed to exercise as many property types, value formats, and edge cases as possible in a compact set. The two structural variants (collapsed vs. expanded YAML) ensure that formatting differences do not affect parsing or filtering.
 
-
+---
 
 ## Frontmatter properties
 
@@ -28,7 +28,7 @@ The notes are designed to exercise as many property types, value formats, and ed
 
 `tags` is a built-in Obsidian property and is always treated as a **tag-array**, even though its values are stored in frontmatter without a leading `#`. Each tag is an alphanumeric string, optionally with `/`-separated segments (e.g. `tag` or `tag/subtag`).
 
-
+---
 
 ## Test vault
 
@@ -54,12 +54,13 @@ The notes are designed to exercise as many property types, value formats, and ed
 | Dir 3                         | Note without YAML    | (undefined) | (undefined) | (undefined)                            | (undefined)          | (undefined) | (undefined)      | (undefined) | (undefined)    | (undefined)                                    | (undefined)                                                                            | (undefined)                                     |
 
 
+---
 
-# Frontmatter format
+## Frontmatter format
 
-Same content, two different YAML formats.
+Below there are two examples conteining the exact same content, written in two different YAML formats.
 
-## Collapsed YAML
+### Collapsed YAML
 
 ```
 ---
@@ -75,7 +76,7 @@ related: ["[[Topic A]]", "[[Topic B]]", "[[Topic C]]"]
 ---
 ```
 
-## Expanded YAML
+### Expanded YAML
 
 ```
 tags:

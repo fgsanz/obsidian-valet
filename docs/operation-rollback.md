@@ -10,6 +10,8 @@ When the vault is a git repository, the easiest way to undo an operation is the 
 
 For anything the UI doesn't cover — or to roll back to an older state — you can always fall back to standard git commands in the vault directory. See steps below.
 
+## Rollback via Git commands
+
 List the latest commits in your vault:
 
 ```sh

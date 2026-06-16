@@ -11,7 +11,6 @@ Obsidian Valet's test suite has two layers:
 - **BDD scenarios** driven by [Cucumber.js](https://cucumber.io/docs/cucumber/) and written in Gherkin, run in-process against the real filter/operation services (no HTTP server needed). See the generated [Test cases](test-cases) list.
 - **Unit tests** (Node's built-in `node:test`) for pure logic that's awkward to reach through scenarios — type inference, emptiness checks, wiki-link parsing, the settings schema, and version comparison.
 
-
 # Running the suite
 
 ## `npm test` — everything

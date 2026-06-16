@@ -6,8 +6,8 @@ description: How Obsidian Valet behaves when the vault is not a git repository
 
 # Without Git integration
 
-If the vault is not a git repository, the snapshot dialog never appears and the Commit / Revert actions are not shown. The bulk operation simply runs directly — no error, no prompt.
+If the vault is not a Git repository, the snapshot/commit/revert feature is not shown. The bulk operation simply runs directly.
 
-This is perfectly fine for everyday use, but you lose the one-click safety net. If you'd like the snapshot/commit/revert features, see [Add Git to your vault](git-setup) and [With Git integration](git-integration).
+The tool's operations work the same way, but you lose the one-click safety net. To undo an operation by hand in either case, see [Operation rollback](operation-rollback).
 
-To undo an operation by hand in either case, see [Operation rollback](operation-rollback).
+To enable the snapshot/commit/revert feature, see [Add Git to your vault](git-setup) and [With Git integration](git-integration).
