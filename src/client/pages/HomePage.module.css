@@ -36,7 +36,7 @@
 
 .description {
   color: var(--color-text-muted);
-  font-size: calc(var(--text-sm) * 1.2);
+  font-size: calc(var(--text-sm) * 1.1);
   line-height: 1.8;
   padding-bottom: var(--space-8);
 }
