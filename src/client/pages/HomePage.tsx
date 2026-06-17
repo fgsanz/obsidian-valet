@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { APP_NAME } from '@shared/constants'
 import logoDark from '../assets/logo-dark.svg'
 import logoLight from '../assets/logo-light.svg'
@@ -16,9 +15,6 @@ export default function HomePage() {
 
       <p className={styles.description}>
         Manipulate the metadata of your Obsidian vault notes.
-        <br />
-        Add a vault in <Link to="/vaults">Vaults</Link>, then head to{' '}
-        <Link to="/ops">Operations</Link> to filter and bulk-edit notes.
       </p>
     </div>
   )
