@@ -18,6 +18,7 @@ const DOC_SECTIONS: { title: string; slugs: string[] }[] = [
   { title: 'Pro usage', slugs: ['git-integration', 'without-git-integration', 'git-setup', 'operation-rollback'] },
   { title: 'Development', slugs: ['npm-scripts', 'testing', 'test-vault', 'test-cases'] },
   { title: 'Releases', slugs: ['releases', 'changelog'] },
+  { title: 'Support', slugs: ['support'] },
 ]
 
 function groupIntoSections(pages: DocPage[]): { title: string; docs: DocPage[] }[] {

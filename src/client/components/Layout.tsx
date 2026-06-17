@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Outlet, NavLink, Link } from 'react-router-dom'
+import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
 import { Settings, Bell, BellDot } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { APP_NAME } from '@shared/constants'
@@ -26,6 +26,8 @@ export default function Layout() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [gitWarning, setGitWarning] = useState<GitWarning | null>(null)
   const queryClient = useQueryClient()
+  // The Support top-nav item lives under /docs, so keep "Docs" from also highlighting there.
+  const onSupport = useLocation().pathname === '/docs/support'
 
   const { data: settings } = useQuery({
     queryKey: ['settings'],
@@ -141,9 +143,15 @@ export default function Layout() {
           </NavLink>
           <NavLink
             to="/docs"
-            className={({ isActive }) => (isActive ? styles.active : undefined)}
+            className={({ isActive }) => (isActive && !onSupport ? styles.active : undefined)}
           >
             Docs
+          </NavLink>
+          <NavLink
+            to="/docs/support"
+            className={({ isActive }) => (isActive ? styles.active : undefined)}
+          >
+            Support
           </NavLink>
         </div>
         <div className={styles.right}>
