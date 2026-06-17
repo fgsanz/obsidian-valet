@@ -8,6 +8,7 @@ import { api } from '../api/client'
 import { checkLatestVersion } from '../lib/version'
 import { applyColorScheme, type ColorScheme } from '../lib/theme'
 import { shouldWarnNoGit, type GitWarning } from '../lib/gitWarning'
+import { forgetVault } from '@shared/settings'
 import VaultPicker from './VaultPicker'
 import ErrorBoundary from './ErrorBoundary'
 import Tooltip from './Tooltip'
@@ -53,6 +54,12 @@ export default function Layout() {
     if (!activeVault || gitStatus === undefined) {
       setGitWarning(null)
       return
+    }
+    // Git has since been added to a vault we'd previously flagged as "no Git": drop the now-stale
+    // acknowledgment so settings stay accurate (and the warning correctly returns if Git is ever
+    // removed again). The hasGit check below already keeps the notice itself hidden.
+    if (gitStatus.hasGit && (s.gitAckVaultIds ?? []).includes(activeVault.id)) {
+      patchSettings({ gitAckVaultIds: forgetVault(s, activeVault.id).gitAckVaultIds })
     }
     setGitWarning(
       shouldWarnNoGit(gitStatus.hasGit, activeVault.id, s.gitAckVaultIds ?? [])

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, NavLink } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, ChevronDown, ChevronsDownUp, ChevronsUpDown } from 'lucide-react'
@@ -20,6 +20,13 @@ const DOC_SECTIONS: { title: string; slugs: string[] }[] = [
   { title: 'Releases', slugs: ['releases', 'changelog'] },
   { title: 'Support', slugs: ['support'] },
 ]
+
+// By default every section starts collapsed except "Usage".
+const DEFAULT_COLLAPSED = new Set(DOC_SECTIONS.filter((s) => s.title !== 'Usage').map((s) => s.title))
+
+// Remember the expand/collapse state for the current session only (not persisted to settings), so
+// it survives navigating away from Docs and back without resetting to the default.
+let sessionCollapsed: Set<string> | null = null
 
 function groupIntoSections(pages: DocPage[]): { title: string; docs: DocPage[] }[] {
   const bySlug = new Map(pages.map((p) => [p.slug, p]))
@@ -99,7 +106,15 @@ function DocsIndex() {
 
 export default function DocsPage() {
   const { slug = 'index' } = useParams<{ slug?: string }>()
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  // Restore this session's collapse state, or start with everything collapsed but "Usage".
+  const [collapsed, setCollapsed] = useState<Set<string>>(
+    () => new Set(sessionCollapsed ?? DEFAULT_COLLAPSED),
+  )
+
+  // Keep the session memory in sync so it persists across leaving and returning to Docs.
+  useEffect(() => {
+    sessionCollapsed = collapsed
+  }, [collapsed])
 
   const { data: pages = [] } = useQuery({
     queryKey: ['docs'],
