@@ -57,7 +57,7 @@ const USE_CASES: { text: React.ReactNode; author: string }[] = [
   {
     author: 'Aiko',
     text: (
-      <>Find notes where <code>tags</code> contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ <strong>from</strong> <code>related</code> to <code>parent</code></>
+      <>Find notes where <code>tags</code> contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ from <code>related</code> to <code>parent</code></>
     ),
   },
   {
@@ -75,7 +75,7 @@ const USE_CASES: { text: React.ReactNode; author: string }[] = [
   {
     author: 'Yuki',
     text: (
-      <>Find all notes <strong>not in directory</strong> ‘Work’ where property <code>parent</code> contains ´[[sw dev]]´, and <strong>replace</strong> ‘[[sw dev]]’ <strong>with</strong> ‘[[Coding]]’</>
+      <>Find all notes <strong>not in directory</strong> ‘Work’ where property <code>parent</code> contains ´[[sw dev]]´, and <strong>replace</strong> ‘[[sw dev]]’ with ‘[[Coding]]’</>
     ),
   },
   {
