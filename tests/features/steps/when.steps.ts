@@ -1,7 +1,7 @@
 import { When } from '@cucumber/cucumber'
 import type { PropertyOperator, LocationOperator, Operation } from '@shared/types'
 import { filterByCriteria } from '../../../src/server/services/filter'
-import { applyOperation } from '../../../src/server/services/operations'
+import { applyOperation, applyOperations } from '../../../src/server/services/operations'
 import { invalidateCache } from '../../../src/server/services/scanner'
 import type { ValetWorld } from '../../support/world'
 
@@ -187,5 +187,24 @@ When(
   'I apply move value from property {string} to property {string} value to move {string}',
   async function (this: ValetWorld, fromProperty: string, toProperty: string, value: string) {
     await applyAndRescan(this, { type: 'move-value', fromProperty, toProperty, value })
+  },
+)
+
+// Multi-property bulk: one delete per property, applied one after the other in a single pass.
+When(
+  'I apply delete value {string} on property {string} and value {string} on property {string}',
+  async function (this: ValetWorld, valueA: string, propertyA: string, valueB: string, propertyB: string) {
+    const { result } = await applyOperations(
+      this.matched,
+      [
+        { type: 'delete-value', property: propertyA, value: valueA },
+        { type: 'delete-value', property: propertyB, value: valueB },
+      ],
+      this.properties,
+    )
+    this.result = result
+    invalidateCache(this.vault.id)
+    await this.scan()
+    this.log(`→ ${result.succeeded} changed, ${result.failed} skipped`)
   },
 )

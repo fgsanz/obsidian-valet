@@ -53,3 +53,14 @@ Feature: Delete value operation
     And note "Note A" no longer has "tag1" in "tags"
     And note "Note A" has "tag2" in "tags"
     And the YAML of "Note A" is still valid
+
+  Scenario: Applying the same operation to two properties at once (multi-property bulk)
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note X]]"
+    And I apply delete value "[[Note X]]" on property "parent" and value "[[Topic A]]" on property "related"
+    Then 2 notes are changed
+    And 0 notes fail
+    And note "Note A" no longer has "[[Note X]]" in "parent"
+    And note "Note A" no longer has "[[Topic A]]" in "related"
+    And note "Note A" has "[[Topic B]]" in "related"
+    And the YAML of "Note A" is still valid

@@ -59,7 +59,7 @@ export default function OperationsPage() {
   const [isApplying, setIsApplying] = useState(false)
   const [result, setResult] = useState<OperationResult | null>(restored?.result ?? null)
   const [gitModal, setGitModal] = useState<GitModalState>(null)
-  const [pendingOperation, setPendingOperation] = useState<Operation | null>(restored?.pendingOperation ?? null)
+  const [pendingOperations, setPendingOperations] = useState<Operation[] | null>(restored?.pendingOperations ?? null)
   const [gitCommitted, setGitCommitted] = useState(restored?.gitCommitted ?? false)
 
   // Persist the page state on every change so it can be restored after navigating away and back.
@@ -72,11 +72,11 @@ export default function OperationsPage() {
       matchedNotes,
       previewNotes,
       result,
-      pendingOperation,
+      pendingOperations,
       gitCommitted,
       filterError,
     })
-  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperation, gitCommitted, filterError])
+  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperations, gitCommitted, filterError])
 
   // Editing the filter invalidates any results shown from a previous run, so clear them — the
   // table and the match count should never display notes that don't correspond to the current
@@ -86,7 +86,7 @@ export default function OperationsPage() {
     setMatchedNotes(null)
     setResult(null)
     setPreviewNotes(null)
-    setPendingOperation(null)
+    setPendingOperations(null)
     setFilterError(null)
   }
 
@@ -97,7 +97,7 @@ export default function OperationsPage() {
     setMatchedNotes(null)
     setResult(null)
     setPreviewNotes(null)
-    setPendingOperation(null)
+    setPendingOperations(null)
     try {
       const notes = await api.notes.filter(activeVault.id, criteria)
       setMatchedNotes(notes)
@@ -108,12 +108,12 @@ export default function OperationsPage() {
     }
   }
 
-  async function handlePreview(op: Operation) {
+  async function handlePreview(ops: Operation[]) {
     if (!activeVault || !matchedNotes) return
-    setPendingOperation(op)
+    setPendingOperations(ops)
     setIsPreviewing(true)
     try {
-      const previewed = await api.notes.previewOperation(activeVault.id, criteria, op)
+      const previewed = await api.notes.previewOperations(activeVault.id, criteria, ops)
       setPreviewNotes(previewed)
     } catch {
       // ignore preview errors
@@ -127,27 +127,27 @@ export default function OperationsPage() {
     setMatchedNotes(null)
     setResult(null)
     setPreviewNotes(null)
-    setPendingOperation(null)
+    setPendingOperations(null)
     setGitCommitted(false)
     setFilterError(null)
     setActiveTab('filter')
   }
 
-  async function handleApply(op: Operation) {
+  async function handleApply(ops: Operation[]) {
     if (!activeVault) return
-    setPendingOperation(op)
+    setPendingOperations(ops)
     if (gitStatus?.hasGit) {
-      setGitModal({ kind: 'snapshot', message: buildOperationMessage(op, 'Before') })
+      setGitModal({ kind: 'snapshot', message: buildOperationsMessage(ops, 'Before') })
     } else {
-      await doApply(op)
+      await doApply(ops)
     }
   }
 
-  async function doApply(op: Operation) {
+  async function doApply(ops: Operation[]) {
     if (!activeVault) return
     setIsApplying(true)
     try {
-      const res = await api.notes.applyOperation(activeVault.id, criteria, op)
+      const res = await api.notes.applyOperations(activeVault.id, criteria, ops)
       setResult(res.result)
       setMatchedNotes(res.notes)
       setPreviewNotes(null)
@@ -158,12 +158,12 @@ export default function OperationsPage() {
     }
   }
 
-  /** Commit the safety snapshot, then apply the pending operation. */
+  /** Commit the safety snapshot, then apply the pending operations. */
   async function commitSnapshotAndApply(message: string) {
     if (!activeVault) return
     await api.git.commit(activeVault.id, message)
     setGitModal(null)
-    if (pendingOperation) await doApply(pendingOperation)
+    if (pendingOperations) await doApply(pendingOperations)
   }
 
   /** Commit the changes produced by the operation. */
@@ -192,13 +192,11 @@ export default function OperationsPage() {
     )
   }
 
-  // Columns to show in PROPERTY INFO: the filtered properties plus the property(ies) touched by
-  // the active operation — for a move that means both the source and the target property.
-  const operationProps = pendingOperation
-    ? pendingOperation.type === 'move-value'
-      ? [pendingOperation.fromProperty, pendingOperation.toProperty]
-      : [pendingOperation.property]
-    : []
+  // Columns to show in PROPERTY INFO: the filtered properties plus every property touched by the
+  // pending operations — for a move that means both the source and the target property.
+  const operationProps = (pendingOperations ?? []).flatMap((op) =>
+    op.type === 'move-value' ? [op.fromProperty, op.toProperty] : [op.property],
+  )
   const highlightedProperties = [
     ...new Set([
       ...criteria.properties.filter((r) => r.property).map((r) => r.property),
@@ -218,7 +216,7 @@ export default function OperationsPage() {
           onCommit={commitSnapshotAndApply}
           onSkip={() => {
             setGitModal(null)
-            if (pendingOperation) doApply(pendingOperation)
+            if (pendingOperations) doApply(pendingOperations)
           }}
           onCancel={() => setGitModal(null)}
         />
@@ -342,8 +340,8 @@ export default function OperationsPage() {
                   }
                   canRevert={!!gitStatus?.hasGit && result !== null && result.failed > 0}
                   onCommitChanges={() => {
-                    if (pendingOperation)
-                      setGitModal({ kind: 'commit', message: buildOperationMessage(pendingOperation, 'After') })
+                    if (pendingOperations)
+                      setGitModal({ kind: 'commit', message: buildOperationsMessage(pendingOperations, 'After') })
                   }}
                   onRevertChanges={() => setGitModal({ kind: 'revert' })}
                   onOperationChange={() => {
@@ -388,17 +386,26 @@ export default function OperationsPage() {
   )
 }
 
-/** Git commit message describing the operation, either Before (snapshot) or After it ran. */
-function buildOperationMessage(op: Operation, phase: 'Before' | 'After'): string {
-  const prefix = `[${APP_NAME}] ${phase}: `
+/** Short description of a single operation, used to build commit messages. */
+function describeOperation(op: Operation): string {
   switch (op.type) {
     case 'add-value':
-      return `${prefix}add, property: ${op.property}, value: ${op.value}`
+      return `add, property: ${op.property}, value: ${op.value}`
     case 'delete-value':
-      return `${prefix}delete, property: ${op.property}, value: ${op.value}`
+      return `delete, property: ${op.property}, value: ${op.value}`
     case 'replace':
-      return `${prefix}replace, property: ${op.property}, current_value: ${op.oldValue}, new_value: ${op.newValue}`
+      return `replace, property: ${op.property}, current_value: ${op.oldValue}, new_value: ${op.newValue}`
     case 'move-value':
-      return `${prefix}move, from_property: ${op.fromProperty}, to_property: ${op.toProperty}, value: ${op.value}`
+      return `move, from_property: ${op.fromProperty}, to_property: ${op.toProperty}, value: ${op.value}`
   }
+}
+
+/**
+ * Git commit message describing the operation(s), either Before (snapshot) or After they ran.
+ * Multiple operations are listed, one per line, under the prefixed header.
+ */
+function buildOperationsMessage(ops: Operation[], phase: 'Before' | 'After'): string {
+  const prefix = `[${APP_NAME}] ${phase}: `
+  if (ops.length === 1) return prefix + describeOperation(ops[0])
+  return `${prefix}${ops.length} operations\n` + ops.map((op) => `- ${describeOperation(op)}`).join('\n')
 }

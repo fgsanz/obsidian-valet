@@ -3,8 +3,10 @@ import { z } from 'zod'
 import { getConfig } from '../config/config'
 import { scanVault, getCachedNotes, invalidateCache } from '../services/scanner'
 import { filterByCriteria } from '../services/filter'
-import { applyOperation, previewOperation } from '../services/operations'
+import { applyOperations, previewOperations } from '../services/operations'
 import { filterCriteriaSchema, operationSchema } from '@shared/schemas'
+
+const operationsSchema = z.array(operationSchema).min(1)
 
 export const notesPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.post('/notes/scan', async (request, reply) => {
@@ -41,11 +43,11 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
   })
 
   fastify.post('/notes/preview-operation', async (request, reply) => {
-    const { vaultId, criteria, operation } = z
+    const { vaultId, criteria, operations } = z
       .object({
         vaultId: z.string(),
         criteria: filterCriteriaSchema,
-        operation: operationSchema,
+        operations: operationsSchema,
       })
       .parse(request.body)
 
@@ -60,16 +62,16 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
     if (!notes) notes = await scanVault(vault)
 
     const matched = filterByCriteria(notes, criteria, vault.properties)
-    const previews = previewOperation(matched, operation, vault.properties)
+    const previews = previewOperations(matched, operations, vault.properties)
     return { data: previews }
   })
 
   fastify.post('/notes/apply-operation', async (request, reply) => {
-    const { vaultId, criteria, operation } = z
+    const { vaultId, criteria, operations } = z
       .object({
         vaultId: z.string(),
         criteria: filterCriteriaSchema,
-        operation: operationSchema,
+        operations: operationsSchema,
       })
       .parse(request.body)
 
@@ -84,12 +86,9 @@ export const notesPlugin: FastifyPluginAsync = async (fastify) => {
     if (!notes) notes = await scanVault(vault)
 
     const matched = filterByCriteria(notes, criteria, vault.properties)
-    // Compute the post-operation state of the matched notes (the changed ones get their new
-    // values; unchanged ones stay as-is) so the results table can show values AFTER the edit.
-    const previews = previewOperation(matched, operation, vault.properties)
-    const previewByPath = new Map(previews.map((n) => [n.filePath, n]))
-    const result = await applyOperation(matched, operation, vault.properties)
-    const notesAfter = matched.map((n) => previewByPath.get(n.filePath) ?? n)
+    // Apply every operation in order to the matched notes; the table then shows each note's final
+    // state, with both the filtered and the operated-on properties visible.
+    const { result, notesAfter } = await applyOperations(matched, operations, vault.properties)
 
     invalidateCache(vaultId)
     return { data: { result, notes: notesAfter } }

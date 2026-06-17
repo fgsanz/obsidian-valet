@@ -39,18 +39,18 @@ export const api = {
     scan: (vaultId: string) => request<{ count: number }>('POST', '/notes/scan', { vaultId }),
     filter: (vaultId: string, criteria: FilterCriteria) =>
       request<ParsedNote[]>('POST', '/notes/filter', { vaultId, criteria }),
-    previewOperation: (vaultId: string, criteria: FilterCriteria, operation: Operation) =>
-      request<ParsedNote[]>('POST', '/notes/preview-operation', { vaultId, criteria, operation }),
-    applyOperation: (
+    previewOperations: (vaultId: string, criteria: FilterCriteria, operations: Operation[]) =>
+      request<ParsedNote[]>('POST', '/notes/preview-operation', { vaultId, criteria, operations }),
+    applyOperations: (
       vaultId: string,
       criteria: FilterCriteria,
-      operation: Operation,
+      operations: Operation[],
       commitMessage?: string,
     ) =>
       request<{ result: OperationResult; notes: ParsedNote[] }>('POST', '/notes/apply-operation', {
         vaultId,
         criteria,
-        operation,
+        operations,
         commitMessage,
       }),
   },

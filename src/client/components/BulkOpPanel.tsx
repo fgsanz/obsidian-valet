@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Trash2 } from 'lucide-react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
+import Tooltip from './Tooltip'
 import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
-import { resolvePropertyType } from '@shared/properties'
+import { makeRow, updateOpRow, removeOpRow, type OpRow } from '../lib/opRows'
+import { resolvePropertyType, isValidValueForType, expectedFormatHint } from '@shared/properties'
 import styles from './BulkOpPanel.module.css'
 
 interface Props {
   properties: PropertyDef[]
   suggestedProperty?: string
-  onPreview: (op: Operation) => void
-  onApply: (op: Operation) => void
+  onPreview: (ops: Operation[]) => void
+  onApply: (ops: Operation[]) => void
   isPreviewing: boolean
   isApplying: boolean
   matchedNotes?: Array<{ frontmatter: Record<string, unknown> }>
@@ -23,7 +26,7 @@ interface Props {
   canRevert?: boolean
   onCommitChanges?: () => void
   onRevertChanges?: () => void
-  /** Called whenever the configured operation changes, so a stale preview can be cleared. */
+  /** Called whenever the configured operations change, so a stale preview can be cleared. */
   onOperationChange?: () => void
 }
 
@@ -50,11 +53,8 @@ export default function BulkOpPanel({
   onOperationChange,
 }: Props) {
   const [opType, setOpType] = useState<OpType>('delete-value')
-  const [property, setProperty] = useState(suggestedProperty)
-  const [value, setValue] = useState('')
-  const [newValue, setNewValue] = useState('')
-  const [fromProperty, setFromProperty] = useState(suggestedProperty)
-  const [toProperty, setToProperty] = useState('')
+  const [rows, setRows] = useState<OpRow[]>(() => [makeRow(suggestedProperty)])
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
 
   const propertyNames = properties.map((p) => p.name).sort((a, b) => a.localeCompare(b))
 
@@ -65,49 +65,96 @@ export default function BulkOpPanel({
     return properties.find((p) => p.name === propName)?.type
   }
 
-  function canApplyAddValue(): boolean {
+  function canApplyAddValue(property: string): boolean {
     if (!property) return false
     const propType = getPropertyType(property)
     if (!propType) return false
-
     if (allowsMultipleValues(propType)) return true
-
-    const someNotesHaveProperty = matchedNotes.some(
-      (note) => note.frontmatter[property] != null
-    )
+    const someNotesHaveProperty = matchedNotes.some((note) => note.frontmatter[property] != null)
     return !someNotesHaveProperty
   }
 
-  function buildOperation(): Operation | null {
-    if (opType === 'delete-value') {
-      if (!property || !value) return null
-      return { type: 'delete-value', property, value }
+  /**
+   * The written value must match the target property's type — the server enforces this, but we
+   * check up front so the user sees the problem (and Apply/Preview disable) instead of the operation
+   * silently doing nothing. Returns the offending field + a message, or null when the row is fine.
+   * Only fires once the relevant fields are filled, so it doesn't nag mid-typing. Deleting a value
+   * needs no format check (you can remove anything).
+   */
+  function valueTypeError(row: OpRow): { field: 'value' | 'newValue'; message: string } | null {
+    if (opType === 'replace' && row.property && row.newValue) {
+      const type = resolvePropertyType(row.property, properties)
+      if (!isValidValueForType(row.newValue, type))
+        return { field: 'newValue', message: `New value must be ${expectedFormatHint(type)}.` }
     }
-    if (opType === 'replace') {
-      if (!property || !value || !newValue) return null
-      return { type: 'replace', property, oldValue: value, newValue }
+    if (opType === 'move-value' && row.toProperty && row.value) {
+      const type = resolvePropertyType(row.toProperty, properties)
+      if (!isValidValueForType(row.value, type))
+        return { field: 'value', message: `Value must be ${expectedFormatHint(type)} for “${row.toProperty}”.` }
     }
-    if (opType === 'move-value') {
-      if (!isMoveValid(fromProperty, toProperty, value)) return null
-      return { type: 'move-value', fromProperty, toProperty, value }
-    }
-    if (opType === 'add-value') {
-      if (!property || !value) return null
-      if (!canApplyAddValue()) return null
-      return { type: 'add-value', property, value }
+    if (opType === 'add-value' && row.property && row.value) {
+      const type = resolvePropertyType(row.property, properties)
+      if (!isValidValueForType(row.value, type))
+        return { field: 'value', message: `Value must be ${expectedFormatHint(type)}.` }
     }
     return null
   }
 
-  const op = buildOperation()
+  /** Build the operation for a single row, or null if it isn't fully/validly specified. */
+  function buildOperation(row: OpRow): Operation | null {
+    if (valueTypeError(row)) return null
+    if (opType === 'delete-value') {
+      if (!row.property || !row.value) return null
+      return { type: 'delete-value', property: row.property, value: row.value }
+    }
+    if (opType === 'replace') {
+      if (!row.property || !row.value || !row.newValue) return null
+      return { type: 'replace', property: row.property, oldValue: row.value, newValue: row.newValue }
+    }
+    if (opType === 'move-value') {
+      if (!isMoveValid(row.fromProperty, row.toProperty, row.value)) return null
+      return { type: 'move-value', fromProperty: row.fromProperty, toProperty: row.toProperty, value: row.value }
+    }
+    if (opType === 'add-value') {
+      if (!row.property || !row.value || !canApplyAddValue(row.property)) return null
+      return { type: 'add-value', property: row.property, value: row.value }
+    }
+    return null
+  }
 
-  // Notify the parent whenever the operation being configured changes, so a stale preview/result
-  // (and the disabled state derived from it) can be cleared.
-  const opSignature = JSON.stringify({ opType, property, value, newValue, fromProperty, toProperty })
+  const operations = rows.map(buildOperation).filter((op): op is Operation => op !== null)
+  // Apply only when every row is valid, so a half-filled row can never be silently skipped.
+  const allValid = rows.length > 0 && operations.length === rows.length
+
+  // Notify the parent whenever the configured operations change, so a stale preview/result (and the
+  // disabled state derived from it) can be cleared.
+  const opSignature = JSON.stringify({ opType, rows })
   useEffect(() => {
     onOperationChange?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opSignature])
+
+  function updateRow(id: string, patch: Partial<OpRow>) {
+    setRows((prev) => updateOpRow(prev, id, patch))
+  }
+  function addRow() {
+    setRows((prev) => [...prev, makeRow()])
+  }
+  function removeRow(id: string) {
+    setRows((prev) => removeOpRow(prev, id))
+  }
+
+  const addAnotherLabel = opType === 'move-value' ? 'Add move' : 'Add property'
+
+  // Column labels shown once above the rows, matching the fields rendered per row below.
+  const fieldLabels =
+    opType === 'move-value'
+      ? ['From property', 'To property', 'Value to move']
+      : opType === 'replace'
+        ? ['Property', 'Current value', 'New value']
+        : opType === 'delete-value'
+          ? ['Property', 'Value to delete']
+          : ['Property', 'Value to add']
 
   return (
     <div className={styles.panel}>
@@ -124,89 +171,119 @@ export default function BulkOpPanel({
         ))}
       </div>
 
-      <div className={styles.fields}>
-        {opType === 'delete-value' && (
-          <div className={styles.fieldRow}>
-            <div className={styles.field}>
-              <label>Property</label>
-              <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
-            </div>
-            <div className={styles.field}>
-              <label>Value to delete</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
-            </div>
-          </div>
-        )}
+      <div className={styles.rows}>
+        <div className={styles.labels}>
+          {fieldLabels.map((label) => (
+            <span key={label} className={styles.label}>{label}</span>
+          ))}
+          <span className={styles.removeSpacer} />
+        </div>
 
-        {opType === 'replace' && (
-          <div className={styles.fieldRow}>
-            <div className={styles.field}>
-              <label>Property</label>
-              <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
-            </div>
-            <div className={styles.field}>
-              <label>Current value</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
-            </div>
-            <div className={styles.field}>
-              <label>New value</label>
-              <input value={newValue} onChange={(e) => setNewValue(e.target.value)} placeholder={valuePlaceholder(property)} />
-            </div>
-          </div>
-        )}
+        {rows.map((row) => {
+          const typeError = valueTypeError(row)
+          const invalid = (field: 'value' | 'newValue') => typeError?.field === field
+          const showAddWarning =
+            opType === 'add-value' &&
+            row.property &&
+            !allowsMultipleValues(getPropertyType(row.property) || 'text') &&
+            matchedNotes.some((n) => n.frontmatter[row.property] != null)
 
-        {opType === 'move-value' && (
-          <div className={styles.fieldRow}>
-            <div className={styles.field}>
-              <label>From property</label>
-              <Selector value={fromProperty} onChange={setFromProperty} options={movableFromOptions(propertyNames, toProperty)} placeholder="select property" emptyMessage="No matching property" />
-            </div>
-            <div className={styles.field}>
-              <label>To property</label>
-              <Selector value={toProperty} onChange={setToProperty} options={movableFromOptions(propertyNames, fromProperty)} placeholder="select property" emptyMessage="No matching property" />
-            </div>
-            <div className={styles.field}>
-              <label>Value to move</label>
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(fromProperty)} />
-            </div>
-          </div>
-        )}
+          return (
+            <div key={row.id}>
+              <div className={`${styles.rule} ${hoveredRowId === row.id ? styles.ruleHoverDelete : ''}`}>
+                {opType === 'delete-value' && (
+                  <>
+                    <div className={styles.field}>
+                      <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+                    </div>
+                    <div className={styles.field}>
+                      <input className={styles.valueInput} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                    </div>
+                  </>
+                )}
 
-        {opType === 'add-value' && (
-          <>
-            <div className={styles.fieldRow}>
-              <div className={styles.field}>
-                <label>Property</label>
-                <Selector value={property} onChange={setProperty} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+                {opType === 'replace' && (
+                  <>
+                    <div className={styles.field}>
+                      <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+                    </div>
+                    <div className={styles.field}>
+                      <input className={styles.valueInput} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                    </div>
+                    <div className={styles.field}>
+                      <input className={`${styles.valueInput} ${invalid('newValue') ? styles.valueInputInvalid : ''}`} value={row.newValue} onChange={(e) => updateRow(row.id, { newValue: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                    </div>
+                  </>
+                )}
+
+                {opType === 'move-value' && (
+                  <>
+                    <div className={styles.field}>
+                      <Selector value={row.fromProperty} onChange={(v) => updateRow(row.id, { fromProperty: v })} options={movableFromOptions(propertyNames, row.toProperty)} placeholder="select property" emptyMessage="No matching property" />
+                    </div>
+                    <div className={styles.field}>
+                      <Selector value={row.toProperty} onChange={(v) => updateRow(row.id, { toProperty: v })} options={movableFromOptions(propertyNames, row.fromProperty)} placeholder="select property" emptyMessage="No matching property" />
+                    </div>
+                    <div className={styles.field}>
+                      <input className={`${styles.valueInput} ${invalid('value') ? styles.valueInputInvalid : ''}`} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.fromProperty)} />
+                    </div>
+                  </>
+                )}
+
+                {opType === 'add-value' && (
+                  <>
+                    <div className={styles.field}>
+                      <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
+                    </div>
+                    <div className={styles.field}>
+                      <input className={`${styles.valueInput} ${invalid('value') ? styles.valueInputInvalid : ''}`} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                    </div>
+                  </>
+                )}
+
+                <Tooltip content="Delete">
+                  <button
+                    type="button"
+                    className={styles.removeBtn}
+                    aria-label="Delete"
+                    onClick={() => removeRow(row.id)}
+                    disabled={rows.length === 1}
+                    onMouseEnter={() => setHoveredRowId(row.id)}
+                    onMouseLeave={() => setHoveredRowId(null)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </Tooltip>
               </div>
-              <div className={styles.field}>
-                <label>Value to add</label>
-                <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={valuePlaceholder(property)} />
-              </div>
+
+              {showAddWarning && (
+                <div className={styles.warning}>
+                  Some notes already have a value for this single-value property. They won't be affected by this operation.
+                </div>
+              )}
             </div>
-            {property && !allowsMultipleValues(getPropertyType(property) || 'text') && matchedNotes.some((n) => n.frontmatter[property] != null) && (
-              <div className={styles.warning}>
-                Some notes already have a value for this single-value property. They won't be affected by this operation.
-              </div>
-            )}
-          </>
-        )}
+          )
+        })}
+
+        <button type="button" className={styles.addRowBtn} onClick={addRow}>
+          + {addAnotherLabel}
+        </button>
       </div>
 
       <div className={styles.actions}>
         <button
           type="button"
           className={styles.previewBtn}
-          onClick={() => op && onPreview(op)}
-          disabled={!op || isPreviewing || isApplying || applied}
+          onClick={() => allValid && onPreview(operations)}
+          disabled={!allValid || isPreviewing || isApplying || applied}
         >
           {isPreviewing ? 'Previewing…' : 'Preview'}
         </button>
         <button
           type="button"
           className={styles.applyBtn}
-          onClick={() => op && onApply(op)}
-          disabled={!op || isPreviewing || isApplying || disableApply || applied}
+          onClick={() => allValid && onApply(operations)}
+          disabled={!allValid || isPreviewing || isApplying || disableApply || applied}
         >
           {isApplying ? 'Applying…' : 'Apply changes'}
         </button>

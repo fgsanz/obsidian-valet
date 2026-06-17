@@ -1,4 +1,5 @@
 import type { ParsedNote, Operation, OperationResult, PropertyDef, PropertyType } from '@shared/types'
+import { isValidValueForType } from '@shared/properties'
 import { writeNote, normalizeLinkTarget, inferType, isEmptyPropertyValue } from './frontmatter'
 
 function valuesMatch(a: unknown, b: string): boolean {
@@ -25,37 +26,6 @@ function resolveType(property: string, defs: PropertyDef[], currentValue: unknow
   if (property === 'tags') return 'tag-array'
   const def = defs.find((d) => d.name === property)
   return def ? def.type : inferType(property, currentValue)
-}
-
-/**
- * Whether a raw string value is acceptable for the given property type. The backend is the
- * authority on this — it must never write a value that does not match the property type, even
- * if a client (or test) asks it to.
- */
-function isValidValueForType(value: string, type: PropertyType): boolean {
-  const v = value.trim()
-  if (v === '') return false
-  switch (type) {
-    case 'text':
-    case 'text-array':
-      return true
-    case 'tag-array':
-      // A tag is an alphanumeric string, or several joined by "/" (e.g. tag or tag/subtag).
-      return /^[A-Za-z0-9]+(\/[A-Za-z0-9]+)*$/.test(v)
-    case 'number':
-      return !Number.isNaN(Number(v))
-    case 'boolean':
-      return /^(true|false)$/i.test(v)
-    case 'date':
-      return /^\d{4}-\d{2}-\d{2}$/.test(v)
-    case 'week-link':
-      return /^\[\[\d{4}-W\d{1,2}\]\]$/.test(v)
-    case 'link':
-    case 'link-array':
-      return /^\[\[.+\]\]$/.test(v)
-    default:
-      return true
-  }
 }
 
 function mutateNote(note: ParsedNote, operation: Operation, defs: PropertyDef[]): ParsedNote | null {
@@ -144,6 +114,81 @@ export function previewOperation(
   return notes
     .map((note) => mutateNote(note, operation, defs))
     .filter((n): n is ParsedNote => n !== null)
+}
+
+/**
+ * Preview the combined effect of applying several operations in order (one per property, e.g. the
+ * same value deleted from `parent` then `related`). Each operation sees the result of the previous,
+ * so a note touched by any of them appears once with its final state. Returns only changed notes.
+ */
+export function previewOperations(
+  notes: ParsedNote[],
+  operations: Operation[],
+  defs: PropertyDef[],
+): ParsedNote[] {
+  const changed: ParsedNote[] = []
+  for (const note of notes) {
+    let current = note
+    let didChange = false
+    for (const operation of operations) {
+      const mutated = mutateNote(current, operation, defs)
+      if (mutated) {
+        current = mutated
+        didChange = true
+      }
+    }
+    if (didChange) changed.push(current)
+  }
+  return changed
+}
+
+/**
+ * Apply several operations in order to the matched notes — the multi-property equivalent of
+ * {@link applyOperation}. The operations are applied sequentially in memory (op N sees op N-1's
+ * result) and each note is written to disk once, with its final state. A note counts as changed if
+ * any operation changed it.
+ */
+export async function applyOperations(
+  notes: ParsedNote[],
+  operations: Operation[],
+  defs: PropertyDef[],
+): Promise<{ result: OperationResult; notesAfter: ParsedNote[] }> {
+  const result: OperationResult = {
+    matched: notes.length,
+    succeeded: 0,
+    failed: 0,
+    errors: [],
+    changedPaths: [],
+  }
+  const notesAfter: ParsedNote[] = []
+
+  for (const note of notes) {
+    let current = note
+    let didChange = false
+    for (const operation of operations) {
+      const mutated = mutateNote(current, operation, defs)
+      if (mutated) {
+        current = mutated
+        didChange = true
+      }
+    }
+    if (!didChange) {
+      notesAfter.push(note)
+      continue
+    }
+    try {
+      await writeNote(current, defs)
+      result.succeeded++
+      result.changedPaths.push(note.filePath)
+      notesAfter.push(current)
+    } catch (err) {
+      result.failed++
+      result.errors.push({ filePath: note.filePath, error: String(err) })
+      notesAfter.push(note)
+    }
+  }
+
+  return { result, notesAfter }
 }
 
 export async function applyOperation(

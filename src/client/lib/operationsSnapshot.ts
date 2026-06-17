@@ -13,7 +13,7 @@ export interface OperationsSnapshot {
   matchedNotes: ParsedNote[] | null
   previewNotes: ParsedNote[] | null
   result: OperationResult | null
-  pendingOperation: Operation | null
+  pendingOperations: Operation[] | null
   gitCommitted: boolean
   filterError: string | null
 }
