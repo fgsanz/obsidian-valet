@@ -1,0 +1,78 @@
+/* Overlay just below the 56px top nav. Zero-height + pointer-events:none so it never affects
+   layout or blocks clicks; each hint is anchored (via inline left) to its measured nav-link centre. */
+.hints {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  height: 0;
+  z-index: 40;
+  pointer-events: none;
+  font-family: 'Bradley Hand', 'Segoe Print', 'Comic Sans MS', cursive;
+}
+
+/* Each hint's `left` (inline) is the nav-link centre; the arrow and label are placed relative to
+   it. The arrow is shifted so its TIP lands on that centre; the label hangs off the arrow's tail. */
+.hint {
+  position: absolute;
+  top: 0;
+}
+
+/* Softened toward the page background: a bit lighter on light, a bit darker on dark — in one rule. */
+.arrow {
+  position: absolute;
+  top: 0;
+  width: 46px;
+  height: 58px;
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-text) 64%, var(--color-bg));
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.label {
+  position: absolute;
+  top: 58px;
+  width: 70px;
+  font-size: 1.05rem;
+  line-height: 1.15;
+  color: color-mix(in srgb, var(--color-text) 78%, var(--color-bg));
+}
+
+/* The step number is intentionally lighter than the words it labels. */
+.num {
+  margin-right: 3px;
+  color: var(--color-text-subtle);
+}
+
+/* 1 → Vaults: arrow tip (top-right ≈ 38px) on the centre; label to the lower-LEFT of the tail. */
+.hint1 .arrow {
+  left: -38px;
+}
+.hint1 .label {
+  right: 30px;
+  text-align: right;
+}
+
+/* 2 → Operations: nearly straight, nudged slightly left of centre; label centred below. */
+.hint2 .arrow {
+  left: -35px;
+}
+.hint2 .label {
+  left: -57px;
+  text-align: center;
+}
+
+/* 3 → Operations: arrow tip (top-left ≈ 8px) just right of centre; label to the lower-RIGHT.
+   The whole group is nudged right so it sits clear of hint 2. */
+.hint3 {
+  transform: translateX(16px);
+}
+.hint3 .arrow {
+  left: 4px;
+}
+.hint3 .label {
+  left: 48px;
+  text-align: left;
+}

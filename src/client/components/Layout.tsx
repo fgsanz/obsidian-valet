@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
 import { Settings, Bell, BellDot } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -13,6 +13,7 @@ import VaultPicker from './VaultPicker'
 import ErrorBoundary from './ErrorBoundary'
 import Tooltip from './Tooltip'
 import SettingsPanel from './SettingsPanel'
+import HomeNavHints from './HomeNavHints'
 import styles from './Layout.module.css'
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -27,8 +28,34 @@ export default function Layout() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [gitWarning, setGitWarning] = useState<GitWarning | null>(null)
   const queryClient = useQueryClient()
+  const location = useLocation()
   // The Support top-nav item lives under /docs, so keep "Docs" from also highlighting there.
-  const onSupport = useLocation().pathname === '/docs/support'
+  const onSupport = location.pathname === '/docs/support'
+  const isHome = location.pathname === '/'
+
+  // Anchor the home-page hand-drawn hints to the real nav links so they track the menu entries as
+  // the window resizes (measured in viewport coords; the hints overlay is position: fixed).
+  const vaultsLinkRef = useRef<HTMLAnchorElement>(null)
+  const opsLinkRef = useRef<HTMLAnchorElement>(null)
+  const [navAnchors, setNavAnchors] = useState<{ vaults: number; ops: number } | null>(null)
+  useLayoutEffect(() => {
+    if (!isHome) {
+      setNavAnchors(null)
+      return
+    }
+    function measure() {
+      const v = vaultsLinkRef.current?.getBoundingClientRect()
+      const o = opsLinkRef.current?.getBoundingClientRect()
+      if (v && o) setNavAnchors({ vaults: v.left + v.width / 2, ops: o.left + o.width / 2 })
+    }
+    measure()
+    const raf = requestAnimationFrame(measure) // re-measure once fonts/layout have settled
+    window.addEventListener('resize', measure)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', measure)
+    }
+  }, [isHome])
 
   const { data: settings } = useQuery({
     queryKey: ['settings'],
@@ -138,12 +165,14 @@ export default function Layout() {
         <div className={styles.links}>
           <NavLink
             to="/vaults"
+            ref={vaultsLinkRef}
             className={({ isActive }) => (isActive ? styles.active : undefined)}
           >
             Vaults
           </NavLink>
           <NavLink
             to="/ops"
+            ref={opsLinkRef}
             className={({ isActive }) => (isActive ? styles.active : undefined)}
           >
             Operations
@@ -185,6 +214,7 @@ export default function Layout() {
           </Tooltip>
         </div>
       </nav>
+      {isHome && navAnchors && <HomeNavHints vaultsX={navAnchors.vaults} opsX={navAnchors.ops} />}
       <main className={styles.main}>
         <ErrorBoundary>
           <Outlet />
