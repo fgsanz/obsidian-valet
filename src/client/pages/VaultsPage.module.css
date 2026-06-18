@@ -63,6 +63,11 @@
   font-size: var(--text-xs);
 }
 
+/* "Refresh properties" — regular weight text (the base .btn is 600). */
+.refreshBtn {
+  font-weight: 400;
+}
+
 .btnIcon {
   padding: var(--space-2);
   width: 40px;
@@ -161,7 +166,7 @@
    background so it reads well in both light and dark themes. */
 .vaultCard.vaultCardActive {
   border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
-  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg));
+  background: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg));
 }
 
 .vaultCard.hasDeleteHover,
