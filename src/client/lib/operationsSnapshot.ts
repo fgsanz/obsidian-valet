@@ -1,7 +1,7 @@
 import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
 
 /**
- * In-memory snapshot of the Operations page so its filter, results and selections survive leaving
+ * In-memory snapshot of the Metadata page so its filter, results and selections survive leaving
  * the page (e.g. to Vaults) and coming back — but only while the active vault is unchanged. The
  * route component unmounts on navigation, so React state alone would be lost; this module-level
  * slot persists it for the session, keyed by vault id.

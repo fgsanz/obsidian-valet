@@ -86,7 +86,7 @@ On your browser:
 - On the **Vaults** page:
   - Add the location of your Obsidian vault
   - Optionally, add one or several forbidden directories so the tool ignores them
-- You are now ready to perform bulk **Operations** on your notes
+- You are now ready to perform bulk metadata operations on your notes in the **Metadata** page
 
 ## New releases
 

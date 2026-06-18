@@ -16,6 +16,8 @@ interface Props {
   isPreviewing: boolean
   isApplying: boolean
   matchedNotes?: Array<{ frontmatter: Record<string, unknown> }>
+  /** Disable both Preview and Apply (e.g. no notes are matched yet). */
+  disabled?: boolean
   /** Disable the Apply button (e.g. a preview showed that no notes would change). */
   disableApply?: boolean
   /** The current operation has already been applied; disable Preview/Apply until it changes. */
@@ -44,6 +46,7 @@ export default function BulkOpPanel({
   isPreviewing,
   isApplying,
   matchedNotes = [],
+  disabled = false,
   disableApply = false,
   applied = false,
   canCommit = false,
@@ -275,7 +278,7 @@ export default function BulkOpPanel({
           type="button"
           className={styles.previewBtn}
           onClick={() => allValid && onPreview(operations)}
-          disabled={!allValid || isPreviewing || isApplying || applied}
+          disabled={disabled || !allValid || isPreviewing || isApplying || applied}
         >
           {isPreviewing ? 'Previewing…' : 'Preview'}
         </button>
@@ -283,7 +286,7 @@ export default function BulkOpPanel({
           type="button"
           className={styles.applyBtn}
           onClick={() => allValid && onApply(operations)}
-          disabled={!allValid || isPreviewing || isApplying || disableApply || applied}
+          disabled={disabled || !allValid || isPreviewing || isApplying || disableApply || applied}
         >
           {isApplying ? 'Applying…' : 'Apply changes'}
         </button>

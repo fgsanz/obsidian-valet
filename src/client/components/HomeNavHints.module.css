@@ -34,8 +34,8 @@
 .label {
   position: absolute;
   top: 58px;
-  width: 70px;
-  font-size: 1.05rem;
+  width: 78px;
+  font-size: 1.18rem;
   line-height: 1.15;
   color: color-mix(in srgb, var(--color-text) 78%, var(--color-bg));
 }
@@ -55,7 +55,7 @@
   text-align: right;
 }
 
-/* 2 → Operations: nearly straight, nudged slightly left of centre; label centred below. */
+/* 2 → Metadata: nearly straight, nudged slightly left of centre; label centred below. */
 .hint2 .arrow {
   left: -35px;
 }
@@ -64,7 +64,7 @@
   text-align: center;
 }
 
-/* 3 → Operations: arrow tip (top-left ≈ 8px) just right of centre; label to the lower-RIGHT.
+/* 3 → Metadata: arrow tip (top-left ≈ 8px) just right of centre; label to the lower-RIGHT.
    The whole group is nudged right so it sits clear of hint 2. */
 .hint3 {
   transform: translateX(16px);

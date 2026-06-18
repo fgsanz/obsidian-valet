@@ -10,7 +10,7 @@ import StatsBar from '../components/StatsBar'
 import BulkOpPanel from '../components/BulkOpPanel'
 import GitCommitModal from '../components/GitCommitModal'
 import { APP_NAME } from '@shared/constants'
-import styles from './OperationsPage.module.css'
+import styles from './MetadataPage.module.css'
 
 type Tab = 'filter' | 'ops'
 type GitModalState =
@@ -20,7 +20,7 @@ type GitModalState =
   | { kind: 'reverted' } // revert finished — info only
   | null
 
-export default function OperationsPage() {
+export default function MetadataPage() {
   const { data: activeVault, isLoading } = useQuery({
     queryKey: ['vaults', 'active'],
     queryFn: api.vaults.getActive,
@@ -186,7 +186,7 @@ export default function OperationsPage() {
   if (!activeVault) {
     return (
       <div className={styles.noVault}>
-        <h1>Operations</h1>
+        <h1>Metadata</h1>
         <p>No active vault selected. Go to <Link to="/vaults">Vaults</Link> to add and activate a vault first.</p>
       </div>
     )
@@ -257,7 +257,7 @@ export default function OperationsPage() {
       )}
 
       <div className={styles.header}>
-        <h1>Operations</h1>
+        <h1>Metadata</h1>
         <span className={styles.vaultName}>{activeVault.name}</span>
       </div>
 
@@ -277,7 +277,6 @@ export default function OperationsPage() {
           type="button"
           className={`${styles.tab} ${activeTab === 'ops' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('ops')}
-          disabled={!hasMatches && !result}
         >
           Bulk operation
           {result && (
@@ -318,55 +317,59 @@ export default function OperationsPage() {
 
       {/* ── Tab: Bulk operation ───────────────────────────────────────────── */}
       <div style={{ display: activeTab === 'ops' ? 'contents' : 'none' }}>
-          {matchedNotes !== null && (
-            <>
-              <div className={styles.section}>
-                <div className={styles.operationHeader}>
+          <div className={styles.section}>
+            <div className={styles.operationHeader}>
+              {matchedNotes !== null ? (
+                <>
                   <span className={styles.matchCount}>{matchedNotes.length}</span>
                   {' '}note{matchedNotes.length === 1 ? '' : 's'} matched. Choose an operation…
-                </div>
-                <BulkOpPanel
-                  properties={activeVault.properties}
-                  suggestedProperty={criteria.properties[0]?.property}
-                  onPreview={handlePreview}
-                  onApply={handleApply}
-                  isPreviewing={isPreviewing}
-                  isApplying={isApplying}
-                  matchedNotes={matchedNotes}
-                  disableApply={previewNotes !== null && previewNotes.length === 0}
-                  applied={result !== null}
-                  canCommit={
-                    !!gitStatus?.hasGit && result !== null && result.failed === 0 && !gitCommitted
-                  }
-                  canRevert={!!gitStatus?.hasGit && result !== null && result.failed > 0}
-                  onCommitChanges={() => {
-                    if (pendingOperations)
-                      setGitModal({ kind: 'commit', message: buildOperationsMessage(pendingOperations, 'After') })
-                  }}
-                  onRevertChanges={() => setGitModal({ kind: 'revert' })}
-                  onOperationChange={() => {
-                    setPreviewNotes(null)
-                    setResult(null)
-                    setGitCommitted(false)
-                  }}
-                />
-              </div>
-              {previewNotes && !result && (
-                <div className={styles.section}>
-                  <div
-                    className={styles.sectionTitle}
-                    style={previewNotes.length === 0 ? { color: 'var(--color-error)' } : undefined}
-                  >
-                    {previewNotes.length === 0
-                      ? 'Preview — Change cannot be applied. Rethink the bulk operation.'
-                      : `Preview — change will be applied to ${previewNotes.length} out of ${matchedNotes.length} note${matchedNotes.length === 1 ? '' : 's'}`}
-                  </div>
-                  {previewNotes.length > 0 && (
-                    <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
-                  )}
-                </div>
+                </>
+              ) : (
+                <>Run a filter in the <strong>Filter notes</strong> tab to choose which notes to operate on.</>
               )}
-            </>
+            </div>
+            <BulkOpPanel
+              properties={activeVault.properties}
+              suggestedProperty={criteria.properties[0]?.property}
+              onPreview={handlePreview}
+              onApply={handleApply}
+              isPreviewing={isPreviewing}
+              isApplying={isApplying}
+              matchedNotes={matchedNotes ?? []}
+              disabled={!hasMatches}
+              disableApply={previewNotes !== null && previewNotes.length === 0}
+              applied={result !== null}
+              canCommit={
+                !!gitStatus?.hasGit && result !== null && result.failed === 0 && !gitCommitted
+              }
+              canRevert={!!gitStatus?.hasGit && result !== null && result.failed > 0}
+              onCommitChanges={() => {
+                if (pendingOperations)
+                  setGitModal({ kind: 'commit', message: buildOperationsMessage(pendingOperations, 'After') })
+              }}
+              onRevertChanges={() => setGitModal({ kind: 'revert' })}
+              onOperationChange={() => {
+                setPreviewNotes(null)
+                setResult(null)
+                setGitCommitted(false)
+              }}
+            />
+          </div>
+
+          {matchedNotes !== null && previewNotes && !result && (
+            <div className={styles.section}>
+              <div
+                className={styles.sectionTitle}
+                style={previewNotes.length === 0 ? { color: 'var(--color-error)' } : undefined}
+              >
+                {previewNotes.length === 0
+                  ? 'Preview — Change cannot be applied. Rethink the bulk operation.'
+                  : `Preview — change will be applied to ${previewNotes.length} out of ${matchedNotes.length} note${matchedNotes.length === 1 ? '' : 's'}`}
+              </div>
+              {previewNotes.length > 0 && (
+                <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
+              )}
+            </div>
           )}
 
           {result && (

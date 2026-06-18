@@ -20,7 +20,7 @@ Property definitions tell the tool how to interpret each frontmatter key. Obsidi
 
 ## Active vault
 
-Only one vault is active at a time. The **Operations** page always operates on the active vault.
+Only one vault is active at a time. The **Metadata** page always operates on the active vault.
 
 ## Git integration
 

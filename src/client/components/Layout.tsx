@@ -171,11 +171,11 @@ export default function Layout() {
             Vaults
           </NavLink>
           <NavLink
-            to="/ops"
+            to="/metadata"
             ref={opsLinkRef}
             className={({ isActive }) => (isActive ? styles.active : undefined)}
           >
-            Operations
+            Metadata
           </NavLink>
           <NavLink
             to="/docs"

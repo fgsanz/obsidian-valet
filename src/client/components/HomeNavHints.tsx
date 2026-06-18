@@ -3,7 +3,7 @@ import styles from './HomeNavHints.module.css'
 interface Props {
   /** Viewport x of the centre of the "Vaults" nav link. */
   vaultsX: number
-  /** Viewport x of the centre of the "Operations" nav link. */
+  /** Viewport x of the centre of the "Metadata" nav link. */
   opsX: number
 }
 
@@ -38,7 +38,7 @@ function ArrowLeft() {
 
 /**
  * Playful, hand-written annotations under the top nav, pointing at the steps a first-time user
- * takes: 1 → Vaults, 2 & 3 → Operations. Each hint is anchored to the measured centre of its nav
+ * takes: 1 → Vaults, 2 & 3 → Metadata. Each hint is anchored to the measured centre of its nav
  * link (passed in), so they track the real menu entries as the window resizes. Arrows 1 and 3 bow
  * outward and their labels hang to the lower-left / lower-right of the arrow's tail. Colours come
  * from theme tokens, so it reads on both light and dark themes.
