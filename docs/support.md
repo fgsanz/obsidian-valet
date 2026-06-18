@@ -8,9 +8,9 @@ description: How to report bugs, ask questions, and suggest improvements
 
 The way to get in touch about Obsidian Valet is through **GitHub Issues**:
 
-- **Open an issue:** [github.com/fgsanz/obsidian-valet/issues](https://github.com/fgsanz/obsidian-valet/issues)
+- Open an issue: [github.com/fgsanz/obsidian-valet/issues](https://github.com/fgsanz/obsidian-valet/issues)
 
-You will need a (free) **GitHub account** to create or comment on an issue. If you don't have one yet, you can sign up at [github.com/signup](https://github.com/signup).
+You will need a (free) GitHub account to create or comment on an issue. If you don't have one yet, you can sign up at [github.com/signup](https://github.com/signup).
 
 ## What you can raise
 
