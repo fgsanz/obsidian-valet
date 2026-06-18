@@ -5,6 +5,7 @@ import { ChevronRight, ChevronDown, ChevronsDownUp, ChevronsUpDown } from 'lucid
 import type { DocPage } from '@shared/types'
 import { api } from '../api/client'
 import DocViewer from '../components/DocViewer'
+import ChangelogView from '../components/ChangelogView'
 import Tooltip from './../components/Tooltip'
 import styles from './DocsPage.module.css'
 
@@ -200,7 +201,8 @@ export default function DocsPage() {
         {slug === 'index' && <DocsIndex />}
         {slug !== 'index' && isLoading && <p style={{ color: 'var(--color-text-muted)' }}>Loading…</p>}
         {slug !== 'index' && isError && <p style={{ color: 'var(--color-error)' }}>Failed to load page.</p>}
-        {slug !== 'index' && page && <DocViewer content={page.content} />}
+        {slug !== 'index' && page && slug === 'changelog' && <ChangelogView markdown={page.content} />}
+        {slug !== 'index' && page && slug !== 'changelog' && <DocViewer content={page.content} />}
       </main>
     </div>
   )
