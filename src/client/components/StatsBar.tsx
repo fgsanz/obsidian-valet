@@ -5,6 +5,8 @@ import styles from './StatsBar.module.css'
 interface Props {
   matched: number
   result?: OperationResult | null
+  /** Preview mode: how many of the matched notes would change. */
+  willChange?: number
 }
 
 /** Bold + coloured when non-zero; plain muted when zero. */
@@ -14,7 +16,7 @@ function valueStyle(value: number, activeColor: string): CSSProperties {
     : { fontWeight: 700, color: activeColor }
 }
 
-export default function StatsBar({ matched, result }: Props) {
+export default function StatsBar({ matched, result, willChange }: Props) {
   const unchanged = result ? Math.max(matched - result.succeeded - result.failed, 0) : 0
 
   return (
@@ -25,6 +27,17 @@ export default function StatsBar({ matched, result }: Props) {
         </span>
         <span className={styles.statLabel}>{matched === 1 ? 'note' : 'notes'} matched</span>
       </span>
+      {!result && willChange !== undefined && (
+        <>
+          <span className={styles.divider}>·</span>
+          <span className={styles.stat}>
+            <span className={styles.statValue} style={valueStyle(willChange, 'var(--color-success)')}>
+              {willChange}
+            </span>
+            <span className={styles.statLabel}>will change</span>
+          </span>
+        </>
+      )}
       {result && (
         <>
           <span className={styles.divider}>·</span>

@@ -358,16 +358,16 @@ export default function MetadataPage() {
 
           {matchedNotes !== null && previewNotes && !result && (
             <div className={styles.section}>
-              <div
-                className={styles.sectionTitle}
-                style={previewNotes.length === 0 ? { color: 'var(--color-error)' } : undefined}
-              >
-                {previewNotes.length === 0
-                  ? 'Preview — Change cannot be applied. Rethink the bulk operation.'
-                  : `Preview — change will be applied to ${previewNotes.length} out of ${matchedNotes.length} note${matchedNotes.length === 1 ? '' : 's'}`}
-              </div>
-              {previewNotes.length > 0 && (
-                <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
+              {previewNotes.length === 0 ? (
+                <div className={styles.sectionTitle} style={{ color: 'var(--color-error)' }}>
+                  Preview — Change cannot be applied. Rethink the bulk operation.
+                </div>
+              ) : (
+                <>
+                  <div className={styles.sectionTitle}>Preview</div>
+                  <StatsBar matched={matchedNotes.length} willChange={previewNotes.length} />
+                  <NoteList notes={previewNotes} highlightProperties={highlightedProperties} />
+                </>
               )}
             </div>
           )}
