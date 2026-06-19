@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Trash2, AlertTriangle } from 'lucide-react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
 import Tooltip from './Tooltip'
 import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
 import { makeRow, updateOpRow, removeOpRow, type OpRow } from '../lib/opRows'
+import { addValueStatus, canAddValue } from '../lib/addValue'
 import { resolvePropertyType, isValidValueForType, expectedFormatHint } from '@shared/properties'
 import styles from './BulkOpPanel.module.css'
 
@@ -68,13 +69,15 @@ export default function BulkOpPanel({
     return properties.find((p) => p.name === propName)?.type
   }
 
-  function canApplyAddValue(property: string): boolean {
-    if (!property) return false
+  /** Status of an add-value on a property across the matched notes (single-value caveat handling). */
+  function addStatus(property: string) {
     const propType = getPropertyType(property)
-    if (!propType) return false
-    if (allowsMultipleValues(propType)) return true
-    const someNotesHaveProperty = matchedNotes.some((note) => note.frontmatter[property] != null)
-    return !someNotesHaveProperty
+    return addValueStatus(matchedNotes, property, propType ? allowsMultipleValues(propType) : false)
+  }
+
+  function canApplyAddValue(property: string): boolean {
+    if (!property || !getPropertyType(property)) return false
+    return canAddValue(addStatus(property))
   }
 
   /**
@@ -185,11 +188,14 @@ export default function BulkOpPanel({
         {rows.map((row) => {
           const typeError = valueTypeError(row)
           const invalid = (field: 'value' | 'newValue') => typeError?.field === field
-          const showAddWarning =
-            opType === 'add-value' &&
-            row.property &&
-            !allowsMultipleValues(getPropertyType(row.property) || 'text') &&
-            matchedNotes.some((n) => n.frontmatter[row.property] != null)
+          // Single-value add-value caveat: some notes skipped, or none can be filled at all.
+          const addState = opType === 'add-value' && row.property ? addStatus(row.property) : 'ok'
+          const addWarning =
+            addState === 'some-skipped'
+              ? "Some notes already have a value for this single-value property. They won't be affected by this operation."
+              : addState === 'all-skipped'
+                ? 'All notes already have a value for this single-value property. Operation cannot be applied.'
+                : null
 
           return (
             <div key={row.id}>
@@ -259,9 +265,10 @@ export default function BulkOpPanel({
                 </Tooltip>
               </div>
 
-              {showAddWarning && (
+              {addWarning && (
                 <div className={styles.warning}>
-                  Some notes already have a value for this single-value property. They won't be affected by this operation.
+                  <AlertTriangle size={15} className={styles.warningIcon} />
+                  <span>{addWarning}</span>
                 </div>
               )}
             </div>

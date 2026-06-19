@@ -43,6 +43,15 @@ export function isValidValueForType(value: string, type: PropertyType): boolean 
   }
 }
 
+/** A property value counts as "empty" when it's null/undefined, a blank string, or an empty array. */
+export function isEmptyPropertyValue(value: unknown): boolean {
+  return (
+    value == null ||
+    (typeof value === 'string' && value.trim() === '') ||
+    (Array.isArray(value) && value.length === 0)
+  )
+}
+
 /** A short, human-readable hint of the expected format for a property type — used in error text. */
 export function expectedFormatHint(type: PropertyType): string {
   switch (type) {
