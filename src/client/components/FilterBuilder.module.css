@@ -72,7 +72,7 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text);
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-sm);
   outline: none;
@@ -87,7 +87,7 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text);
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-sm);
   outline: none;
@@ -106,7 +106,7 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text);
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
@@ -116,21 +116,8 @@
 }
 
 .valueInput::placeholder {
-  color: var(--color-text-muted);
+  color: var(--color-text-subtle);
   opacity: 1;
-}
-
-.valueInput::-webkit-input-placeholder {
-  color: var(--color-text-muted);
-}
-
-.valueInput::-moz-placeholder {
-  color: var(--color-text-muted);
-  opacity: 1;
-}
-
-.valueInput:-ms-input-placeholder {
-  color: var(--color-text-muted);
 }
 
 .valueInput:focus {

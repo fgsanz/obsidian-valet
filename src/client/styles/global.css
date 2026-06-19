@@ -68,3 +68,10 @@ button {
 input, select, textarea {
   font-family: inherit;
 }
+
+/* Placeholder / suggested text is deliberately more subtle than typed content, so it's clear it's
+   a hint and not an entered value. Works in both themes via the token. */
+::placeholder {
+  color: var(--color-text-subtle);
+  opacity: 1;
+}
