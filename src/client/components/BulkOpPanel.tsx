@@ -6,6 +6,7 @@ import Tooltip from './Tooltip'
 import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
 import { makeRow, updateOpRow, removeOpRow, type OpRow } from '../lib/opRows'
 import { addValueStatus, canAddValue } from '../lib/addValue'
+import { deleteValueStatus, canDeleteValue } from '../lib/deleteValue'
 import { resolvePropertyType, isValidValueForType, expectedFormatHint } from '@shared/properties'
 import styles from './BulkOpPanel.module.css'
 
@@ -75,6 +76,11 @@ export default function BulkOpPanel({
     return addValueStatus(matchedNotes, property, propType ? allowsMultipleValues(propType) : false)
   }
 
+  /** Status of a delete-value on a property: whether any matched note actually has content. */
+  function deleteStatus(property: string) {
+    return deleteValueStatus(matchedNotes, property)
+  }
+
   function canApplyAddValue(property: string): boolean {
     if (!property || !getPropertyType(property)) return false
     return canAddValue(addStatus(property))
@@ -111,6 +117,7 @@ export default function BulkOpPanel({
     if (valueTypeError(row)) return null
     if (opType === 'delete-value') {
       if (!row.property || !row.value) return null
+      if (!canDeleteValue(deleteStatus(row.property))) return null
       return { type: 'delete-value', property: row.property, value: row.value }
     }
     if (opType === 'replace') {
@@ -188,14 +195,19 @@ export default function BulkOpPanel({
         {rows.map((row) => {
           const typeError = valueTypeError(row)
           const invalid = (field: 'value' | 'newValue') => typeError?.field === field
-          // Single-value add-value caveat: some notes skipped, or none can be filled at all.
+          // Amber caveats when an operation can't (fully) change anything across the matched notes.
           const addState = opType === 'add-value' && row.property ? addStatus(row.property) : 'ok'
-          const addWarning =
+          const deleteState = opType === 'delete-value' && row.property ? deleteStatus(row.property) : 'ok'
+          const opWarning =
             addState === 'some-skipped'
               ? "Some notes already have a value for this single-value property. They won't be affected by this operation."
               : addState === 'all-skipped'
-                ? 'All notes already have a value for this single-value property. Operation cannot be applied.'
-                : null
+                ? 'All notes already have a value for this single-value property. Operation will not change anything.'
+                : deleteState === 'some-skipped'
+                  ? "Some notes do not have the property defined or the property is empty. They won't be affected by this operation."
+                  : deleteState === 'all-skipped'
+                    ? 'All notes either do not have the property defined or the property is empty. Operation will not change anything.'
+                    : null
 
           return (
             <div key={row.id}>
@@ -265,10 +277,10 @@ export default function BulkOpPanel({
                 </Tooltip>
               </div>
 
-              {addWarning && (
+              {opWarning && (
                 <div className={styles.warning}>
                   <AlertTriangle size={15} className={styles.warningIcon} />
-                  <span>{addWarning}</span>
+                  <span>{opWarning}</span>
                 </div>
               )}
             </div>

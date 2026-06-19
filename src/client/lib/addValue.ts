@@ -10,16 +10,16 @@ import { isEmptyPropertyValue } from '@shared/properties'
 export type AddValueStatus = 'ok' | 'some-skipped' | 'all-skipped'
 
 export function addValueStatus(
-  frontmatters: Array<Record<string, unknown>>,
+  notes: Array<{ frontmatter: Record<string, unknown> }>,
   property: string,
   isMultiValue: boolean,
 ): AddValueStatus {
   // Multi-value properties always accept the value (appended unless already present); no caveat.
-  if (isMultiValue || !property || frontmatters.length === 0) return 'ok'
+  if (isMultiValue || !property || notes.length === 0) return 'ok'
 
-  const emptyCount = frontmatters.filter((fm) => isEmptyPropertyValue(fm[property])).length
+  const emptyCount = notes.filter((n) => isEmptyPropertyValue(n.frontmatter[property])).length
   if (emptyCount === 0) return 'all-skipped'
-  if (emptyCount < frontmatters.length) return 'some-skipped'
+  if (emptyCount < notes.length) return 'some-skipped'
   return 'ok'
 }
 

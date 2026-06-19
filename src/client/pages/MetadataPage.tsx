@@ -360,7 +360,7 @@ export default function MetadataPage() {
             <div className={styles.section}>
               {previewNotes.length === 0 ? (
                 <div className={styles.sectionTitle} style={{ color: 'var(--color-error)' }}>
-                  Preview — Change cannot be applied. Rethink the bulk operation.
+                  Operation cannot be applied. Rethink the operation, properties and respective values.
                 </div>
               ) : (
                 <>
