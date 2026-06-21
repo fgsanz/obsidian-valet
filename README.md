@@ -40,15 +40,12 @@ If you configured Git in your vault, Obsidian Valet will assist you in making sa
 
 There is more functionality coming. Stay tuned.
 
----
 
 ## Installation
 
 You do not need to be a developer to use **Obsidian Valet** 👍
 
 You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
-
----
 
 ### Requirements
 
@@ -57,8 +54,6 @@ For the tool to run, you need the following:
 - Node.js 20+ [Official instructions](https://nodejs.org/en/download)
 - npm [Official instructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
 - Git [Official instructions](https://git-scm.com/install/) (Optional, see below)
-
----
 
 ### Get the tool
 
@@ -84,8 +79,6 @@ Now, before launching Obsidian Valet, you can optionally add a extra safety roll
 npm install
 ```
 Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section [Optional – Configure Git in your Obsidian vault for safe rollback](#optional--configure-git-in-your-obsidian-vault-for-safe-rollback) and then head to [Run the tool](#run-the-tool).
-
----
 
 ## Optional – Configure Git in your Obsidian vault for safe rollback
 
@@ -143,8 +136,6 @@ The server starts typically on port 3741 (or the next available port) and opens 
 
 Follow your intuition and get cracking. Alternatively, check out the Docs section.
 
----
-
 ## New releases
 
 Released versions are published on the [Releases page](https://github.com/fgsanz/obsidian-valet/releases). The newest one is always at:
@@ -152,8 +143,6 @@ Released versions are published on the [Releases page](https://github.com/fgsanz
 - https://github.com/fgsanz/obsidian-valet/releases/latest
 
 Each release includes downloadable archives — a named source `.zip` (`obsidian-valet-<version>.zip`) plus GitHub's automatic "Source code" `.zip`/`.tar.gz`. See [CHANGELOG.md](CHANGELOG.md) for changes in each version.
-
----
 
 ## For developers
 
