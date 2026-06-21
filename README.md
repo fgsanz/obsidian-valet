@@ -3,7 +3,7 @@
 [![Latest release](https://img.shields.io/github/v/release/fgsanz/obsidian-valet?sort=semver)](https://github.com/fgsanz/obsidian-valet/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-**Obsidian Valet** is a local web tool (any browser) for bulk manipulation of Obsidian vault notes based on YAML frontmatter properties.
+**Obsidian Valet** is a local web tool (any browser) for bulk manipulation of [Obsidian](https://obsidian.md/) vault notes based on YAML frontmatter properties.
 
 ## What it does
 
