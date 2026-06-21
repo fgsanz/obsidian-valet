@@ -23,16 +23,11 @@ All notable changes to Obsidian Valet are documented in this file.
 
 ### Improvements
 
-#### Robustness
-
 - **Git. Rollback robustness**: more reliable snapshot/commit/revert flows; a snapshot commit is
   forced even when there's nothing new to commit, and the revert flow now warns if no snapshot was
   taken beforehand.
 - **Git. Cleaner handling of vaults without Git**: clearer handling and guidance when a vault isn't version-controlled.
 - **Git. Robust vault Git detection** when adding or removing a vault after it's been defined.
-
-#### Usability
-
 - **Smoother navigation**: switching between tabs (Filter ↔ Metadata) and navigating to Vaults and
   back no longer drops filter criteria, in-progress operations, or the results table; clicking
   "Find notes" intentionally resets the bulk-operations tab.
