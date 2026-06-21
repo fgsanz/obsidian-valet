@@ -142,16 +142,15 @@ export default function BulkOpPanel({
   // Apply only when every row is valid, so a half-filled row can never be silently skipped.
   const allValid = rows.length > 0 && operations.length === rows.length
 
-  // Notify the parent whenever the configured operations change, so a stale preview/result (and the
-  // disabled state derived from it) can be cleared — but NOT on the first render, otherwise a
-  // restored preview/result would be wiped when returning to the page.
+  // Notify the parent whenever the configured operations *actually change*, so a stale preview/result
+  // (and the disabled state derived from it) can be cleared. Comparing against the last signature —
+  // rather than a "first render" flag — means a restored draft isn't treated as a change on mount,
+  // and it's safe under StrictMode's double-invoked effects (same signature → no spurious clear).
   const opSignature = JSON.stringify({ opType, rows })
-  const firstRender = useRef(true)
+  const lastSignature = useRef(opSignature)
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
+    if (lastSignature.current === opSignature) return
+    lastSignature.current = opSignature
     onOperationChange?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opSignature])

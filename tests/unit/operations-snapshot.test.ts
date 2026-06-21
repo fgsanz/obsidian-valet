@@ -40,6 +40,21 @@ test('snapshot: round-trips the in-progress operation draft for the same vault',
   assert.equal(loaded?.snapshotTaken, true)
 })
 
+test('snapshot: round-trips the applied results table (matched notes + result counts)', () => {
+  const withResult: OperationsSnapshot = {
+    ...snapshot('vault-r', 'x'),
+    matchedNotes: [
+      { filePath: 'a.md', relativePath: 'a.md', title: 'a', frontmatter: {}, rawFrontmatter: '', body: '' },
+    ],
+    result: { matched: 1, succeeded: 1, failed: 0, errors: [], changedPaths: ['a.md'] },
+  }
+  saveOperationsSnapshot(withResult)
+  const loaded = loadOperationsSnapshot('vault-r')
+  assert.equal(loaded?.matchedNotes?.length, 1)
+  assert.equal(loaded?.result?.succeeded, 1)
+  assert.equal(loaded?.result?.matched, 1)
+})
+
 test('snapshot: a different active vault gets no restore (state resets)', () => {
   saveOperationsSnapshot(snapshot('vault-a', 'x'))
   assert.equal(loadOperationsSnapshot('vault-b'), null)
