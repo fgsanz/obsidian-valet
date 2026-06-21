@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, NavLink } from 'react-router-dom'
+import { useParams, NavLink, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, ChevronDown, ChevronsDownUp, ChevronsUpDown } from 'lucide-react'
 import type { DocPage } from '@shared/types'
@@ -93,6 +93,7 @@ function DocsIndex() {
       <h1>Obsidian Valet</h1>
       <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level.</p>
       <p>The tool filters notes by paths and/or properties, and performs operations such as <strong>delete</strong>, <strong>replace</strong>, <strong>move</strong> and <strong>add</strong> value. It runs completely offline and does not connect to any external service.</p>
+      <p>First time? Check out <Link to="/docs/getting-started">Getting started</Link>.</p>
       <h2>Use cases – Examples</h2>
       <div className={styles.examplesGrid}>
         {USE_CASES.map((u, i) => (
