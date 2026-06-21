@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Trash2, AlertTriangle } from 'lucide-react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
+import ValueInput from './ValueInput'
 import Tooltip from './Tooltip'
 import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
 import { makeRow, updateOpRow, removeOpRow, type OpRow, type OpType } from '../lib/opRows'
@@ -226,7 +227,7 @@ export default function BulkOpPanel({
                       <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
                     </div>
                     <div className={styles.field}>
-                      <input className={styles.valueInput} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                      <ValueInput value={row.value} onChange={(v) => updateRow(row.id, { value: v })} placeholder={valuePlaceholder(row.property)} />
                     </div>
                   </>
                 )}
@@ -237,10 +238,10 @@ export default function BulkOpPanel({
                       <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
                     </div>
                     <div className={styles.field}>
-                      <input className={styles.valueInput} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                      <ValueInput value={row.value} onChange={(v) => updateRow(row.id, { value: v })} placeholder={valuePlaceholder(row.property)} />
                     </div>
                     <div className={styles.field}>
-                      <input className={`${styles.valueInput} ${invalid('newValue') ? styles.valueInputInvalid : ''}`} value={row.newValue} onChange={(e) => updateRow(row.id, { newValue: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                      <ValueInput value={row.newValue} onChange={(v) => updateRow(row.id, { newValue: v })} placeholder={valuePlaceholder(row.property)} invalid={invalid('newValue')} />
                     </div>
                   </>
                 )}
@@ -254,7 +255,7 @@ export default function BulkOpPanel({
                       <Selector value={row.toProperty} onChange={(v) => updateRow(row.id, { toProperty: v })} options={movableFromOptions(propertyNames, row.fromProperty)} placeholder="select property" emptyMessage="No matching property" />
                     </div>
                     <div className={styles.field}>
-                      <input className={`${styles.valueInput} ${invalid('value') ? styles.valueInputInvalid : ''}`} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.fromProperty)} />
+                      <ValueInput value={row.value} onChange={(v) => updateRow(row.id, { value: v })} placeholder={valuePlaceholder(row.fromProperty)} invalid={invalid('value')} />
                     </div>
                   </>
                 )}
@@ -265,7 +266,7 @@ export default function BulkOpPanel({
                       <Selector value={row.property} onChange={(v) => updateRow(row.id, { property: v })} options={propertyNames} placeholder="select property" emptyMessage="No matching property" />
                     </div>
                     <div className={styles.field}>
-                      <input className={`${styles.valueInput} ${invalid('value') ? styles.valueInputInvalid : ''}`} value={row.value} onChange={(e) => updateRow(row.id, { value: e.target.value })} placeholder={valuePlaceholder(row.property)} />
+                      <ValueInput value={row.value} onChange={(v) => updateRow(row.id, { value: v })} placeholder={valuePlaceholder(row.property)} invalid={invalid('value')} />
                     </div>
                   </>
                 )}

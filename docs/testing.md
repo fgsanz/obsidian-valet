@@ -6,10 +6,11 @@ description: Test suite — running tests, coverage, writing scenarios, step voc
 
 # Testing
 
-Obsidian Valet's test suite has two layers:
+Obsidian Valet's test suite has three layers:
 
 - **BDD scenarios** driven by [Cucumber.js](https://cucumber.io/docs/cucumber/) and written in Gherkin, run in-process against the real filter/operation services (no HTTP server needed). See the generated [Test cases](test-cases) list.
-- **Unit tests** (Node's built-in `node:test`) for pure logic that's awkward to reach through scenarios — type inference, emptiness checks, wiki-link parsing, the settings schema, and version comparison.
+- **Unit tests** (Node's built-in `node:test`) for pure logic that's awkward to reach through scenarios — type inference, emptiness checks, wiki-link parsing, the settings schema, version comparison, the operation-applicability rules, and the page-state snapshot.
+- **Interaction (component) tests** that render React components with [Testing Library](https://testing-library.com/docs/react-testing-library/intro/) in a jsdom DOM, to verify UI behaviour — e.g. the clear-value buttons, the property selector's dropdown/filtering, and the type-to-confirm dialog. These live alongside the unit tests and run as part of `npm run test:unit`.
 
 # Running the suite
 
@@ -34,9 +35,11 @@ AssertionError: Expected 2 matching notes but got 3: Note A, Note B, Note D
 Run just one layer when iterating:
 
 ```bash
-npm run test:unit   # only the node:test unit tests
+npm run test:unit   # node:test unit tests AND interaction (component) tests
 npm run test:bdd    # only the Cucumber BDD scenarios
 ```
+
+`test:unit` runs both the pure unit tests (`*.test.ts`) and the interaction tests (`*.test.tsx`) under `tests/unit/`.
 
 ## `npm run test:verbose` — step-by-step evidence
 
@@ -118,10 +121,12 @@ tests/
 ├── fixtures/
 │   └── test-vault/            ← committed vault (never modified at runtime)
 ├── support/
-│   ├── world.ts               ← per-scenario state
+│   ├── world.ts               ← per-scenario state (BDD)
 │   ├── hooks.ts               ← Before: copy vault to tmp; After: delete tmp
-│   └── vault-schema.ts        ← property type definitions for the test vault
-└── unit/                      ← node:test unit tests for pure functions
+│   ├── vault-schema.ts        ← property type definitions for the test vault
+│   ├── test-setup.mjs         ← jsdom + CSS-import stub for interaction tests
+│   └── css-hooks.mjs          ← Node loader hook stubbing `*.css` imports
+└── unit/                      ← unit tests (*.test.ts) and interaction tests (*.test.tsx)
 ```
 
 The vault is copied once **per scenario** — not once per feature file. Every test case gets its own independent directory in the OS temp folder, created just before the scenario runs and deleted immediately after. This means two scenarios in the same feature file can both modify the same note without interfering with each other, because they are each working on a separate copy. The committed fixture in `tests/fixtures/test-vault/` is never modified.
@@ -223,3 +228,38 @@ If the built-in vocabulary does not cover a new behaviour, add a step to the app
 - `then.steps.ts` — assertions
 
 Steps call the same service functions the UI uses: `filterByCriteria`, `applyOperation`, `scanVault`. After an operation is applied the step calls `invalidateCache` and re-scans so all subsequent assertions read fresh on-disk state.
+
+
+
+# Writing an interaction (component) test
+
+Interaction tests render a React component and assert on its DOM/behaviour. They use `node:test` (so they run in the same pass as the unit tests) plus [Testing Library](https://testing-library.com/docs/react-testing-library/intro/) and a jsdom DOM. Put them in `tests/unit/` with a **`.test.tsx`** extension.
+
+```tsx
+import { test, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import ValueInput from '../../src/client/components/ValueInput'
+
+afterEach(cleanup) // unmount between tests so the DOM doesn't leak
+
+test('shows a clear button when there is a value', () => {
+  render(<ValueInput value="hello" onChange={() => {}} />)
+  assert.ok(screen.getByLabelText('Clear value'))
+})
+```
+
+How it works under the hood (configured for you, no setup needed):
+
+- `tests/support/test-setup.mjs` is loaded via `node --import`. It registers a global jsdom DOM and a loader hook (`css-hooks.mjs`) that stubs `*.css` imports — components import CSS modules, which Node can't load otherwise. The stub returns the class name itself (so `styles.foo === 'foo'`), which keeps `className` assertions meaningful.
+- Prefer querying by what the user perceives — `getByPlaceholderText`, `getByText`, `getByRole`, `getByLabelText` — over implementation details.
+- Components are controlled, so pass `value` + `onChange` and assert the callback is invoked (e.g. clearing reports `''`); to test a class toggle, assert `element.className.includes('inputClearHover')`.
+
+# For contributors
+
+A few conventions worth knowing:
+
+- **Pull out pure logic.** Behaviour that can be a plain function (e.g. `addValueStatus`, `deleteValueStatus`, `isValidValueForType`, `sortVaultsActiveFirst`, `parseChangelog`) lives in `src/**` and is unit-tested directly — it's faster and clearer than driving it through the UI. Favour this over component tests when you can.
+- **Match the data shape the app uses.** Helpers that read note frontmatter take the real `{ frontmatter: {...} }` note shape; tests should pass that shape, not a bare value (a past bug came from the mismatch).
+- **The backend is the authority.** Type/format validation is enforced server-side in `operations.ts`; the client mirrors it via the shared `@shared/properties` helpers for instant feedback. Keep the two in lock-step rather than duplicating rules.
+- **Tests are typechecked.** `tests/**` is part of `tsconfig.json`, so `npm run typecheck` covers your tests too.

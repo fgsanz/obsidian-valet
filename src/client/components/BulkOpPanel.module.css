@@ -83,32 +83,6 @@
   min-width: 0;
 }
 
-.valueInput {
-  width: 100%;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-sm);
-  font-family: var(--font-mono);
-  outline: none;
-}
-
-.valueInput::placeholder {
-  color: var(--color-text-subtle);
-  opacity: 1;
-}
-
-.valueInput:focus {
-  border-color: var(--color-accent);
-}
-
-.valueInputInvalid {
-  border-color: var(--color-error);
-  background-color: rgba(239, 68, 68, 0.05);
-}
-
 .removeBtn {
   background: none;
   border: none;

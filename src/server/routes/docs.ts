@@ -113,27 +113,41 @@ async function generateTestCasesContent(): Promise<string> {
     totalScenarios.count += feature.scenarios.length
     sections.push(featureToMarkdown(feature))
   }
-  const header =
+  // Count the unit-test files (*.test.ts) and interaction/component test files (*.test.tsx),
+  // without listing the individual tests.
+  let unitCount = 0
+  let componentCount = 0
+  try {
+    const unitFiles = await readdir(UNIT_DIR)
+    unitCount = unitFiles.filter((f) => f.endsWith('.test.ts')).length
+    componentCount = unitFiles.filter((f) => f.endsWith('.test.tsx')).length
+  } catch {
+    unitCount = 0
+    componentCount = 0
+  }
+  const plural = (n: number) => (n === 1 ? '' : 's')
+
+  // Shown first: the unit & interaction tests.
+  const unitSection =
+    `## Unit & interaction tests\n\n` +
+    `Alongside the BDD scenarios below, the suite includes lower-level **unit tests** ` +
+    `(${unitCount} file${plural(unitCount)} in \`tests/unit/\`) covering pure logic that is ` +
+    `awkward to reach through behaviour scenarios — such as property type inference, emptiness ` +
+    `checks, wiki-link parsing, the settings schema, version comparison, the operation-applicability ` +
+    `rules (add/delete/move), and the page-state snapshot.\n\n` +
+    `It also includes **interaction (component) tests** (${componentCount} file${plural(componentCount)}, ` +
+    `\`*.test.tsx\`) that render React components with Testing Library in a jsdom DOM to verify UI ` +
+    `behaviour — e.g. the clear-value buttons, the property selector, and the type-to-confirm dialog. ` +
+    `Both run with \`npm run test:unit\`. See [Testing](testing) for how to write each kind.\n`
+
+  // Shown second: the BDD scenarios, generated from the feature files.
+  const bddHeader =
+    `## BDD scenarios\n\n` +
     `All BDD scenarios defined in \`tests/features/\`. ` +
     `See [Testing](testing) for how to run the suite and write new scenarios.\n\n` +
     `**${totalScenarios.count} scenarios** across ${files.length} feature files.\n\n---\n\n`
 
-  // Count the unit-test files (without listing the individual tests).
-  let unitCount = 0
-  try {
-    unitCount = (await readdir(UNIT_DIR)).filter((f) => f.endsWith('.test.ts')).length
-  } catch {
-    unitCount = 0
-  }
-  const unitSection =
-    `\n\n---\n\n## Unit tests\n\n` +
-    `Beyond the BDD scenarios above, the suite also includes lower-level **unit tests** ` +
-    `(${unitCount} file${unitCount === 1 ? '' : 's'} in \`tests/unit/\`) covering pure logic that is ` +
-    `awkward to reach through behaviour scenarios — such as property type inference, emptiness ` +
-    `checks, wiki-link parsing, the settings schema, and version comparison. ` +
-    `Run them with \`npm run test:unit\`.\n`
-
-  return header + sections.join('---\n\n') + unitSection
+  return unitSection + '\n\n---\n\n' + bddHeader + sections.join('---\n\n')
 }
 
 // ── Doc listing ───────────────────────────────────────────────────────────────
