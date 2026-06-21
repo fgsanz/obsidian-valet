@@ -83,8 +83,9 @@
   color: var(--color-text);
 }
 
+/* Bold stays bold but keeps the muted body colour — no jump to full text colour. */
 .items li strong {
-  color: var(--color-text);
+  color: inherit;
 }
 
 .items li a {

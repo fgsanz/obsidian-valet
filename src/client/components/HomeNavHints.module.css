@@ -67,7 +67,7 @@
 /* 3 → Metadata: arrow tip (top-left ≈ 8px) just right of centre; label to the lower-RIGHT.
    The whole group is nudged right so it sits clear of hint 2. */
 .hint3 {
-  transform: translateX(16px);
+  transform: translateX(6px);
 }
 .hint3 .arrow {
   left: 4px;
