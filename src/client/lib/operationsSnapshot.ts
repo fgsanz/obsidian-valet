@@ -17,6 +17,8 @@ export interface OperationsSnapshot {
   pendingOperations: Operation[] | null
   gitCommitted: boolean
   filterError: string | null
+  // Whether a git safety snapshot was taken before the applied operation (drives the revert flow).
+  snapshotTaken: boolean
   // The in-progress operation draft (type + property/value rows), even before Preview/Apply.
   opType: OpType
   opRows: OpRow[]

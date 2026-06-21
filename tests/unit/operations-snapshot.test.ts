@@ -24,6 +24,7 @@ function snapshot(vaultId: string, value: string): OperationsSnapshot {
     filterError: null,
     opType: 'add-value',
     opRows: [{ ...makeRow('parent'), value }],
+    snapshotTaken: true,
   }
 }
 
@@ -35,6 +36,8 @@ test('snapshot: round-trips the in-progress operation draft for the same vault',
   // The entered value (which used to be lost on navigation) survives the save/load.
   assert.equal(loaded?.opRows[0].value, '[[Note Z]]')
   assert.equal(loaded?.opRows[0].property, 'parent')
+  // The snapshot-taken flag survives too, so the right revert flow is chosen after returning.
+  assert.equal(loaded?.snapshotTaken, true)
 })
 
 test('snapshot: a different active vault gets no restore (state resets)', () => {

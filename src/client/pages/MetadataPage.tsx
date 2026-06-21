@@ -10,6 +10,7 @@ import NoteList from '../components/NoteList'
 import StatsBar from '../components/StatsBar'
 import BulkOpPanel from '../components/BulkOpPanel'
 import GitCommitModal from '../components/GitCommitModal'
+import ConfirmModal from '../components/ConfirmModal'
 import { APP_NAME } from '@shared/constants'
 import styles from './MetadataPage.module.css'
 
@@ -17,7 +18,8 @@ type Tab = 'filter' | 'ops'
 type GitModalState =
   | { kind: 'snapshot'; message: string } // safety snapshot before applying
   | { kind: 'commit'; message: string } // commit the applied changes
-  | { kind: 'revert' } // confirm reverting the applied changes
+  | { kind: 'revert' } // confirm reverting the applied changes (snapshot exists)
+  | { kind: 'revert-unsafe' } // confirm reverting when no snapshot was taken (type-to-confirm)
   | { kind: 'reverted' } // revert finished — info only
   | null
 
@@ -62,6 +64,7 @@ export default function MetadataPage() {
   const [gitModal, setGitModal] = useState<GitModalState>(null)
   const [pendingOperations, setPendingOperations] = useState<Operation[] | null>(restored?.pendingOperations ?? null)
   const [gitCommitted, setGitCommitted] = useState(restored?.gitCommitted ?? false)
+  const [snapshotTaken, setSnapshotTaken] = useState(restored?.snapshotTaken ?? false)
 
   // The in-progress operation draft (type + rows), lifted here so it survives navigation. Seed the
   // first row with the first filtered property as a convenience.
@@ -85,8 +88,9 @@ export default function MetadataPage() {
       filterError,
       opType,
       opRows,
+      snapshotTaken,
     })
-  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperations, gitCommitted, filterError, opType, opRows])
+  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperations, gitCommitted, filterError, opType, opRows, snapshotTaken])
 
   // Editing the filter invalidates any results shown from a previous run, so clear them — the
   // table and the match count should never display notes that don't correspond to the current
@@ -153,6 +157,7 @@ export default function MetadataPage() {
     if (gitStatus?.hasGit) {
       setGitModal({ kind: 'snapshot', message: buildOperationsMessage(ops, 'Before') })
     } else {
+      setSnapshotTaken(false)
       await doApply(ops)
     }
   }
@@ -178,6 +183,7 @@ export default function MetadataPage() {
   async function commitSnapshotAndApply(message: string) {
     if (!activeVault) return
     await api.git.commit(activeVault.id, message, true)
+    setSnapshotTaken(true)
     setGitModal(null)
     if (pendingOperations) await doApply(pendingOperations)
   }
@@ -231,6 +237,7 @@ export default function MetadataPage() {
           defaultMessage={gitModal.message}
           onCommit={commitSnapshotAndApply}
           onSkip={() => {
+            setSnapshotTaken(false)
             setGitModal(null)
             if (pendingOperations) doApply(pendingOperations)
           }}
@@ -256,6 +263,27 @@ export default function MetadataPage() {
           commitLabel="Revert to safety git snapshot"
           showMessage={false}
           onCommit={revertAppliedChanges}
+          onCancel={() => setGitModal(null)}
+        />
+      )}
+
+      {gitModal?.kind === 'revert-unsafe' && (
+        <ConfirmModal
+          title="Important"
+          message={
+            <>
+              You have not taken a snapshot before this operation. The revert process might delete
+              vault changes you might want to keep. Are you sure you want to revert changes? Type{' '}
+              <code>revert</code> in the confirmation field below.
+            </>
+          }
+          requireText="revert"
+          inputLabel="Confirmation"
+          confirmLabel="Revert changes"
+          onConfirm={() => {
+            setGitModal(null)
+            revertAppliedChanges()
+          }}
           onCancel={() => setGitModal(null)}
         />
       )}
@@ -366,7 +394,7 @@ export default function MetadataPage() {
                 if (pendingOperations)
                   setGitModal({ kind: 'commit', message: buildOperationsMessage(pendingOperations, 'After') })
               }}
-              onRevertChanges={() => setGitModal({ kind: 'revert' })}
+              onRevertChanges={() => setGitModal({ kind: snapshotTaken ? 'revert' : 'revert-unsafe' })}
               onOperationChange={() => {
                 setPreviewNotes(null)
                 setResult(null)
