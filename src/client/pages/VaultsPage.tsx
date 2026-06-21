@@ -285,18 +285,20 @@ export default function VaultsPage() {
                     {gitStatus[vault.id] && <span className={styles.gitReadyPill}>Git ready</span>}
                   </div>
                   <div className={styles.vaultCardActions}>
-                    {isActive ? (
-                      <span className={styles.activeBadge}>Active</span>
-                    ) : (
+                    <div className={styles.activeToggleWrap}>
+                      <span className={styles.activeLabel}>{isActive ? 'Active' : 'Inactive'}</span>
                       <button
                         type="button"
-                        className={styles.makeActiveBtn}
-                        onClick={() => setActiveMutation.mutate(vault.id)}
+                        role="switch"
+                        aria-checked={isActive}
+                        aria-label={isActive ? 'Active vault' : 'Make active'}
+                        className={`${styles.toggle} ${isActive ? styles.toggleOn : ''}`}
+                        onClick={() => !isActive && setActiveMutation.mutate(vault.id)}
                         disabled={setActiveMutation.isPending}
                       >
-                        Make active
+                        <span className={styles.toggleKnob} />
                       </button>
-                    )}
+                    </div>
                     <Tooltip content="Delete vault">
                       <button
                         type="button"

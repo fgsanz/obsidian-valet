@@ -223,37 +223,64 @@
   flex-shrink: 0;
 }
 
-.activeBadge {
-  background: var(--color-accent);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
+/* Active-state toggle: a label ("Active" / "Inactive") next to a switch. Turning a vault's switch
+   on makes it the active vault; the active vault's switch stays on (clicking it is a no-op). */
+.activeToggleWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-/* Hollow button shown on non-active vaults to promote them to active. Styled to match the trash
-   icon beside it so it stays understated until hover. */
-.makeActiveBtn {
-  background: transparent;
-  border: 1px solid var(--color-text-muted);
+.activeLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
   color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
+}
+
+.toggle {
+  flex-shrink: 0;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  padding: 0;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.makeActiveBtn:hover:not(:disabled) {
+.toggle.toggleOn {
   background: var(--color-accent);
-  color: #fff;
+  border-color: var(--color-accent);
+  cursor: default;
 }
 
-.makeActiveBtn:disabled {
-  opacity: 0.6;
+.toggle:disabled {
   cursor: not-allowed;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s;
+}
+
+.toggle.toggleOn .toggleKnob {
+  transform: translateX(18px);
+}
+
+/* In dark mode a pure-white knob is too bright on the muted off-state pill — soften it.
+   The on-state (purple pill) keeps the white knob for contrast. */
+:global([data-theme='dark']) .toggle:not(.toggleOn) .toggleKnob {
+  background: var(--color-text-muted);
+  box-shadow: none;
 }
 
 .deleteBtn {
@@ -471,7 +498,9 @@
 
 .propType {
   font-size: 10px;
-  color: var(--color-text-subtle);
+  /* text-muted reads darker in light mode and lighter in dark mode than text-subtle — so the
+     type label is more legible in both themes. */
+  color: var(--color-text-muted);
   background: var(--color-surface-2);
   padding: 1px 5px;
   border-radius: var(--radius-sm);
