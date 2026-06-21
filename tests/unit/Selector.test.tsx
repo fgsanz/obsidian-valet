@@ -60,3 +60,22 @@ test('Selector: hovering the clear icon tints the field', () => {
   fireEvent.mouseEnter(screen.getByLabelText('Clear selection'))
   assert.ok(input.className.includes('inputClearHover'))
 })
+
+test('Selector: clicking the input opens the dropdown', () => {
+  render(<Selector value="" onChange={() => {}} options={['alpha', 'beta']} />)
+  fireEvent.click(screen.getByRole('textbox'))
+  assert.ok(screen.getByText('alpha'))
+  assert.ok(screen.getByText('beta'))
+})
+
+test('Selector: clicking the input reopens the dropdown after a selection closed it', () => {
+  // Regression: selecting an option keeps focus on the input (pointerdown preventDefault), so a
+  // subsequent click fires no onFocus — without an onClick handler the dropdown stayed closed.
+  render(<Selector value="" onChange={() => {}} options={['alpha', 'beta']} />)
+  const input = screen.getByRole('textbox')
+  fireEvent.focus(input)
+  fireEvent.pointerDown(screen.getByText('beta'))
+  assert.equal(screen.queryByText('alpha'), null) // selection closed the dropdown
+  fireEvent.click(input)
+  assert.ok(screen.getByText('alpha')) // clicking the still-focused input reopens it
+})

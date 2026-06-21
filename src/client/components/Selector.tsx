@@ -98,6 +98,9 @@ export default function Selector({
         autoComplete="off"
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => setOpen(true)}
+        // Selecting an option keeps focus on the input (the option's pointerdown preventDefault),
+        // so a later click fires no focus change — reopen here so the dropdown shows again.
+        onClick={() => setOpen(true)}
         onKeyDown={handleKey}
       />
       {value && !disabled && (
