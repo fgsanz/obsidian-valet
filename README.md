@@ -14,9 +14,31 @@ Obsidian Valet...
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
 - Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
 
-You can define multiple vaults and constrain the working directories:
+You can define multiple vaults:
 
-![Defining multiple vaults and constraining their working directories](./docs/resources/vault00.png)
+![Defining multiple vaults](./docs/resources/vault00.png)
+
+You can constrain the working directories, by defining forbidden directories. It also offers a nice view of the properties and their respective type:
+
+![Detailed view of a vault](./docs/resources/vault01.png)
+
+You can find a set of notes that match the filter criteria by combinations of directories and metadata properties — YAML, frontmatter. You can combine the rules with `AND` and `OR` logical operators.
+
+![Filter example](./docs/resources/find01.png)
+
+And for each property there are several ways to match it:
+
+![Filter example](./docs/resources/find02.png)
+
+When you are ready with the set of notes, you can apply a variety of bulk operations (delete, replace, move, add) to one or several properties at once:
+
+![Bulk operation](./docs/resources/bulk-operation.png)
+
+If you configured Git in your vault, Obsidian Valet will assist you in making safe snapshots (Git commits) before and after the bulk operation:
+
+![Git snapshot](./docs/resources/git-snapshot.png)
+
+There is more functionality coming. Stay tuned.
 
 ---
 
