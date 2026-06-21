@@ -16,7 +16,7 @@ Obsidian Valet...
 
 ## Installation
 
-You do not need to be a developer to use **Obsidian Valet**.
+You do not need to be a developer to use **Obsidian Valet** 👍
 
 You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
 
@@ -40,6 +40,8 @@ cd obsidian-valet
 npm install
 ```
 
+Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section **Optional – Configure Git in your Obsidian vault for safe rollback** and then head to **Run the tool**.
+
 #### Option 2 – Download a release and decompress it
 
 - Download a release archive from the [latest release](https://github.com/fgsanz/obsidian-valet/releases/latest)
@@ -49,12 +51,14 @@ npm install
 ```sh
 npm install
 ```
+Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section **Optional – Configure Git in your Obsidian vault for safe rollback** and then head to **Run the tool**.
+
 
 #### Optional – Configure Git in your Obsidian vault for safe rollback
 
-Obsidian Valet is **safe**. If you care enough about safety, you can find in the tool detailed documentation about the text cases and you can run them yourself.
+> You can also do this later. And there is plenty of documentation explainign strategic ways to address an Obsidian setup on multiple devices which sync. So, upon doubt, launch the tool now and decide later.
 
-Regardless and to be extra careful, it is highly recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub or Gilab in the cloud.
+Obsidian Valet is **safe**. Regardless, if you want to be extra careful, it is recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub/Gilab in the cloud.
 
 If you setup Git in your local vault, Obsidian Valet can use Git to safely (and optionally) push local commits before and after performing bulk operations, in case you decide to roll them back.
 
@@ -67,9 +71,34 @@ cd {path to your Obsidian vault}
 git init 
 ```
 
-## Getting started
+Create a .gitignore file in the root of the vault and add the following content:
 
-### Run the tool
+```
+# Obsidian local/workspace state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.trash/
+
+# OSX noise (if you use MacOS)
+.DS_Store
+
+# If you use Smart plugins (Connections, Context, Lookup, ...)
+.smart-env
+```
+
+Keep the rest of .obsidian (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
+
+Enable tracking of your note files:
+
+```
+git add -A
+git commit -m "Initial snapshot of the vault"
+```
+
+That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot/commit/revert steps automatically.
+
+## Run the tool
 
 Open a terminal/console window, go inside the extracted folder and execute the following command:
 
@@ -77,16 +106,11 @@ Open a terminal/console window, go inside the extracted folder and execute the f
 npm start
 ```
 
-The server starts typically on port 3741 (or the next available port) and opens the app in your browser. The app prints the URL to the console.
+The server starts typically on port 3741 (or the next available port) and opens the app in your browser. The app also prints the URL to the console.
 
-### Add your vault and get busy
+Follow your intuition and get cracking. Alternatively, check out the Docs section.
 
-On your browser:
-
-- On the **Vaults** page:
-  - Add the location of your Obsidian vault
-  - Optionally, add one or several forbidden directories so the tool ignores them
-- You are now ready to perform bulk metadata operations on your notes in the **Metadata** page
+---
 
 ## New releases
 
@@ -96,6 +120,7 @@ Released versions are published on the [Releases page](https://github.com/fgsanz
 
 Each release includes downloadable archives — a named source `.zip` (`obsidian-valet-<version>.zip`) plus GitHub's automatic "Source code" `.zip`/`.tar.gz`. See [CHANGELOG.md](CHANGELOG.md) for changes in each version.
 
+---
 
 ## For developers
 
