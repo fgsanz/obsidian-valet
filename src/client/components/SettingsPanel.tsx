@@ -113,7 +113,7 @@ export default function SettingsPanel({
           <div className={styles.setting}>
             <div className={styles.settingInfo}>
               <div className={styles.settingTitle}>Check for new version</div>
-              <div className={styles.settingDesc}>Checks for a newer version at tool launch.</div>
+              <div className={styles.settingDesc}>Checks for a newer version periodically.</div>
             </div>
             <button
               type="button"

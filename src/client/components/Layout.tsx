@@ -109,7 +109,11 @@ export default function Layout() {
   const { data: versionInfo } = useQuery({
     queryKey: ['version'],
     queryFn: checkLatestVersion,
-    staleTime: Infinity,
+    // Re-check periodically so a release published while the GUI is open is noticed without a
+    // reload: every 6 hours, and whenever the window regains focus (if the data is >1h old).
+    staleTime: 1000 * 60 * 60, // 1 hour
+    refetchInterval: 1000 * 60 * 60 * 6, // 6 hours
+    refetchOnWindowFocus: true,
     retry: false,
     enabled: s.checkForUpdates,
   })
