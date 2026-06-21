@@ -5,7 +5,28 @@
 .title {
   font-size: var(--text-2xl);
   font-weight: 700;
+  margin-bottom: var(--space-4);
+}
+
+/* Link styled as a button, shown above the topmost release; jumps to the Releases doc. */
+.getLatest {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   margin-bottom: var(--space-8);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-accent);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.getLatest:hover {
+  color: #fff;
+  background: var(--color-accent-hover);
 }
 
 /* Each release is separated by a subtle rule, like Obsidian's changelog. */

@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const DOCS_DIR = join(__dirname, '../docs')
 const ROUTES_DIR = join(__dirname, '../src/server/routes')
 
-const REQUIRED_SLUGS = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-integration', 'npm-scripts']
+const REQUIRED_SLUGS = ['index', 'vaults', 'bulk-operations', 'filters', 'frontmatter-types', 'git-integration', 'npm-scripts']
 
 async function main() {
   const docFiles = await readdir(DOCS_DIR)

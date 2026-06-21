@@ -1,6 +1,6 @@
 export const APP_NAME = 'Obsidian Valet'
 export const APP_NAME_SLUG = 'obsidian-valet'
-export const APP_VERSION = '0.2.0'
+export const APP_VERSION = '0.1.8'
 export const GITHUB_REPO = 'fgsanz/obsidian-valet'
 
 export const PROPERTY_TYPES = [

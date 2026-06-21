@@ -1,10 +1,10 @@
 ---
-title: Operations
-slug: operations
+title: Bulk operations
+slug: bulk-operations
 description: Filter notes by property values and apply bulk changes
 ---
 
-# Operations
+# Bulk operations
 
 | Operation | Description | Example|
 | --------- | ----------- |--------|
