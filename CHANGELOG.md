@@ -2,6 +2,20 @@
 
 All notable changes to Obsidian Valet are documented in this file.
 
+## [0.2.1] - 2026-06-21
+
+### Improvements
+
+- **New version check runs periodically**, as opposed to checking for a new version only at tool launch.
+- New doc **Upgrading the tool** explaining the two ways to update (git pull vs. downloading a
+  release), with a pros/cons comparison.
+- Documentation refinements, including a "Get the latest release" link on the Changelog page and a
+  renamed **Bulk operations** doc.
+
+[0.2.1]: https://github.com/fgsanz/obsidian-valet/releases/tag/v0.2.1
+
+---
+
 ## [0.2.0] - 2026-06-21
 
 ### New

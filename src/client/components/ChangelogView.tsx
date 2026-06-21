@@ -1,6 +1,5 @@
 import { marked } from 'marked'
 import { Link } from 'react-router-dom'
-import { Download } from 'lucide-react'
 import { parseChangelog } from '../lib/changelog'
 import styles from './ChangelogView.module.css'
 
@@ -16,7 +15,6 @@ export default function ChangelogView({ markdown }: { markdown: string }) {
       <h1 className={styles.title}>Changelog</h1>
 
       <Link to="/docs/releases" className={styles.getLatest}>
-        <Download size={16} />
         Get the latest release
       </Link>
 
