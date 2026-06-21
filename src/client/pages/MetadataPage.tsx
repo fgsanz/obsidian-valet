@@ -108,6 +108,9 @@ export default function MetadataPage() {
     setResult(null)
     setPreviewNotes(null)
     setPendingOperations(null)
+    // A new search produces a new set of notes, so start the Bulk operation tab fresh.
+    setOpType('delete-value')
+    setOpRows([makeRow(criteria.properties[0]?.property ?? '')])
     try {
       const notes = await api.notes.filter(activeVault.id, criteria)
       setMatchedNotes(notes)
