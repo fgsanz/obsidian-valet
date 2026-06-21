@@ -2,6 +2,70 @@
 
 All notable changes to Obsidian Valet are documented in this file.
 
+## [0.2.0] - 2026-06-21
+
+### New
+
+- **Multi-property bulk operations**: apply an operation across several properties at once.
+- **Active vault**: set an active vault, with card visual cues and transitions; usability and
+  design improvements across vault cards and vault settings.
+- **Release notifications**: a bell with in-app notifications, including an optional setting that
+  checks for new releases.
+- **Resizable table columns** on the Filter and Results tables, without changing overall width.
+- **Docs overhaul**: a docs home page with grouped, collapsible navigation sections, plus new
+  documents — Getting started, Obsidian scenarios, Git and cloud-storage folders, Configuration,
+  and Support. Images now support click-to-zoom.
+- **"Metadata" tab**: the Operations page is now reached via the Metadata menu item (the
+  bulk-operation concept is unchanged). 
+- **Cross-platform configuration storage**: your `config.json` now lives in the OS-standard
+  per-user config directory on Linux, macOS, and Windows, outside the repo — so updating the tool
+  never touches your settings. All browser-stored settings were consolidated there too.
+
+### Improvements
+
+#### Robustness
+
+- **Git. Rollback robustness**: more reliable snapshot/commit/revert flows; a snapshot commit is
+  forced even when there's nothing new to commit, and the revert flow now warns if no snapshot was
+  taken beforehand.
+- **Git. Cleaner handling of vaults without Git**: clearer handling and guidance when a vault isn't version-controlled.
+- **Git. Robust vault Git detection** when adding or removing a vault after it's been defined.
+
+#### Usability
+
+- **Smoother navigation**: switching between tabs (Filter ↔ Metadata) and navigating to Vaults and
+  back no longer drops filter criteria, in-progress operations, or the results table; clicking
+  "Find notes" intentionally resets the bulk-operations tab.
+- **Move operation**: the property chosen in `To` is no longer offered in the `From` dropdown.
+- **Add/delete/move applicability**: clearer warnings when an operation wouldn't change anything,
+  with a preview counter on the bulk-operation tab.
+- **Clearable input fields**: an "X" button to quickly clear value fields.
+- **Accessibility**: improved contrast between placeholder/suggested text and user-entered values.
+- **Redesigned homepage**: cleaner, with handwritten step hints, plus new logo and favicon.
+
+### No longer broken
+
+- Operation **add-value** on **single-value properties** was wrongly blocked when any of the matched notes already had
+  a value; it now proceeds, since the backend only fills notes whose value is empty.
+- Filter table sometimes showed the `title` property instead of the filename.
+- The copy icon in the filter table is now always visible regardless of filename length.
+- The count badge on the operations tab was rendered white-on-white on light theme. Now is dark.
+- Switching from the Operations page to Vaults and back no longer clears the page.
+
+### Developers
+
+- **Interaction (component) tests**: React components are now tested with Testing Library in jsdom,
+  running alongside the unit suite (`npm run test:unit`).
+- **Test coverage**: Expanded test coverage for the replace/move operations, additional filter cases, and unit tests.
+- Added **Dependabot** config for weekly dependency-update PRs.
+- Cleared a TypeScript 7.0 deprecation warning.
+- README sync script so shared sections are fed from the docs.
+- `npm start` now builds before launching.
+
+[0.2.0]: https://github.com/fgsanz/obsidian-valet/releases/tag/v0.2.0
+
+---
+
 ## [0.1.0] - 2026-06-13
 First public release.
 
