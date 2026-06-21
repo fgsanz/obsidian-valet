@@ -10,6 +10,7 @@
     "start": "npm run build && tsx src/server/index.ts",
     "preview": "npm run start",
     "check-docs": "tsx scripts/check-docs.ts",
+    "sync-readme": "tsx scripts/sync-readme.ts",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:unit && npm run test:bdd",
     "test:unit": "node --import tsx --import ./tests/support/test-setup.mjs --test \"tests/unit/**/*.test.ts\" \"tests/unit/**/*.test.tsx\"",

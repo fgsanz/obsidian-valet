@@ -71,7 +71,7 @@ cd {path to your Obsidian vault}
 git init 
 ```
 
-Create a .gitignore file in the root of the vault and add the following content:
+Likely, you consume the same Obsidian vault in different devices (e.g., laptop, phone). Obsidian stores per-device UI state info inside the `.obsidian` folder. You usually do not want that churn in your history. Create a `.gitignore` file in the root of the vault and add the following content:
 
 ```
 # Obsidian local/workspace state
@@ -87,7 +87,7 @@ Create a .gitignore file in the root of the vault and add the following content:
 .smart-env
 ```
 
-Keep the rest of .obsidian (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
+Keep the rest of `.obsidian` (your plugins and settings) tracked if you want them versioned, or ignore the whole folder if you only care about note content. Just consider that keeping track of changes in plugins and settings might come in handy some day.
 
 Enable tracking of your note files:
 
@@ -146,16 +146,20 @@ tests/         # Test cases, written BDD style
 
 ### Configuration
 
-Your configuration — the vaults you've added, their forbidden directories and discovered properties, and which vault is active — is saved in a `config.json` file. **Obsidian Valet runs on Linux, macOS, and Windows**, and on each it stores this file in that platform's standard per-user application config directory:
+<!-- BEGIN GENERATED: configuration (source: docs/configuration.md — run `npm run sync-readme`) -->
+Your configuration — the vaults you've added, their forbidden directories and discovered properties, and which vault is active — is saved in a `config.json` file.
 
-| OS | Location |
-|----|----------|
-| **Linux** | `$XDG_CONFIG_HOME/obsidian-valet/config.json` (defaults to `~/.config/obsidian-valet/config.json`) |
-| **macOS** | `~/Library/Application Support/obsidian-valet/config.json` |
-| **Windows** | `%APPDATA%\obsidian-valet\config.json` (e.g. `C:\Users\<you>\AppData\Roaming\obsidian-valet\config.json`) |
+Obsidian Valet runs on Linux, macOS, and Windows, and on each system it stores `config.json` in the platform's standard per-user application config directory:
+
+| OS | Location | Comment |
+|----|----------|---------|
+| **Linux** | `$XDG_CONFIG_HOME/obsidian-valet/config.json` | defaults to `~/.config/obsidian-valet/config.json` |
+| **macOS** | `~/Library/Application Support/obsidian-valet/config.json` | |
+| **Windows** | `%APPDATA%\obsidian-valet\config.json` | e.g. `C:\Users\<you>\AppData\Roaming\obsidian-valet\config.json` |
 
 The location is detected automatically at runtime, so no setup is needed. A few things worth knowing:
 
 - It lives in your **home/user profile**, not inside the cloned repository — so updating the tool (`git pull` or downloading a new release) never touches your configuration.
 - The folder and file are created automatically the first time you add a vault; you normally never edit them by hand.
 - It only ever references your own machine — nothing is sent anywhere.
+<!-- END GENERATED: configuration -->

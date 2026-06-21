@@ -17,7 +17,7 @@ import styles from './DocsPage.module.css'
 const DOC_SECTIONS: { title: string; slugs: string[] }[] = [
   { title: 'Usage', slugs: ['getting-started', 'vaults', 'filters', 'operations', 'frontmatter-types'] },
   { title: 'Pro usage', slugs: ['obsidian-scenarios', 'git-integration', 'without-git-integration', 'git-setup', 'git-cloud-storage', 'operation-rollback'] },
-  { title: 'Development', slugs: ['npm-scripts', 'testing', 'test-vault', 'test-cases'] },
+  { title: 'Development', slugs: ['npm-scripts', 'testing', 'test-vault', 'test-cases', 'configuration'] },
   { title: 'Releases', slugs: ['releases', 'changelog'] },
   { title: 'Support', slugs: ['support'] },
 ]
