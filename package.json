@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "concurrently -n \"vite,server\" -c \"cyan,yellow\" \"vite\" \"NODE_ENV=development tsx watch src/server/index.ts\"",
     "build": "vite build",
-    "start": "tsx src/server/index.ts",
-    "preview": "npm run build && npm run start",
+    "start": "npm run build && tsx src/server/index.ts",
+    "preview": "npm run start",
     "check-docs": "tsx scripts/check-docs.ts",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:unit && npm run test:bdd",
