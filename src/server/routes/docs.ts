@@ -8,6 +8,15 @@ import type { DocPage } from '@shared/types'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DOCS_DIR = join(__dirname, '../../../docs')
+const RESOURCES_DIR = join(DOCS_DIR, 'resources')
+const RESOURCE_TYPES: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  webp: 'image/webp',
+}
 const FEATURES_DIR = join(__dirname, '../../../tests/features')
 const UNIT_DIR = join(__dirname, '../../../tests/unit')
 const CHANGELOG_FILE = join(__dirname, '../../../CHANGELOG.md')
@@ -141,7 +150,7 @@ async function listDocs(): Promise<DocPage[]> {
   }
   pages.push({ title: 'Test cases', slug: 'test-cases', description: 'All defined BDD scenarios, generated from the feature files' })
   pages.push({ title: 'Changelog', slug: 'changelog', description: "What's new in each released version" })
-  const KNOWN_ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'git-setup', 'git-integration', 'without-git-integration', 'git-cloud-sync', 'operation-rollback', 'npm-scripts', 'testing', 'test-vault', 'test-cases', 'releases', 'changelog', 'support']
+  const KNOWN_ORDER = ['index', 'vaults', 'operations', 'filters', 'frontmatter-types', 'obsidian-scenarios', 'git-setup', 'git-integration', 'without-git-integration', 'git-cloud-storage', 'operation-rollback', 'npm-scripts', 'testing', 'test-vault', 'test-cases', 'releases', 'changelog', 'support']
   return pages.sort((a, b) => {
     const ai = KNOWN_ORDER.indexOf(a.slug)
     const bi = KNOWN_ORDER.indexOf(b.slug)
@@ -158,6 +167,26 @@ export const docsPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/docs', async () => {
     const pages = await listDocs()
     return { data: pages }
+  })
+
+  // Serve images referenced by docs (in docs/resources). The filename pattern forbids slashes and
+  // "..", so it can't escape the resources directory.
+  fastify.get('/docs/resources/:file', async (request, reply) => {
+    const { file } = request.params as { file: string }
+    const ext = extname(file).slice(1).toLowerCase()
+    if (!/^[\w-]+\.[A-Za-z0-9]+$/.test(file) || !RESOURCE_TYPES[ext]) {
+      reply.code(400).send({ error: { code: 'INVALID', message: 'Invalid resource' } })
+      return
+    }
+    try {
+      const buf = await readFile(join(RESOURCES_DIR, file))
+      reply.header('Content-Type', RESOURCE_TYPES[ext])
+      // Revalidate each load so replaced images (same filename) show up on a normal reload.
+      reply.header('Cache-Control', 'no-cache')
+      return buf
+    } catch {
+      reply.code(404).send({ error: { code: 'NOT_FOUND', message: 'Resource not found' } })
+    }
   })
 
   fastify.get('/docs/:slug', async (request, reply) => {

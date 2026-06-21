@@ -1,10 +1,10 @@
 ---
-title: Git and cloud-sync folders
-slug: git-cloud-sync
+title: Git and cloud-storage
+slug: git-cloud-storage
 description: Why Git can fail inside OneDrive/Google Drive/Dropbox folders, and how to fix or avoid it
 ---
 
-# Git and cloud-sync folders
+# Git and cloud-storage
 
 Beware of the following scenario:
 
@@ -28,4 +28,6 @@ Out of all the choices below, **Option 1** (and eventually Option 2) is the imme
 git config core.preloadindex false
 ```
 
-3. **Separation of concerns** Long-term, recommended choice. Running a Git repo inside a live cloud-sync folder is generally problematic — the cloud solution can interfere with .git internals (locking index files, uploading partial writes, etc.). Consider keeping the repo on a local path and only syncing the working files via OneDrive, or using a dedicated git remote (GitHub/GitLab) instead of OneDrive as your backup.
+3. **Separation of concerns** Long-term, recommended choice. Running a Git repo inside a live cloud-sync folder is generally problematic — the cloud solution can interfere with .git internals (locking index files, uploading partial writes, etc.). For setups that keep Git and the cloud-synced vault apart, see [Obsidian scenarios](obsidian-scenarios).
+
+4. **Using GitHub/GitLab** instead of cloud-storage solutions as your backup. You could keep the vault on a local path outside cloud-storage, make it a Git repository, and periodically push updates of the vault to a dedicated git remote (GitHub/GitLab). Note that this option does not synchronize files automatically, you need to periodically sync the vault with GitHub/GitLab.

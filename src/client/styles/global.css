@@ -75,3 +75,9 @@ input, select, textarea {
   color: var(--color-text-subtle);
   opacity: 1;
 }
+
+/* Theme-conditional images (e.g. diagrams in docs): show only the matching theme's variant. */
+[data-theme='dark'] .theme-light-only,
+[data-theme='light'] .theme-dark-only {
+  display: none;
+}
