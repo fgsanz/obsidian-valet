@@ -390,32 +390,7 @@
   margin-bottom: var(--space-3);
 }
 
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  border: 1px solid var(--color-border);
-}
-
-.tagRemove {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: var(--text-base);
-  padding: 0;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
-.tagRemove:hover {
-  color: var(--color-error);
-}
+/* The forbidden-directory chip styles live with the ForbiddenDirTag component. */
 
 .dirSelectWrapper {
   margin-top: var(--space-2);

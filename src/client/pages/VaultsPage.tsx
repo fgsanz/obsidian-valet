@@ -1,11 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { FolderOpen, Trash2, ChevronDown, ChevronRight, X, RefreshCw, Plus, AlertOctagon } from 'lucide-react'
+import { FolderOpen, Trash2, ChevronDown, ChevronRight, RefreshCw, Plus, AlertOctagon } from 'lucide-react'
 import { api } from '../api/client'
 import type { Vault } from '@shared/types'
 import { sortVaultsActiveFirst } from '@shared/vaults'
 import Tooltip from '../components/Tooltip'
 import Selector from '../components/Selector'
+import ForbiddenDirTag from '../components/ForbiddenDirTag'
 import ConfirmModal from '../components/ConfirmModal'
 import styles from './VaultsPage.module.css'
 
@@ -346,16 +347,11 @@ export default function VaultsPage() {
                     <div className={styles.accordionContent}>
                       <div className={styles.tagList}>
                         {vault.forbiddenDirs.map((dir) => (
-                          <span key={dir} className={styles.tag}>
-                            {dir}
-                            <button
-                              type="button"
-                              className={styles.tagRemove}
-                              onClick={() => removeForbiddenDir(vault.id, dir)}
-                            >
-                              <X size={14} />
-                            </button>
-                          </span>
+                          <ForbiddenDirTag
+                            key={dir}
+                            dir={dir}
+                            onRemove={() => removeForbiddenDir(vault.id, dir)}
+                          />
                         ))}
                       </div>
                       <div className={styles.dirSelectWrapper}>
