@@ -33,7 +33,9 @@ export const gitPlugin: FastifyPluginAsync = async (fastify) => {
 
   fastify.post('/git/:vaultId/commit', async (request, reply) => {
     const { vaultId } = request.params as { vaultId: string }
-    const { message } = z.object({ message: z.string().min(1) }).parse(request.body)
+    const { message, allowEmpty } = z
+      .object({ message: z.string().min(1), allowEmpty: z.boolean().optional() })
+      .parse(request.body)
     const config = await getConfig()
     const vault = config.vaults.find((v) => v.id === vaultId)
     if (!vault) {
@@ -41,7 +43,7 @@ export const gitPlugin: FastifyPluginAsync = async (fastify) => {
       return
     }
     try {
-      const sha = await commitAll(vault.path, message)
+      const sha = await commitAll(vault.path, message, allowEmpty)
       return { data: { sha } }
     } catch (err) {
       const msg = String(err)

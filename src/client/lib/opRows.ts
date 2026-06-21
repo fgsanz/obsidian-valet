@@ -1,3 +1,6 @@
+/** The bulk operation kind chosen via the type buttons. */
+export type OpType = 'delete-value' | 'replace' | 'move-value' | 'add-value'
+
 /**
  * A single property target row in the Bulk operation panel. Only the fields relevant to the chosen
  * operation type are used. Each row carries a globally-unique `id` so rows never share identity —

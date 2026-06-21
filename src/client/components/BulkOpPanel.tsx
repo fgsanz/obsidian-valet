@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Trash2, AlertTriangle } from 'lucide-react'
 import type { Operation, PropertyDef, PropertyType } from '@shared/types'
 import Selector from './Selector'
 import Tooltip from './Tooltip'
 import { getValuePlaceholder, movableFromOptions, isMoveValid } from '../lib/operators'
-import { makeRow, updateOpRow, removeOpRow, type OpRow } from '../lib/opRows'
+import { makeRow, updateOpRow, removeOpRow, type OpRow, type OpType } from '../lib/opRows'
 import { addValueStatus, canAddValue } from '../lib/addValue'
 import { deleteValueStatus, canDeleteValue } from '../lib/deleteValue'
 import { resolvePropertyType, isValidValueForType, expectedFormatHint } from '@shared/properties'
@@ -12,7 +12,11 @@ import styles from './BulkOpPanel.module.css'
 
 interface Props {
   properties: PropertyDef[]
-  suggestedProperty?: string
+  /** Controlled operation draft (lifted to the page so it survives navigation). */
+  opType: OpType
+  rows: OpRow[]
+  onOpTypeChange: (opType: OpType) => void
+  onRowsChange: (rows: OpRow[]) => void
   onPreview: (ops: Operation[]) => void
   onApply: (ops: Operation[]) => void
   isPreviewing: boolean
@@ -34,15 +38,16 @@ interface Props {
   onOperationChange?: () => void
 }
 
-type OpType = 'delete-value' | 'replace' | 'move-value' | 'add-value'
-
 function allowsMultipleValues(type: PropertyType): boolean {
   return type === 'text-array' || type === 'tag-array' || type === 'link-array'
 }
 
 export default function BulkOpPanel({
   properties,
-  suggestedProperty = '',
+  opType,
+  rows,
+  onOpTypeChange,
+  onRowsChange,
   onPreview,
   onApply,
   isPreviewing,
@@ -57,8 +62,6 @@ export default function BulkOpPanel({
   onRevertChanges,
   onOperationChange,
 }: Props) {
-  const [opType, setOpType] = useState<OpType>('delete-value')
-  const [rows, setRows] = useState<OpRow[]>(() => [makeRow(suggestedProperty)])
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
 
   const propertyNames = properties.map((p) => p.name).sort((a, b) => a.localeCompare(b))
@@ -140,21 +143,27 @@ export default function BulkOpPanel({
   const allValid = rows.length > 0 && operations.length === rows.length
 
   // Notify the parent whenever the configured operations change, so a stale preview/result (and the
-  // disabled state derived from it) can be cleared.
+  // disabled state derived from it) can be cleared — but NOT on the first render, otherwise a
+  // restored preview/result would be wiped when returning to the page.
   const opSignature = JSON.stringify({ opType, rows })
+  const firstRender = useRef(true)
   useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
     onOperationChange?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opSignature])
 
   function updateRow(id: string, patch: Partial<OpRow>) {
-    setRows((prev) => updateOpRow(prev, id, patch))
+    onRowsChange(updateOpRow(rows, id, patch))
   }
   function addRow() {
-    setRows((prev) => [...prev, makeRow()])
+    onRowsChange([...rows, makeRow()])
   }
   function removeRow(id: string) {
-    setRows((prev) => removeOpRow(prev, id))
+    onRowsChange(removeOpRow(rows, id))
   }
 
   const addAnotherLabel = opType === 'move-value' ? 'Add move' : 'Add property'
@@ -177,7 +186,7 @@ export default function BulkOpPanel({
             key={t}
             type="button"
             className={`${styles.typeBtn} ${opType === t ? styles.selected : ''}`}
-            onClick={() => setOpType(t)}
+            onClick={() => onOpTypeChange(t)}
           >
             {t === 'delete-value' ? 'Delete value' : t === 'replace' ? 'Replace value' : t === 'move-value' ? 'Move value' : 'Add value'}
           </button>

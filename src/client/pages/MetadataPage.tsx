@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
 import { loadOperationsSnapshot, saveOperationsSnapshot } from '../lib/operationsSnapshot'
+import { makeRow, type OpRow, type OpType } from '../lib/opRows'
 import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
 import FilterBuilder from '../components/FilterBuilder'
 import NoteList from '../components/NoteList'
@@ -62,6 +63,13 @@ export default function MetadataPage() {
   const [pendingOperations, setPendingOperations] = useState<Operation[] | null>(restored?.pendingOperations ?? null)
   const [gitCommitted, setGitCommitted] = useState(restored?.gitCommitted ?? false)
 
+  // The in-progress operation draft (type + rows), lifted here so it survives navigation. Seed the
+  // first row with the first filtered property as a convenience.
+  const [opType, setOpType] = useState<OpType>(restored?.opType ?? 'delete-value')
+  const [opRows, setOpRows] = useState<OpRow[]>(
+    () => restored?.opRows ?? [makeRow(restored?.criteria?.properties?.[0]?.property ?? '')],
+  )
+
   // Persist the page state on every change so it can be restored after navigating away and back.
   useEffect(() => {
     if (!activeVault) return
@@ -75,8 +83,10 @@ export default function MetadataPage() {
       pendingOperations,
       gitCommitted,
       filterError,
+      opType,
+      opRows,
     })
-  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperations, gitCommitted, filterError])
+  }, [activeVault, activeTab, criteria, matchedNotes, previewNotes, result, pendingOperations, gitCommitted, filterError, opType, opRows])
 
   // Editing the filter invalidates any results shown from a previous run, so clear them — the
   // table and the match count should never display notes that don't correspond to the current
@@ -124,6 +134,7 @@ export default function MetadataPage() {
 
   /** Reset the whole operation flow back to a clean filter view. */
   function resetOperation() {
+    setGitModal(null)
     setMatchedNotes(null)
     setResult(null)
     setPreviewNotes(null)
@@ -158,10 +169,12 @@ export default function MetadataPage() {
     }
   }
 
-  /** Commit the safety snapshot, then apply the pending operations. */
+  /** Commit the safety snapshot, then apply the pending operations. The snapshot is allowed to be an
+   *  empty commit so an explicitly requested "Before" snapshot is always recorded, even if the vault
+   *  is already clean (identical to the last commit). */
   async function commitSnapshotAndApply(message: string) {
     if (!activeVault) return
-    await api.git.commit(activeVault.id, message)
+    await api.git.commit(activeVault.id, message, true)
     setGitModal(null)
     if (pendingOperations) await doApply(pendingOperations)
   }
@@ -330,7 +343,10 @@ export default function MetadataPage() {
             </div>
             <BulkOpPanel
               properties={activeVault.properties}
-              suggestedProperty={criteria.properties[0]?.property}
+              opType={opType}
+              rows={opRows}
+              onOpTypeChange={setOpType}
+              onRowsChange={setOpRows}
               onPreview={handlePreview}
               onApply={handleApply}
               isPreviewing={isPreviewing}
@@ -342,7 +358,7 @@ export default function MetadataPage() {
               canCommit={
                 !!gitStatus?.hasGit && result !== null && result.failed === 0 && !gitCommitted
               }
-              canRevert={!!gitStatus?.hasGit && result !== null && result.failed > 0}
+              canRevert={!!gitStatus?.hasGit && result !== null && !gitCommitted}
               onCommitChanges={() => {
                 if (pendingOperations)
                   setGitModal({ kind: 'commit', message: buildOperationsMessage(pendingOperations, 'After') })

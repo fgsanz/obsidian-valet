@@ -17,10 +17,19 @@ export async function getGitStatus(vaultPath: string): Promise<GitStatus> {
   }
 }
 
-export async function commitAll(vaultPath: string, message: string): Promise<string> {
+/**
+ * Stage everything and commit. `allowEmpty` records a commit even when nothing changed — used for
+ * the safety snapshot, so an explicitly requested "Before" snapshot always lands in history (and
+ * marks the exact pre-operation state) even if the vault is already clean.
+ */
+export async function commitAll(
+  vaultPath: string,
+  message: string,
+  allowEmpty = false,
+): Promise<string> {
   const git = simpleGit(vaultPath)
   await git.add('-A')
-  const result = await git.commit(message)
+  const result = await git.commit(message, undefined, allowEmpty ? { '--allow-empty': null } : undefined)
   return result.commit
 }
 

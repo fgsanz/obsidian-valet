@@ -1,4 +1,5 @@
 import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
+import type { OpRow, OpType } from './opRows'
 
 /**
  * In-memory snapshot of the Metadata page so its filter, results and selections survive leaving
@@ -16,6 +17,9 @@ export interface OperationsSnapshot {
   pendingOperations: Operation[] | null
   gitCommitted: boolean
   filterError: string | null
+  // The in-progress operation draft (type + property/value rows), even before Preview/Apply.
+  opType: OpType
+  opRows: OpRow[]
 }
 
 let snapshot: OperationsSnapshot | null = null
