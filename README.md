@@ -40,7 +40,7 @@ cd obsidian-valet
 npm install
 ```
 
-Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section **Optional – Configure Git in your Obsidian vault for safe rollback** and then head to **Run the tool**.
+Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section [Optional – Configure Git in your Obsidian vault for safe rollback](#optional--configure-git-in-your-obsidian-vault-for-safe-rollback) and then head to [Run the tool](#run-the-tool).
 
 #### Option 2 – Download a release and decompress it
 
@@ -51,10 +51,10 @@ Now, before launching Obsidian Valet, you can optionally add a extra safety roll
 ```sh
 npm install
 ```
-Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section **Optional – Configure Git in your Obsidian vault for safe rollback** and then head to **Run the tool**.
+Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section [Optional – Configure Git in your Obsidian vault for safe rollback](#optional--configure-git-in-your-obsidian-vault-for-safe-rollback) and then head to [Run the tool](#run-the-tool).
 
 
-#### Optional – Configure Git in your Obsidian vault for safe rollback
+## Optional – Configure Git in your Obsidian vault for safe rollback
 
 > You can also do this later. And there is plenty of documentation explainign strategic ways to address an Obsidian setup on multiple devices which sync. So, upon doubt, launch the tool now and decide later.
 
