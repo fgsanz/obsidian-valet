@@ -14,11 +14,19 @@ Obsidian Valet...
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
 - Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
 
+You can define multiple vaults and constrain the working directories:
+
+![Defining multiple vaults and constraining their working directories](./docs/resources/vault00.png)
+
+---
+
 ## Installation
 
 You do not need to be a developer to use **Obsidian Valet** 👍
 
 You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
+
+---
 
 ### Requirements
 
@@ -27,6 +35,8 @@ For the tool to run, you need the following:
 - Node.js 20+ [Official instructions](https://nodejs.org/en/download)
 - npm [Official instructions](https://docs.npmjs.com/cli/v9/configuring-npm/install)
 - Git [Official instructions](https://git-scm.com/install/) (Optional, see below)
+
+---
 
 ### Get the tool
 
@@ -53,6 +63,7 @@ npm install
 ```
 Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section [Optional – Configure Git in your Obsidian vault for safe rollback](#optional--configure-git-in-your-obsidian-vault-for-safe-rollback) and then head to [Run the tool](#run-the-tool).
 
+---
 
 ## Optional – Configure Git in your Obsidian vault for safe rollback
 
