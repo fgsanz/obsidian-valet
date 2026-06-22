@@ -12,7 +12,7 @@ Knowledge management is not static; it evolves as you do. Over years of note-tak
 
 Quick examples:
 > - Shoud `[[Neuron]]` be linked to `[[Nervous system]]` or `[[Brain]]` or `[[Cell]]` or `[[Biology]]` or all of them?
-> - Should all my hobbies have a tag `#diy` or should they be linked to `[[DIY]]`
+> - Should all hobby notes have a tag `#diy` or should they be linked to `[[DIY]]`?
 
 **The motivation:**
 Obsidian Valet helps you realign your vault with your current thinking style. By giving you the power to reshape the topology of your vault, it ensures your notes remain highly discoverable. Whether you are browsing visually or leveraging modern local AI tools (like semantic search and RAG embeddings), Obsidian Valet assists you in reshaping your vault so that hidden, emergent connections can actually surface.
