@@ -10,6 +10,10 @@
 **The problem:**
 Knowledge management is not static; it evolves as you do. Over years of note-taking, your organizational style changes. You fluctuate between tags and links, rethink your metadata properties, and constantly shift how densely connected your notes are. Ultimately, this creates an unoptimized network topology where organic insights and connections struggle to form.
 
+Quick examples:
+> - Shoud `[[Neuron]]` be linked to `[[Nervous system]]` or `[[Brain]]` or `[[Cell]]` or `[[Biology]]` or all of them?
+> - Should all my hobbies have a tag `#diy` or should they be linked to `[[DIY]]`
+
 **The motivation:**
 Obsidian Valet helps you realign your vault with your current thinking style. By giving you the power to reshape the topology of your vault, it ensures your notes remain highly discoverable. Whether you are browsing visually or leveraging modern local AI tools (like semantic search and RAG embeddings), Obsidian Valet assists you in reshaping your vault so that hidden, emergent connections can actually surface.
 
