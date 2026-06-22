@@ -5,6 +5,10 @@
 
 **Obsidian Valet** is a local web tool (any browser) for bulk manipulation of [Obsidian](https://obsidian.md/) vault notes based on YAML frontmatter properties.
 
+## Motivation
+
+
+
 ## What it does
 
 Obsidian Valet...
@@ -14,6 +18,16 @@ Obsidian Valet...
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
 - Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
 
+## Demo
+
+(video coming soon)
+
+## Screens
+
+First of all, there is a lot of documentation within the tool: 
+
+![Docs homepage](./docs/resources/docs-homepage.png)
+
 You can define multiple vaults:
 
 ![Defining multiple vaults](./docs/resources/vault00.png)
@@ -22,7 +36,7 @@ You can constrain the working directories, by defining forbidden directories. It
 
 ![Detailed view of a vault](./docs/resources/vault01.png)
 
-You can find a set of notes that match the filter criteria by combinations of directories and metadata properties — YAML, frontmatter. You can combine the rules with `AND` and `OR` logical operators.
+You can find a group of notes that match a filter criteria that combines directories and metadata properties — YAML, frontmatter. You can combine the rules with `AND` and `OR` logical operators.
 
 ![Filter example](./docs/resources/find01.png)
 
@@ -30,7 +44,7 @@ And for each property there are several ways to match it:
 
 ![Filter example](./docs/resources/find02.png)
 
-When you are ready with the set of notes, you can apply a variety of bulk operations (delete, replace, move, add) to one or several properties at once:
+When you are ready with the group of notes, you can apply bulk operations (delete, replace, move, add) to one or several properties at once:
 
 ![Bulk operation](./docs/resources/bulk-operation.png)
 
@@ -45,7 +59,7 @@ There is more functionality coming. Stay tuned.
 
 You do not need to be a developer to use **Obsidian Valet** 👍
 
-You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
+This is a graphical tool and there is no coding involved. Only the installation requires some file and commands manipulation. You can either download the tool (and decompress it somewhere locally) or clone the tool repository (if you prefer Git commands), then run the tool from the command line and use it on your browser. All steps are explain bellow.
 
 ### Requirements
 
@@ -78,15 +92,26 @@ Now, before launching Obsidian Valet, you can optionally add a extra safety roll
 ```sh
 npm install
 ```
-Now, before launching Obsidian Valet, you can optionally add a extra safety rollback for changes you will make with the tool. Check out the section [Optional – Configure Git in your Obsidian vault for safe rollback](#optional--configure-git-in-your-obsidian-vault-for-safe-rollback) and then head to [Run the tool](#run-the-tool).
 
-## Optional – Configure Git in your Obsidian vault for safe rollback
+## Run the tool
 
-> You can also do this later. And there is plenty of documentation explainign strategic ways to address an Obsidian setup on multiple devices which sync. So, upon doubt, launch the tool now and decide later.
+Open a terminal/console window, go inside the extracted folder and execute the following command:
 
-Obsidian Valet is **safe**. Regardless, if you want to be extra careful, it is recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub/Gilab in the cloud.
+```sh
+npm start
+```
+
+The server starts typically on port `3741` (or the next available port) and opens the app in your browser. The app also prints the URL to the console.
+
+Follow your intuition and get cracking. Alternatively, check out the Docs section.
+
+## [Optional] – Configure Git in your Obsidian vault for safe rollback
 
 If you setup Git in your local vault, Obsidian Valet can use Git to safely (and optionally) push local commits before and after performing bulk operations, in case you decide to roll them back.
+
+> You can also do this later. Inside the tool, there is plenty of documentation explaining strategic ways to address an Obsidian setup on multiple devices which sync. So, upon doubt, launch the tool now and decide later.
+
+Obsidian Valet is **safe**, meaning it will not corrupt your notes. Regardless, to play extra safe, it is recommended that you run Git in your Obsidian vault. This is also safe and **no information leaves your computer** unless you also decide to push the vault to GitHub/Gilab in the cloud.
 
 > Safe rollbacks, locally.
 
@@ -124,25 +149,12 @@ git commit -m "Initial snapshot of the vault"
 
 That's it. The vault is now version-controlled. From this point on, Obsidian Valet will detect the repository and offer the snapshot/commit/revert steps automatically.
 
-## Run the tool
-
-Open a terminal/console window, go inside the extracted folder and execute the following command:
-
-```sh
-npm start
-```
-
-The server starts typically on port 3741 (or the next available port) and opens the app in your browser. The app also prints the URL to the console.
-
-Follow your intuition and get cracking. Alternatively, check out the Docs section.
-
 ## New releases
 
-Released versions are published on the [Releases page](https://github.com/fgsanz/obsidian-valet/releases). The newest one is always at:
+- [Releases page](https://github.com/fgsanz/obsidian-valet/releases)
+- [Latest release](https://github.com/fgsanz/obsidian-valet/releases/latest)
 
-- https://github.com/fgsanz/obsidian-valet/releases/latest
-
-Each release includes downloadable archives — a named source `.zip` (`obsidian-valet-<version>.zip`) plus GitHub's automatic "Source code" `.zip`/`.tar.gz`. See [CHANGELOG.md](CHANGELOG.md) for changes in each version.
+See [CHANGELOG.md](CHANGELOG.md) for changes in each version.
 
 ## For developers
 
@@ -152,7 +164,7 @@ Running the tool this way automatically takes on the changes you made to the sou
 npm run dev
 ```
 
-Runs Vite dev server (port 5173) and the API server (port 3741) concurrently with hot reload.
+Runs Vite dev server (port `5173`) and the API server (port `3741`) concurrently with hot reload.
 
 ### Project structure
 
@@ -163,7 +175,7 @@ src/
   client/      # React frontend — pages, components, API client
 docs/          # Documentation served by the app at /docs
 scripts/       # check-docs.ts — validates docs coverage
-tests/         # Test cases, written BDD style
+tests/         # Test cases, written BDD style, unit test, interaction tests
 ```
 
 ### Configuration
