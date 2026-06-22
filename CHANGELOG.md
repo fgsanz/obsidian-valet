@@ -2,6 +2,27 @@
 
 All notable changes to Obsidian Valet are documented in this file.
 
+## [0.2.2] - 2026-06-22
+
+### Improvements
+
+- **Active-vault toggle**: the vault card's "Active" badge and "Make active" button are now a single
+  toggle switch — flip a vault on to make it active.
+- **Better contrast** for elements in the vault card, including the property-type labels (darker in
+  light mode, lighter in dark mode) for easier reading.
+- **Enhanced README.md** in GitHub with new images and sections, so that potential users understand what the tool is about. 
+
+### No longer broken
+
+- The forbidden-directory dropdown now reappears when you click the input again after picking a
+  directory.
+- Hovering the remove (✕) icon on a forbidden directory now tints the whole chip red, matching the
+  delete cue used elsewhere in the app.
+
+[0.2.2]: https://github.com/fgsanz/obsidian-valet/releases/tag/v0.2.2
+
+---
+
 ## [0.2.1] - 2026-06-21
 
 ### Improvements
