@@ -3,12 +3,12 @@
 [![Latest release](https://img.shields.io/github/v/release/fgsanz/obsidian-valet?sort=semver)](https://github.com/fgsanz/obsidian-valet/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-**Obsidian Valet** is a local web tool (any browser) for bulk manipulation of [Obsidian](https://obsidian.md/) vault notes based on YAML frontmatter properties.
+**Obsidian Valet** is a local web tool (any browser) for bulk modification of [Obsidian](https://obsidian.md/) vault notes based on YAML frontmatter properties.
 
 ## Motivation
 
 **The problem:**
-Knowledge management is not static; it evolves as you do. Over years of note-taking, your organizational style changes. You fluctuate between tags and links, rethink your metadata properties, and constantly shift how densely connected your notes are. Ultimately, this creates an unoptimized network topology where organic insights and connections struggle to form.
+Knowledge management is not static; it evolves as you do. Over years of note-taking, your organizing style changes. You fluctuate between tags and links, rethink your metadata properties, and constantly shift how densely connected your notes are. Ultimately, this creates an unoptimized network topology where organic insights and connections struggle to form.
 
 Quick examples:
 > - Shoud `[[Neuron]]` be linked to `[[Nervous system]]` or `[[Brain]]` or `[[Cell]]` or `[[Biology]]` or all of them?
@@ -17,14 +17,17 @@ Quick examples:
 **The motivation:**
 Obsidian Valet helps you realign your vault with your current thinking style. By giving you the power to reshape the topology of your vault, it ensures your notes remain highly discoverable. Whether you are browsing visually or leveraging modern local AI tools (like semantic search and RAG embeddings), Obsidian Valet assists you in reshaping your vault so that hidden, emergent connections can actually surface.
 
-## What it does
+## What it does and does not
 
 Obsidian Valet...
-
-- Filters notes by directory and property values (e.g., links, tags, dates, text)
+- Filters notes by directory and metadata property values (e.g., links, tags, dates, text)
 - Applies bulk operations across matched notes: delete a value, change a value, or move a value between properties
 - Leverages Git to take safety checkpoints before and after every operation — in case a rollback is needed
+
+Important to know...
+- Obsidian Valet does not do anything with your information
 - Works entirely offline — no external services, no information is shared outside your computer, and no AI tokens are spent
+- It is an offline tool
 
 ## Demo
 
