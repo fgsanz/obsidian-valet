@@ -182,6 +182,18 @@ export default function Layout() {
             Metadata
           </NavLink>
           <NavLink
+            to="/body-note"
+            className={({ isActive }) => (isActive ? styles.active : undefined)}
+          >
+            Body note
+          </NavLink>
+          <NavLink
+            to="/analysis"
+            className={({ isActive }) => (isActive ? styles.active : undefined)}
+          >
+            Analysis
+          </NavLink>
+          <NavLink
             to="/docs"
             className={({ isActive }) => (isActive && !onSupport ? styles.active : undefined)}
           >

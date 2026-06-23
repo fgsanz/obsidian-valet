@@ -1,0 +1,35 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.vaultName {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.intro {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.hints {
+  list-style: disc;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+}
