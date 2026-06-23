@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, ChevronRight } from 'lucide-react'
+import { APP_VERSION } from '@shared/constants'
 import { type ColorScheme } from '../lib/theme'
 import styles from './SettingsPanel.module.css'
 
@@ -65,7 +66,10 @@ export default function SettingsPanel({
         aria-hidden={!open}
       >
         <div className={styles.header}>
-          <h2 className={styles.title}>Settings</h2>
+          <div className={styles.titleRow}>
+            <h2 className={styles.title}>Settings</h2>
+            <span className={styles.version}>v{APP_VERSION}</span>
+          </div>
           <button
             type="button"
             className={styles.closeBtn}
