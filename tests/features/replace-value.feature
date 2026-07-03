@@ -40,3 +40,12 @@ Feature: Replace value operation
     Then 2 notes are changed
     And note "Note A" has "alias two" in "aliases"
     And note "Note A" no longer has "alias 2" in "aliases"
+
+  Scenario: Replacing a boolean value writes an unquoted boolean, not a quoted string
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note X]]"
+    And I apply replace value on property "read" current value "true" new value "false"
+    Then 2 notes are changed
+    And note "Note A" has property "read" equal to "false"
+    And note "Note D" has property "read" equal to "false"
+    And the YAML of "Note A" is still valid

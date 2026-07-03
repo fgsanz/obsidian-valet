@@ -75,7 +75,11 @@ function normalizeValue(value: unknown, type: PropertyType): unknown {
     case 'number':
       return value != null ? Number(value) : null
     case 'boolean':
-      return Boolean(value)
+      // Preserve an empty/absent value as null (so a deleted checkbox stays empty rather than
+      // becoming `false`); otherwise keep a real boolean or parse the string "true"/"false".
+      if (value == null || value === '') return null
+      if (typeof value === 'boolean') return value
+      return String(value).trim().toLowerCase() === 'true'
     default:
       return value
   }
@@ -126,6 +130,15 @@ function serializeValue(value: unknown, type: PropertyType): unknown {
     case 'link-array':
     case 'text-array':
       return Array.isArray(value) ? value : [value]
+    case 'boolean':
+      // An operation may hand us the string "true"/"false"; coerce to a real boolean so YAML
+      // writes `key: false`, not the quoted string `key: "false"`.
+      return typeof value === 'boolean' ? value : String(value).trim().toLowerCase() === 'true'
+    case 'number': {
+      // Likewise, coerce a numeric string to a number so it isn't written quoted.
+      const n = typeof value === 'number' ? value : Number(String(value).trim())
+      return Number.isNaN(n) ? null : n
+    }
     default:
       return value
   }

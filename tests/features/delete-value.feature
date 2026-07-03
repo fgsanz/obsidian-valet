@@ -64,3 +64,11 @@ Feature: Delete value operation
     And note "Note A" no longer has "[[Topic A]]" in "related"
     And note "Note A" has "[[Topic B]]" in "related"
     And the YAML of "Note A" is still valid
+
+  Scenario: Deleting a boolean value leaves the property empty
+    Given a fresh copy of the test vault
+    When I filter notes where "parent" "exists and contains" "[[Note X]]"
+    And I apply delete value on property "read" with value to delete "true"
+    Then 2 notes are changed
+    And note "Note A" has property "read" and it is empty
+    And the YAML of "Note A" is still valid
