@@ -98,10 +98,47 @@ export async function scanVault(vault: Vault): Promise<ParsedNote[]> {
   return notes
 }
 
+/**
+ * Obsidian records the type a user assigns to a property (its Properties UI) in
+ * `<vault>/.obsidian/types.json`. Its type keywords are coarser than ours, so we only map the ones
+ * that are unambiguous — and deliberately skip `text`/`multitext`, because our own inference
+ * distinguishes link / tag / date sub-kinds that Obsidian lumps together.
+ */
+const OBSIDIAN_TYPE_MAP: Record<string, PropertyType> = {
+  checkbox: 'boolean',
+  number: 'number',
+  date: 'date',
+  datetime: 'date',
+  tags: 'tag-array',
+  aliases: 'text-array',
+}
+
+/**
+ * Read `<vault>/.obsidian/types.json` and return the property → type overrides it declares. Returns
+ * an empty map when the file is missing, unreadable, or invalid — so callers fall back to inference.
+ */
+export async function readObsidianTypes(vaultPath: string): Promise<Map<string, PropertyType>> {
+  const map = new Map<string, PropertyType>()
+  try {
+    const raw = await readFile(join(vaultPath, '.obsidian', 'types.json'), 'utf-8')
+    const parsed = JSON.parse(raw) as { types?: Record<string, string> }
+    for (const [name, obsType] of Object.entries(parsed.types ?? {})) {
+      const mapped = OBSIDIAN_TYPE_MAP[obsType]
+      if (mapped) map.set(name, mapped)
+    }
+  } catch {
+    // No types.json (or invalid) — inference alone decides the types.
+  }
+  return map
+}
+
 export async function discoverProperties(vault: Vault): Promise<PropertyDef[]> {
   const forbidden = normalizeForbiddenDirs(vault.forbiddenDirs)
   const files: string[] = []
   await collectFiles(vault.path, forbidden, files)
+
+  // Explicit types the user assigned in Obsidian take precedence over inferred ones.
+  const declaredTypes = await readObsidianTypes(vault.path)
 
   // Track type votes: propName → Map<type, count>
   const votes = new Map<string, Map<PropertyType, number>>()
@@ -122,10 +159,11 @@ export async function discoverProperties(vault: Vault): Promise<PropertyDef[]> {
     }
   }
 
-  // Pick most-voted type per property, sort by total occurrence count (descending)
+  // Pick most-voted type per property (unless Obsidian declares one), sort by total count (desc).
   const props: PropertyDef[] = []
   for (const [name, typeVotes] of votes) {
-    const type = [...typeVotes.entries()].sort((a, b) => b[1] - a[1])[0][0]
+    const inferred = [...typeVotes.entries()].sort((a, b) => b[1] - a[1])[0][0]
+    const type = declaredTypes.get(name) ?? inferred
     props.push({ name, type })
   }
 
