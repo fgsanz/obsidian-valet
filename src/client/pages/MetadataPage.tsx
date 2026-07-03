@@ -302,7 +302,7 @@ export default function MetadataPage() {
 
       <div className={styles.header}>
         <h1>Metadata</h1>
-        <span className={styles.vaultName}>{activeVault.name}</span>
+        <span className={styles.vaultName}>@{activeVault.name}</span>
       </div>
 
       {/* Tabs */}

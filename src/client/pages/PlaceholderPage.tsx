@@ -13,7 +13,7 @@ export default function PlaceholderPage({ title }: { title: string }) {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>{title}</h1>
-        {activeVault && <span className={styles.vaultName}>{activeVault.name}</span>}
+        {activeVault && <span className={styles.vaultName}>@{activeVault.name}</span>}
       </div>
       <p className={styles.intro}>
         This page is a placeholder for new functionality. Here are some hints of what is coming...
