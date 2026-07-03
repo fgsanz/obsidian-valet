@@ -10,6 +10,9 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Always reserve space for the vertical scrollbar so centred content doesn't shift a few pixels
+     between short pages/tabs (no scrollbar) and tall ones (scrollbar shown). */
+  scrollbar-gutter: stable;
 }
 
 body {
