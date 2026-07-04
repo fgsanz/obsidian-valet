@@ -303,6 +303,12 @@ export default function MetadataPage() {
       <div className={styles.header}>
         <h1>Metadata</h1>
         <span className={styles.vaultName}>@{activeVault.name}</span>
+        {gitStatus &&
+          (gitStatus.hasGit ? (
+            <span className={styles.gitReadyPill}>Git ready</span>
+          ) : (
+            <span className={styles.noGit}>(no .git)</span>
+          ))}
       </div>
 
       {/* Tabs */}
