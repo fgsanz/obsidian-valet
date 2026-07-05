@@ -11,11 +11,18 @@ a commitment or a schedule — it's a sense of direction.
 
 ## General
 
-_Ideas under consideration will appear here._
+- I am considering converting this tool as an Obsidian plugin. But first I will focus on developing the functionality that motivated me to build this tool.
 
 ## Metadata
 
-_Ideas under consideration will appear here._
+- Move inline properties made for the Obsidian plugin [Dataview](https://obsidianhub.org/plugins/dataview#overview) to `frontmatter` (YAML)
+- Empty all values of a given property
+- Delete a property (or several) from the notes matching the filter
+- Clicking on a note's filename opens it in Obsidian directly
+- New operator for properties of the type `link-array`, `text-array` and `tag-array`: Match when the count of values is none or any integer
+- Add the ability to filter by filename (contains, does not contains). Currently the filtering is by directory and metadata
+- Export filter table
+- Export results table
 
 ## Body note
 
