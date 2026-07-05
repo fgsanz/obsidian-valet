@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Info } from 'lucide-react'
 import { api } from '../api/client'
 import Selector from '../components/Selector'
 import ValueInput from '../components/ValueInput'
@@ -341,25 +341,27 @@ export default function BodyNotePage() {
                 />
                 {noteInput && selected && isKindle && (
                   <div className={`${styles.banner} ${styles.bannerSuccess}`}>
-                    ✓ Detected a Kindle highlights note — <strong>{highlightsCount} highlights</strong>{' '}
-                    found. You can continue.
+                    ✓ Valid Kindle highlights note — <strong>{highlightsCount} highlights</strong> found.
                   </div>
                 )}
                 {noteInput && selected && !isKindle && (
                   <div className={`${styles.banner} ${styles.bannerError}`}>
-                    ✗ This is not a Kindle highlights note (no <code>kindle-*</code> properties). Pick a
-                    note created by the Kindle Highlights plugin.
+                    ✗ Not a Kindle highlights note. Pick a note created by the Kindle Highlights plugin.
                   </div>
                 )}
               </div>
             </section>
 
             {/* Step 2 — naming */}
-            <Step n={2} title="Name the split notes" disabled={!isKindle}
-              hint="Each note’s name is the prefix followed by an incrementing counter, zero-padded to the width of kindle-highlightsCount (187 → three digits).">
+            <Step n={2} title="Name the split notes" disabled={!isKindle}>
               <div className={styles.row}>
                 <div className={styles.grow}>
-                  <div className={styles.label}>Name prefix for split notes</div>
+                  <div className={styles.label}>
+                    Name prefix for split notes
+                    <Tooltip content="The final note’s name is the prefix followed by an incrementing counter, zero-padded to match the width of kindle-highlightsCount (e.g., 187 → three digits counter)." className={styles.labelInfo}>
+                      <Info size={14} aria-label="More info" />
+                    </Tooltip>
+                  </div>
                   <ValueInput value={prefix} onChange={(v) => { setPrefix(v); invalidateRun() }} placeholder="e.g., Book title - Kindle highlights" />
                 </div>
                 <div className={styles.startField}>
@@ -372,10 +374,12 @@ export default function BodyNotePage() {
                   />
                 </div>
               </div>
-              <div className={styles.examples}>
-                <span>First: <code className={styles.code}>{examples.first}</code></span>
-                <span>Last: <code className={styles.code}>{examples.last}</code></span>
-              </div>
+              {isKindle && prefix.trim() && (
+                <div className={styles.examples}>
+                  <span>First: <code className={styles.code}>{examples.first}</code></span>
+                  <span>Last: <code className={styles.code}>{examples.last}</code></span>
+                </div>
+              )}
             </Step>
 
             {/* Step 3 — folder */}
