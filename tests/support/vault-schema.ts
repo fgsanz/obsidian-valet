@@ -14,4 +14,13 @@ export const TEST_VAULT_PROPERTIES: PropertyDef[] = [
   { name: 'number headings', type: 'text' },
   { name: 'parent', type: 'link-array' },
   { name: 'related', type: 'link-array' },
+  // Kindle highlights notes (Books – Kindle highlights/).
+  { name: 'kindle-bookId', type: 'text' },
+  { name: 'kindle-title', type: 'text' },
+  { name: 'kindle-author', type: 'text' },
+  { name: 'kindle-highlightsCount', type: 'number' },
+  { name: 'kindle-asin', type: 'text' },
+  { name: 'kindle-lastAnnotatedDate', type: 'date' },
+  { name: 'kindle-bookImageUrl', type: 'text' },
+  { name: 'people', type: 'link-array' },
 ]

@@ -79,6 +79,19 @@ export const filterRuleSchema = z.object({
   combinator: z.enum(['and', 'or']),
 })
 
+export const kindleSplitPropertySchema = z.object({
+  name: z.string().min(1),
+  value: z.string(),
+})
+
+export const kindleSplitOptionsSchema = z.object({
+  prefix: z.string().min(1),
+  startNumber: z.number().int().min(0).default(1),
+  targetDir: z.string(),
+  properties: z.array(kindleSplitPropertySchema).default([]),
+  deleteOriginal: z.boolean().default(false),
+})
+
 export const operationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('replace'),

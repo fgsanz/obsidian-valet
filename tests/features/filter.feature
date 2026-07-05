@@ -28,12 +28,14 @@ Feature: Filtering notes
   Scenario: Filter for notes missing a property
     Given a fresh copy of the test vault
     When I filter notes where "parent" "does not exist"
-    Then 6 notes match
+    # +2 for the book fixtures (Books/ and Books – Kindle highlights/), which have no `parent`.
+    Then 8 notes match
 
   Scenario: Filter for notes where a property exists
     Given a fresh copy of the test vault
     When I filter notes where "related" "exists"
-    Then 4 notes match
+    # +1 for the Books/ book note, which has a `related` property.
+    Then 5 notes match
 
   Scenario: Combine a directory and a property rule
     Given a fresh copy of the test vault
@@ -69,7 +71,8 @@ Feature: Filtering notes
   Scenario: Filter with "exists and does not contain"
     Given a fresh copy of the test vault
     When I filter notes where "tags" "exists and does not contain" "tag2"
-    Then 2 notes match
+    # +1 for the Books/ book note, which has tags but not `tag2`.
+    Then 3 notes match
 
   Scenario: Text matching is case-insensitive by default
     Given a fresh copy of the test vault

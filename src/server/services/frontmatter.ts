@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
-import { writeFile, rename } from 'fs/promises'
+import { writeFile, rename, mkdir, access } from 'fs/promises'
 import { tmpdir } from 'os'
-import { join, basename } from 'path'
+import { join, basename, dirname } from 'path'
 import { randomUUID } from 'crypto'
 import type { ParsedNote, PropertyDef, PropertyType } from '@shared/types'
 
@@ -120,7 +120,7 @@ export function parseNote(
   }
 }
 
-function serializeValue(value: unknown, type: PropertyType): unknown {
+export function serializeValue(value: unknown, type: PropertyType): unknown {
   if (value == null) return null
   switch (type) {
     case 'tag-array': {
@@ -163,6 +163,27 @@ export async function writeNote(note: ParsedNote, defs: PropertyDef[]): Promise<
   const tmp = join(tmpdir(), `ov-${randomUUID()}.tmp`)
   await writeFile(tmp, newContent, 'utf-8')
   await rename(tmp, note.filePath)
+}
+
+/**
+ * Create a brand-new note file. Ensures the parent directory exists and writes atomically (temp file
+ * in the destination directory, then rename — same fs, so no cross-device rename). Refuses to
+ * clobber an existing file unless `overwrite` is set, so a split can never silently overwrite a note.
+ */
+export async function createNote(
+  filePath: string,
+  content: string,
+  overwrite = false,
+): Promise<void> {
+  if (!overwrite) {
+    const exists = await access(filePath).then(() => true).catch(() => false)
+    if (exists) throw new Error(`File already exists: ${filePath}`)
+  }
+  const dir = dirname(filePath)
+  await mkdir(dir, { recursive: true })
+  const tmp = join(dir, `.ov-${randomUUID()}.tmp`)
+  await writeFile(tmp, content, 'utf-8')
+  await rename(tmp, filePath)
 }
 
 /**

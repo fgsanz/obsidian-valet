@@ -1,4 +1,4 @@
-import type { Vault, ParsedNote, FilterCriteria, Operation, OperationResult, GitStatus, DocPage, ApiResponse, PropertyDef } from '@shared/types'
+import type { Vault, ParsedNote, FilterCriteria, Operation, OperationResult, GitStatus, DocPage, ApiResponse, PropertyDef, NoteSummary, KindleSplitOptions, SplitNote, KindleSplitResult } from '@shared/types'
 import type { UserSettings } from '@shared/schemas'
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
@@ -53,6 +53,13 @@ export const api = {
         operations,
         commitMessage,
       }),
+    list: (vaultId: string) => request<NoteSummary[]>('POST', '/notes/list', { vaultId }),
+    kindleSplitPreview: (vaultId: string, notePath: string, options: KindleSplitOptions) =>
+      request<SplitNote[]>('POST', '/notes/kindle-split/preview', { vaultId, notePath, options }),
+    kindleSplitApply: (vaultId: string, notePath: string, options: KindleSplitOptions) =>
+      request<KindleSplitResult>('POST', '/notes/kindle-split/apply', { vaultId, notePath, options }),
+    kindleSplitRevert: (vaultId: string, createdPaths: string[], resetToHead: boolean) =>
+      request<{ ok: boolean }>('POST', '/notes/kindle-split/revert', { vaultId, createdPaths, resetToHead }),
   },
 
   git: {

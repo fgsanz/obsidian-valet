@@ -5,6 +5,8 @@ import type {
   ParsedNote,
   FilterCriteria,
   OperationResult,
+  SplitNote,
+  KindleSplitResult,
 } from '@shared/types'
 import { scanVault } from '../../src/server/services/scanner'
 import { parseNote } from '../../src/server/services/frontmatter'
@@ -28,6 +30,12 @@ export class ValetWorld extends World {
   result: OperationResult | null = null
   /** Filter criteria being assembled by When steps. */
   criteria: FilterCriteria = { location: [], properties: [] }
+  /** The note chosen for a Kindle highlights split. */
+  kindleNote: ParsedNote | null = null
+  /** The most recent in-memory split preview. */
+  splitPreview: SplitNote[] = []
+  /** The result of the most recent applied split. */
+  splitResult: KindleSplitResult | null = null
 
   get properties() {
     return this.vault.properties
