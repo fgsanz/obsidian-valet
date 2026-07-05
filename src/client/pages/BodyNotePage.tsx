@@ -572,7 +572,7 @@ function Step({
     <section className={`${styles.step} ${disabled ? styles.stepDisabled : ''}`}>
       <StepHead n={n} title={title} optional={optional} />
       {hint && <p className={styles.stepHint}>{hint}</p>}
-      <div className={hint ? undefined : styles.stepBody}>{children}</div>
+      <div className={`${styles.stepBody} ${hint ? styles.stepBodyFlush : ''}`}>{children}</div>
     </section>
   )
 }
