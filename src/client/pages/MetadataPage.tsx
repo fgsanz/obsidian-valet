@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
 import { loadOperationsSnapshot, saveOperationsSnapshot } from '../lib/operationsSnapshot'
 import { makeRow, type OpRow, type OpType } from '../lib/opRows'
+import { SIMPLE_PROPERTY_OPERATORS } from '../lib/operators'
 import type { FilterCriteria, Operation, ParsedNote, OperationResult } from '@shared/types'
 import FilterBuilder from '../components/FilterBuilder'
 import NoteList from '../components/NoteList'
@@ -50,7 +51,7 @@ export default function MetadataPage() {
   const [criteria, setCriteria] = useState<FilterCriteria>(
     restored?.criteria ?? {
       location: [{ operator: 'all-directories', combinator: 'and' }],
-      properties: [{ property: '', operator: 'contains', combinator: 'and' }],
+      properties: [{ property: '', operator: SIMPLE_PROPERTY_OPERATORS[0].value, combinator: 'and' }],
     },
   )
   const [isFiltering, setIsFiltering] = useState(false)

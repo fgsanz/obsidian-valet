@@ -99,7 +99,7 @@ export default function FilterBuilder({
     const next = { ...criteria }
     next.properties = [
       ...next.properties,
-      { property: '', operator: 'contains', combinator: 'and' },
+      { property: '', operator: SIMPLE_PROPERTY_OPERATORS[0].value, combinator: 'and' },
     ]
     onChange(next)
   }
