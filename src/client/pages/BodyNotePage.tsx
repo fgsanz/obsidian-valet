@@ -9,11 +9,23 @@ export default function BodyNotePage() {
     queryFn: api.vaults.getActive,
   })
 
+  const { data: gitStatus } = useQuery({
+    queryKey: ['git', 'status', activeVault?.id],
+    queryFn: () => api.git.status(activeVault!.id),
+    enabled: !!activeVault?.id,
+  })
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Body note</h1>
         {activeVault && <span className={styles.vaultName}>@{activeVault.name}</span>}
+        {gitStatus &&
+          (gitStatus.hasGit ? (
+            <span className={styles.gitReadyPill}>Git ready</span>
+          ) : (
+            <span className={styles.noGit}>(no .git)</span>
+          ))}
       </div>
       <p className={styles.intro}>
         This page is a placeholder for new functionality. Here are some hints of what is coming...
