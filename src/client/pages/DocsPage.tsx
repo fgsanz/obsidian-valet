@@ -118,6 +118,20 @@ export default function DocsPage() {
     sessionCollapsed = collapsed
   }, [collapsed])
 
+  // When navigating to a doc, expand the section that contains it so the active item is visible —
+  // e.g. clicking "Support" in the top nav opens the Support section. Other sections keep their
+  // current expanded/collapsed state. Runs on slug change only, so the user can still collapse it.
+  useEffect(() => {
+    const section = DOC_SECTIONS.find((s) => s.slugs.includes(slug))
+    if (!section) return
+    setCollapsed((prev) => {
+      if (!prev.has(section.title)) return prev
+      const next = new Set(prev)
+      next.delete(section.title)
+      return next
+    })
+  }, [slug])
+
   const { data: pages = [] } = useQuery({
     queryKey: ['docs'],
     queryFn: api.docs.list,
