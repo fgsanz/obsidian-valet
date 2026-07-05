@@ -41,6 +41,18 @@ export default function DocViewer({ content }: Props) {
     return () => el.removeEventListener('click', handleClick)
   }, [navigate])
 
+  // External links open in a new browser tab; rel keeps the new tab from accessing this one.
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.querySelectorAll('a[href]').forEach((a) => {
+      if (/^https?:\/\//.test(a.getAttribute('href') || '')) {
+        a.setAttribute('target', '_blank')
+        a.setAttribute('rel', 'noopener noreferrer')
+      }
+    })
+  }, [html])
+
   // Close the lightbox with Escape.
   useEffect(() => {
     if (!lightbox) return

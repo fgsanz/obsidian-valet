@@ -164,7 +164,7 @@ async function listDocs(): Promise<DocPage[]> {
   }
   pages.push({ title: 'Test cases', slug: 'test-cases', description: 'All defined BDD scenarios, generated from the feature files' })
   pages.push({ title: 'Changelog', slug: 'changelog', description: "What's new in each released version" })
-  const KNOWN_ORDER = ['index', 'getting-started', 'vaults', 'bulk-operations', 'filters', 'frontmatter-types', 'upgrading', 'obsidian-scenarios', 'git-setup', 'git-integration', 'without-git-integration', 'git-cloud-storage', 'operation-rollback', 'npm-scripts', 'testing', 'test-vault', 'test-cases', 'configuration', 'releases', 'changelog', 'support']
+  const KNOWN_ORDER = ['index', 'getting-started', 'vaults', 'bulk-operations', 'filters', 'frontmatter-types', 'upgrading', 'obsidian-scenarios', 'git-setup', 'git-integration', 'without-git-integration', 'git-cloud-storage', 'operation-rollback', 'npm-scripts', 'testing', 'test-vault', 'test-cases', 'configuration', 'releases', 'changelog', 'whats-next', 'support']
   return pages.sort((a, b) => {
     const ai = KNOWN_ORDER.indexOf(a.slug)
     const bi = KNOWN_ORDER.indexOf(b.slug)
