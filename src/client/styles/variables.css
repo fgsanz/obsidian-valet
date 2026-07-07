@@ -26,6 +26,16 @@
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
+  /* Semantic type roles — every UI rule should reference one of these, not a raw --text-* step,
+     so a given role (body copy, a caption, a section title) is one size everywhere.
+       caption  chrome only: pills, badges, counters, uppercase eyebrows, inline code
+       body     default: content and controls — labels, hints, inputs, buttons, prose
+       section  step / modal / section titles
+       title    page h1 */
+  --font-caption: var(--text-xs);
+  --font-body: var(--text-sm);
+  --font-section: var(--text-base);
+  --font-title: var(--text-2xl);
   --leading-normal: 1.5;
   --leading-tight: 1.25;
 
