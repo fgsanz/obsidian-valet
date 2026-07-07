@@ -317,13 +317,13 @@ export default function BodyNotePage() {
         <>
           <div className={styles.motivation}>
             <p className={styles.motivationText}>
-              Split a single “Kindle highlights” note into many atomic notes — one highlight per note.
-              Atomic, self-contained notes connect better across topics and make far more meaningful
-              RAG embeddings than one giant note.
+              Smart notes carry one thought per note, they are self-contained,
+              thus allowing thoughts to connect better across different topics
+              and producing more meaningful RAG embeddings. Use this tool to
+              split a single “Kindle highlights” note into many atomic notes
+              — one highlight per note.
             </p>
-            <Link className={styles.docLink} to="/docs/kindle-highlights-split">
-              Learn more → Kindle highlights split
-            </Link>
+            <p className={styles.motivationText}>Learn more → <Link to="/docs/kindle-highlights-split">Kindle highlights split</Link>.</p>
           </div>
 
           <div className={styles.steps}>
