@@ -79,19 +79,54 @@
   font-size: var(--font-body);
 }
 
-/* Motivation blurb + doc link. */
+/* Motivation — collapsible callout (grey card, neutral header). */
 .motivation {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-5);
+}
+.motivationToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+}
+.motivationIcon {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+.motivationTitle {
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+/* Chevron sits at the far right of the header row. */
+.motivationChevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--color-text-subtle);
+}
+.motivationToggle:hover .motivationChevron,
+.motivationToggle:hover .motivationIcon {
+  color: var(--color-text);
+}
+.motivationBody {
+  margin-top: var(--space-3);
 }
 .motivationText {
   margin: 0 0 var(--space-2);
   /* 15px lead text — deliberately between --font-body (14px) and --font-section (16px). */
   font-size: 0.9375rem;
   color: var(--color-text);
+}
+.motivationText:last-child {
+  margin-bottom: 0;
 }
 .docLink {
   font-size: var(--font-body);

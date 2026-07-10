@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Trash2, Info } from 'lucide-react'
+import { Trash2, Info, ChevronRight, ChevronDown } from 'lucide-react'
 import { api } from '../api/client'
 import Selector from '../components/Selector'
 import ValueInput from '../components/ValueInput'
@@ -16,6 +16,17 @@ import type { SplitNote, KindleSplitOptions, KindleSplitResult } from '@shared/t
 import styles from './BodyNotePage.module.css'
 
 type Tab = 'kindle' | 'audible'
+
+/** Persist the Motivation callout's open/closed state across navigations and reloads. */
+const MOTIVATION_KEY = 'ov-kindle-motivation-open'
+function readMotivationOpen(): boolean {
+  try {
+    return localStorage.getItem(MOTIVATION_KEY) === 'open'
+  } catch {
+    return false
+  }
+}
+
 type GitModalState =
   | { kind: 'snapshot'; message: string }
   | { kind: 'commit'; message: string }
@@ -41,6 +52,7 @@ export default function BodyNotePage() {
   })
 
   const [activeTab, setActiveTab] = useState<Tab>('kindle')
+  const [motivationOpen, setMotivationOpen] = useState(readMotivationOpen)
   const [noteInput, setNoteInput] = useState('')
   const [prefix, setPrefix] = useState('')
   const [startInput, setStartInput] = useState('1')
@@ -316,14 +328,34 @@ export default function BodyNotePage() {
       {activeTab === 'kindle' && (
         <>
           <div className={styles.motivation}>
-            <p className={styles.motivationText}>
-              Smart notes carry one thought per note, they are self-contained,
-              thus allowing thoughts to connect better across different topics
-              and producing more meaningful RAG embeddings. Use this tool to
-              split a single “Kindle highlights” note into many atomic notes
-              — one highlight per note.
-            </p>
-            <p className={styles.motivationText}>Learn more → <Link to="/docs/kindle-highlights-split">Kindle highlights split</Link>.</p>
+            <button
+              type="button"
+              className={styles.motivationToggle}
+              onClick={() => setMotivationOpen((v) => {
+                const next = !v
+                try { localStorage.setItem(MOTIVATION_KEY, next ? 'open' : 'closed') } catch { /* ignore storage failures */ }
+                return next
+              })}
+              aria-expanded={motivationOpen}
+            >
+              <Info size={18} className={styles.motivationIcon} />
+              <span className={styles.motivationTitle}>Motivation</span>
+              {motivationOpen
+                ? <ChevronDown size={18} className={styles.motivationChevron} />
+                : <ChevronRight size={18} className={styles.motivationChevron} />}
+            </button>
+            {motivationOpen && (
+              <div className={styles.motivationBody}>
+                <p className={styles.motivationText}>
+                  Smart notes carry one thought per note, they are self-contained,
+                  thus allowing thoughts to connect better across different topics
+                  and produce more meaningful RAG embeddings. Use this tool to
+                  split a single “Kindle highlights” note into many atomic notes
+                  — one highlight per note.
+                </p>
+                <p className={styles.motivationText}>Learn more → <Link to="/docs/kindle-highlights-split">Kindle highlights split</Link>.</p>
+              </div>
+            )}
           </div>
 
           <div className={styles.steps}>
