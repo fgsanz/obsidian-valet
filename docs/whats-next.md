@@ -24,7 +24,7 @@ a commitment or a schedule — it's a sense of direction.
 - Export filter table
 - Export results table
 
-## Body note
+## Content
 
 - Split a single "Kindle highlights" into multiple notes. Motivation: A note containing all snippets of a whole book is against good practices smart note taking; we want atomic, independent and self-contained notes; atomic notes will unleash the connectivity of a single snippet, and if you are using RAG embeddings your notes will much more meaningful. So... Convert a single note made by the Obsidian plugin [Kindle highlights](https://community.obsidian.md/plugins/obsidian-kindle-plugin) into multiple notes. Allow defining properties and setting up values. Allow defining filename pattern for the new notes. Option to keep the original note. Maybe for this feature it would be useful to use templates already defined in the vault — to apply a template when splitting notes. Only allow adding properties which are already defined in the vault, to leverage format validation when dealing with property values.
 - Split a single note with clip notes from "Audible" (audio book platform) into multi notes. Motivation: same reasoning than the splitting of "Kindle highlights" notes. Take default format from the Audible website (instruct users how to do it). Same capabilities than the splitting of "Kindle highlights".

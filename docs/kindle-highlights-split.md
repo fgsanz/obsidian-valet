@@ -13,7 +13,7 @@ note — so they can be linked across topics and make far more meaningful RAG em
 giant note.
 
 **Kindle highlights split** turns one such note into many notes, one highlight per note, from the
-**Body note** page.
+**Content** page.
 
 # Detecting a Kindle highlights note
 

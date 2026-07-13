@@ -182,10 +182,10 @@ export default function Layout() {
             Metadata
           </NavLink>
           <NavLink
-            to="/body-note"
+            to="/content"
             className={({ isActive }) => (isActive ? styles.active : undefined)}
           >
-            Body note
+            Content
           </NavLink>
           <NavLink
             to="/analysis"

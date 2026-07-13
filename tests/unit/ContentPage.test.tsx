@@ -4,7 +4,7 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import type { NoteSummary, Vault } from '@shared/types'
-import BodyNotePage from '../../src/client/pages/BodyNotePage'
+import ContentPage from '../../src/client/pages/ContentPage'
 
 afterEach(cleanup)
 
@@ -32,31 +32,31 @@ function renderPage() {
   return render(
     <QueryClientProvider client={qc}>
       <MemoryRouter>
-        <BodyNotePage />
+        <ContentPage />
       </MemoryRouter>
     </QueryClientProvider>,
   )
 }
 
-test('BodyNotePage: renders both tabs, Kindle active', () => {
+test('ContentPage: renders both tabs, Kindle active', () => {
   renderPage()
   assert.ok(screen.getByText('Kindle highlights split'))
   assert.ok(screen.getByText('Audible splits'))
 })
 
-test('BodyNotePage: the Audible tab is an empty placeholder', () => {
+test('ContentPage: the Audible tab is an empty placeholder', () => {
   renderPage()
   fireEvent.click(screen.getByText('Audible splits'))
   assert.ok(screen.getByText(/intentionally empty/))
 })
 
-test('BodyNotePage: choosing a non-Kindle note shows the blocking banner', () => {
+test('ContentPage: choosing a non-Kindle note shows the blocking banner', () => {
   renderPage()
   fireEvent.change(screen.getByPlaceholderText('Type a note name…'), { target: { value: 'Plain note' } })
-  assert.ok(screen.getByText(/not a Kindle highlights note/))
+  assert.ok(screen.getByText(/Not a Kindle highlights note/))
 })
 
-test('BodyNotePage: choosing a Kindle note confirms it and shows the highlight count', () => {
+test('ContentPage: choosing a Kindle note confirms it and shows the highlight count', () => {
   renderPage()
   fireEvent.change(screen.getByPlaceholderText('Type a note name…'), {
     target: { value: 'Agile - Kindle highlights' },

@@ -13,7 +13,7 @@ import { getValuePlaceholder } from '../lib/operators'
 import { makePropRow, splitExampleNames, canRunSplit, type PropRow } from '../lib/kindleSplit'
 import { APP_NAME } from '@shared/constants'
 import type { SplitNote, KindleSplitOptions, KindleSplitResult } from '@shared/types'
-import styles from './BodyNotePage.module.css'
+import styles from './ContentPage.module.css'
 
 type Tab = 'kindle' | 'audible'
 
@@ -35,7 +35,7 @@ type GitModalState =
   | { kind: 'reverted' }
   | null
 
-export default function BodyNotePage() {
+export default function ContentPage() {
   const { data: activeVault, isLoading } = useQuery({
     queryKey: ['vaults', 'active'],
     queryFn: api.vaults.getActive,
@@ -213,7 +213,7 @@ export default function BodyNotePage() {
   if (!activeVault) {
     return (
       <div className={styles.noVault}>
-        <h1>Body note</h1>
+        <h1>Content</h1>
         <p>
           No active vault selected. Go to <Link to="/vaults">Vaults</Link> to add and activate a
           vault first.
@@ -294,7 +294,7 @@ export default function BodyNotePage() {
       )}
 
       <div className={styles.header}>
-        <h1 className={styles.title}>Body note</h1>
+        <h1 className={styles.title}>Content</h1>
         <span className={styles.vaultName}>@{activeVault.name}</span>
         {gitStatus &&
           (gitStatus.hasGit ? (

@@ -9,7 +9,7 @@ status: planned   # planned | in-progress | shipped
 ## Summary
 
 - It convert a single note made by the Obsidian plugin “Kindle highlights” into multiple notes
-- Create a new functionality that will be accessed in the GUI via the page "Body note"
+- Create a new functionality that will be accessed in the GUI via the page "Content"
 - The name of the functionality is "Kindle highlights split"
 
 
@@ -253,7 +253,7 @@ Estimating and planning are critical, yet are difficult and error prone. We cann
 
 ## GUI and mockups
 
-- In the page "Body note" add two tags in the same way than in page "Metadata" and call them "Kindle highlights split" (the new functionality comes here) and "Audible splits" (leave them empty for now)
+- In the page "Content" add two tags in the same way than in page "Metadata" and call them "Kindle highlights split" (the new functionality comes here) and "Audible splits" (leave them empty for now)
 - Within the tab "Kindle highlights split", at the top, add a small text explaining the motivation behind the feature and give a link to the doc "Kindle highlights split"
 - And below that text, develop the GUI
 - Before implementing the GUI, show me in Claude Design the workflow and the wireframe, do not implement the GUI without an express agreement with me

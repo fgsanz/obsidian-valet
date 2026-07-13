@@ -3,7 +3,7 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import VaultsPage from './pages/VaultsPage'
 import MetadataPage from './pages/MetadataPage'
-import BodyNotePage from './pages/BodyNotePage'
+import ContentPage from './pages/ContentPage'
 import AnalysisPage from './pages/AnalysisPage'
 import DocsPage from './pages/DocsPage'
 
@@ -15,7 +15,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="vaults" element={<VaultsPage />} />
           <Route path="metadata" element={<MetadataPage />} />
-          <Route path="body-note" element={<BodyNotePage />} />
+          <Route path="content" element={<ContentPage />} />
           <Route path="analysis" element={<AnalysisPage />} />
           <Route path="docs" element={<DocsPage />} />
           <Route path="docs/:slug" element={<DocsPage />} />
