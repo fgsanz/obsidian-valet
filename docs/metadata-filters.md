@@ -1,10 +1,10 @@
 ---
-title: Filters
-slug: filters
+title: Metadata filters
+slug: metadata-filters
 description: All filter operators and type-specific behaviour
 ---
 
-# Filters
+# Metadata filters
 
 Filters can match notes by:
 - **directory** (file location in vault)

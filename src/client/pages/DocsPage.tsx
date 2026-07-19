@@ -15,7 +15,7 @@ import styles from './DocsPage.module.css'
  * decide which section it belongs to and add its slug here.
  */
 const DOC_SECTIONS: { title: string; slugs: string[] }[] = [
-  { title: 'Usage', slugs: ['getting-started', 'vaults', 'filters', 'bulk-operations', 'frontmatter-types', 'kindle-highlights-split', 'upgrading'] },
+  { title: 'Usage', slugs: ['getting-started', 'vaults', 'metadata-filters', 'metadata-operations', 'frontmatter-types', 'kindle-highlights-split', 'upgrading'] },
   { title: 'Pro usage', slugs: ['obsidian-scenarios', 'git-integration', 'without-git-integration', 'git-setup', 'git-cloud-storage', 'operation-rollback'] },
   { title: 'Development', slugs: ['npm-scripts', 'testing', 'test-vault', 'test-cases', 'configuration'] },
   { title: 'Releases', slugs: ['releases', 'changelog', 'whats-next'] },
@@ -48,29 +48,29 @@ function groupIntoSections(pages: DocPage[]): { title: string; docs: DocPage[] }
   return others.length ? [...sections, { title: 'Other', docs: others }] : sections
 }
 
-const USE_CASES: { text: React.ReactNode; author: string }[] = [
+const METADATA_USE_CASES: { text: React.ReactNode; author: string }[] = [
   {
     author: 'Björn',
     text: (
-      <>Find notes <strong>in directory</strong> ‘Notes/Raw’ and <strong>add</strong> ‘review’ to <code>tags</code> property</>
+      <>Find notes <strong>in directory</strong> ‘Notes/Raw’ and <strong>add</strong> ‘#review’ to <code>tags</code> property</>
     ),
   },
   {
     author: 'Aiko',
     text: (
-      <>Find notes where <code>tags</code> contains ‘physics’ and <strong>move</strong> ‘[[STEM]]’ from <code>related</code> to <code>parent</code></>
+      <>Find notes where <code>tags</code> contains ‘#physics’ and <strong>move</strong> ‘[[STEM]]’ from <code>related</code> to <code>parent</code> property</>
     ),
   },
   {
     author: 'Tomás',
     text: (
-      <>Find notes where ´[[Woodworking]]´ <strong>is in either</strong> <code>parent</code> or <code>related</code> properties, and add the tag ‘diy’ to <code>tags</code> property</>
+      <>Find notes where ´[[Woodworking]]´ <strong>is in either</strong> <code>parent</code> or <code>related</code> properties, and add the tag ‘#diy’ to <code>tags</code> property</>
     ),
   },
   {
     author: 'Aless',
     text: (
-      <>Find notes where <code>tags</code> contains ‘physics’ and <code>parent</code> <strong>exists and does not contain</strong> ‘[[STEM]]’, and add ‘[[STEM]]’ to <code>parent</code> property</>
+      <>Find notes where <code>tags</code> contains ‘#physics’ and <code>parent</code> <strong>exists and does not contain</strong> ‘[[STEM]]’, and add ‘[[STEM]]’ to <code>parent</code> property</>
     ),
   },
   {
@@ -87,16 +87,94 @@ const USE_CASES: { text: React.ReactNode; author: string }[] = [
   },
 ]
 
+const CONTENT_USE_CASES: { text: React.ReactNode; author: string }[] = [
+  {
+    author: 'Björn',
+    text: (
+      <>Split the note "Sapiens - Kindle highlights" into individual notes. Carry the original metadata to the split notes. Add ´#literary´ to <code>tags</code> property. Add a link to the original note in <code>parent</code> property. Add the links ´[[Civilization]]´,´[[Human]]´,´[[Evolution]]´ and ´[[Anthropology]]´ to <code>related</code> property ... Later I will carefully review and link each note further.</>
+    ),
+  }
+]
+
+const ANALYSIS_USE_CASES: { text: React.ReactNode; author: string }[] = [
+  {
+    author: 'Björn',
+    text: (
+      <>Show <strong>the shortest path</strong> between two notes. Then the next-shortest, and so on.</>
+    ),
+  },
+  {
+    author: 'Aiko',
+    text: (
+      <>List <strong>all values used</strong> by a given property.</>
+    ),
+  },
+  {
+    author: 'Tomás',
+    text: (
+      <>Find <strong>all values shared</strong> by two properties.</>
+    ),
+  }
+]
+
+// The example use-cases are grouped by the area of the tool they exercise. Each tab shows a short
+// intro and its own set of example cards.
+const USE_CASE_TABS: { id: string; label: string; description: React.ReactNode; cases: typeof METADATA_USE_CASES }[] = [
+  {
+    id: 'metadata',
+    label: 'Metadata',
+    description: (
+      <>Filter notes by paths and/or properties, and perform bulk operations to <strong>delete</strong>, <strong>replace</strong>, <strong>move</strong> and <strong>add</strong> metadata values. This happens completely offline and does not connect to any external service. Examples that accomodate to different tagging and linking styles:</>
+    ),
+    cases: METADATA_USE_CASES,
+  },
+  {
+    id: 'content',
+    label: 'Content',
+    description: (
+      <>The functionality{' '}
+        <Link to="/docs/kindle-highlights-split">Kindle highlights split</Link> turns a single note made by the{' '}
+        <a href="https://community.obsidian.md/plugins/obsidian-kindle-plugin" target="_blank" rel="noreferrer">
+          Kindle Highlights
+        </a>{' '}
+        community plugin — containing all the highlights of a book — into multiple notes carrying a single highlight per note, so each idea can be linked across different topics and delivers far more meaningful AI RAG embeddings.
+      </>
+    ),
+    cases: CONTENT_USE_CASES,
+  },
+  {
+    id: 'analysis',
+    label: 'Analysis',
+    description: (
+      <>Analysis features are <strong>coming soon.</strong> They will expose structure and relationships across your vault, helping you identify suboptimal or outdated note-taking habits built up over time.</>
+    ),
+    cases: ANALYSIS_USE_CASES,
+  },
+]
+
 function DocsIndex() {
+  const [tab, setTab] = useState(USE_CASE_TABS[0].id)
+  const active = USE_CASE_TABS.find((t) => t.id === tab) ?? USE_CASE_TABS[0]
   return (
     <div className={styles.index}>
       <h1>Obsidian Valet</h1>
-      <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level.</p>
-      <p>The tool filters notes by paths and/or properties, and performs operations such as <strong>delete</strong>, <strong>replace</strong>, <strong>move</strong> and <strong>add</strong> value. It runs completely offline and does not connect to any external service.</p>
-      <p>First time? Check out <Link to="/docs/getting-started">Getting started</Link>.</p>
-      <h2>Use cases – Examples</h2>
+      <p>Obsidian Valet is a local web tool that manipulates Obsidian vault notes at the filesystem level. Check out <Link to="/docs/getting-started">Getting started</Link></p>
+      <h2>Functionality examples</h2>
+      <div className={styles.tabs}>
+        {USE_CASE_TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={`${styles.tab} ${tab === t.id ? styles.activeTab : ''}`}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <p>{active.description}</p>
       <div className={styles.examplesGrid}>
-        {USE_CASES.map((u, i) => (
+        {active.cases.map((u, i) => (
           <div key={i} className={styles.exampleCard}>
             {u.text}
           </div>

@@ -33,7 +33,7 @@ note you pick has none, the tool tells you and blocks the flow.
    note's folder.
 4. **Add properties (optional).** Add frontmatter properties to every split note. Only properties
    already defined in the vault are offered, and values are validated by property type — the same
-   rules as [Bulk operations](bulk-operations). A `source` link back to the original note is added
+   rules as [Metadata operations](metadata-operations). A `source` link back to the original note is added
    automatically, unless you add a property that already links back.
 5. **Keep or delete the original.** The original note is kept by default.
 

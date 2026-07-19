@@ -1,10 +1,10 @@
 ---
-title: Bulk operations
-slug: bulk-operations
+title: Metadata operations
+slug: metadata-operations
 description: Filter notes by property values and apply bulk changes
 ---
 
-# Bulk operations
+# Metadata operations
 
 | Operation | Description | Example|
 | --------- | ----------- |--------|
