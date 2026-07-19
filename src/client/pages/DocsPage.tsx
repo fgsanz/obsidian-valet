@@ -100,19 +100,19 @@ const ANALYSIS_USE_CASES: { text: React.ReactNode; author: string }[] = [
   {
     author: 'Björn',
     text: (
-      <>Show <strong>the shortest path</strong> between two notes. Then the next-shortest, and so on.</>
+      <>Show the <strong>paths between two notes</strong>. Start with the shortest, then the next-shortest, and so on.</>
     ),
   },
   {
     author: 'Aiko',
     text: (
-      <>List <strong>all values used</strong> by a given property.</>
+      <>List <strong>all values used</strong> by a given metadata property.</>
     ),
   },
   {
     author: 'Tomás',
     text: (
-      <>Find <strong>all values shared</strong> by two properties.</>
+      <>Find <strong>all values shared</strong> by two metadata properties.</>
     ),
   }
 ]
