@@ -45,7 +45,7 @@ Keep the rest of `.obsidian` (your plugins and settings) tracked if you want the
 
 ### Enable tracking
 
-Enable tracking of your note files:
+Enable tracking of your note files. Depending on the amount of files, these commands might take several seconds:
 
 ```sh
 git add -A
